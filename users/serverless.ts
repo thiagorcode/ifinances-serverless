@@ -1,11 +1,9 @@
 import type { AWS } from '@serverless/typescript';
 
-import hello from '@functions/hello';
-
 const serverlessConfiguration: AWS = {
   service: 'users',
   frameworkVersion: '3',
-  plugins: ['serverless-esbuild'],
+  plugins: ['serverless-esbuild', 'serverless-offline', 'serverless-mysql'],
   provider: {
     name: 'aws',
     runtime: 'nodejs14.x',
@@ -19,8 +17,22 @@ const serverlessConfiguration: AWS = {
     },
   },
   // import the function via paths
-  functions: { hello },
+   functions: {
+    list: {
+      handler: "src/functions/list.handler",
+      events:[
+        {
+          http: {
+            path: 'users',
+            method: 'get',
+            cors: true,
+          }
+        }
+      ]
+    }
+   },
   package: { individually: true },
+  useDotenv: true,
   custom: {
     esbuild: {
       bundle: true,
