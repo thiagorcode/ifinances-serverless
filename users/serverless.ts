@@ -3,7 +3,7 @@ import type { AWS } from '@serverless/typescript';
 const serverlessConfiguration: AWS = {
   service: 'users',
   frameworkVersion: '3',
-  plugins: ['serverless-esbuild', 'serverless-offline', 'serverless-mysql'],
+  plugins: ['serverless-esbuild', 'serverless-offline'],
   provider: {
     name: 'aws',
     runtime: 'nodejs14.x',
@@ -18,8 +18,8 @@ const serverlessConfiguration: AWS = {
   },
   // import the function via paths
    functions: {
-    list: {
-      handler: "src/functions/list.handler",
+    getByUserId: {
+      handler: "handler.getByUserId",
       events:[
         {
           http: {
