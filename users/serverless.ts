@@ -17,20 +17,28 @@ const serverlessConfiguration: AWS = {
     },
   },
   // import the function via paths
-   functions: {
+  functions: {
     getByUserId: {
-      handler: "handler.getByUserId",
-      events:[
+      handler: 'handler.getByUserId',
+
+      events: [
         {
           http: {
-            path: 'users',
+            path: 'users/{id}',
             method: 'get',
             cors: true,
-          }
-        }
-      ]
-    }
-   },
+            request: {
+              parameters: {
+                paths: {
+                  id: true,
+                },
+              },
+            },
+          },
+        },
+      ],
+    },
+  },
   package: { individually: true },
   useDotenv: true,
   custom: {
