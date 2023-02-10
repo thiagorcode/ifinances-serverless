@@ -12,7 +12,6 @@ import {
 } from 'typeorm';
 import * as crypto from 'crypto';
 
-
 const PrevPasswordSymbol = Symbol('UserPrevPassword');
 const PrevEmailSymbol = Symbol('UserPrevEmail');
 const PasswordPlaceholder = '***********';
@@ -32,7 +31,7 @@ export class Users extends BaseEntity {
   @Column({ type: 'varchar', length: '80', nullable: false })
   password: string;
 
-  @Column({type: 'bool'})
+  @Column({ type: 'bool' })
   isActive: boolean;
 
   @Column({ type: 'bool', default: false })
