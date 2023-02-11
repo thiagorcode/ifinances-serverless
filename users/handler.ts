@@ -1,24 +1,30 @@
-import { APIGatewayProxyHandler } from 'aws-lambda';
-import 'reflect-metadata';
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 
-// import * as createFunction from './src/functions/create'
-import * as getByUserIdFunction from './src/functions/getById'
+/**
+ *
+ * Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
+ * @param {Object} event - API Gateway Lambda Proxy Input Format
+ *
+ * Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
+ * @returns {Object} object - API Gateway Lambda Proxy Output Format
+ *
+ */
 
-// import * as updateFunction from './src/functions/update'
-// import * as removeFunction from './src/functions/remove'
-
-// export const create: APIGatewayProxyHandler = async (event, context) => {
-//   return createFunction.default(event, context);
-// };
-
-export const getByUserId: APIGatewayProxyHandler = (event, context, callback) => {
-  return getByUserIdFunction.default(event, context, callback);
+export const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+  try {
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        message: 'hello world',
+      }),
+    };
+  } catch (err) {
+    console.log(err);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        message: 'some error happened',
+      }),
+    };
+  }
 };
-
-// export const update: APIGatewayProxyHandler = async (event, context) => {
-//   return updateFunction.default(event, context);
-// };
-
-// export const remove: APIGatewayProxyHandler = async (event, context) => {
-//   return removeFunction.default(event, context);
-// };

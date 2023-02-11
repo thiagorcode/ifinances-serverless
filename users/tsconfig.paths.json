@@ -8,6 +8,9 @@
       ],
       "@libs/*": [
         "src/libs/*"
+      ],
+      "@shared/*": [
+        "src/shared/*"
       ]
     }
   }
