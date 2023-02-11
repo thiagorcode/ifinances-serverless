@@ -3,7 +3,7 @@ import { Database } from '@shared/database';
 import { Users } from '@shared/database/entities/users.entity';
 import UsersRepositoryProps from './interface/users.repository.interface';
 
-class UsersRepository implements UsersRepositoryProps {
+export class UsersRepository implements UsersRepositoryProps {
   // Transformar em layer
   private usersRepository: Repository<Users>;
 
@@ -18,8 +18,3 @@ class UsersRepository implements UsersRepositoryProps {
     });
   }
 }
-
-export const usersRepository = async () => {
-  const repository = new UsersRepository();
-  return repository;
-};

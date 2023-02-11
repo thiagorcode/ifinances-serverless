@@ -15,20 +15,14 @@ Globals:
     TracingEnabled: true
 
 Resources:
-  UsersFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+  UsersGetByIdFunction:
+    Type: AWS::Serverless::Function
     Properties:
       CodeUri: usersFunction/
       Handler: handler.getByUserId
       Runtime: nodejs18.x
-      Architectures:
-      - x86_64
-      Events:
-        Users:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /users
-            Method: get
+      Policies:
+        - AWSLambdaBasicExecutionRole
     Metadata: # Manage esbuild properties
       BuildMethod: esbuild
       BuildProperties:
@@ -37,6 +31,33 @@ Resources:
         Sourcemap: true # Enabling source maps will create the required NODE_OPTIONS environment variables on your lambda function during sam build
         EntryPoints:
         - handler.ts
+      
+  UsersApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: dev
+      DefinitionBody:
+        openapi: 3.0.1
+        info:
+          title: Users API
+          version: '1.0'
+        paths:
+          /users/{id}:
+            get:
+              parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                    type: string
+              responses:
+                '200':
+                  description: Successful response
+              x-amazon-apigateway-integration:
+                uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${UsersGetByIdFunction.Arn}/invocations"
+                credentials: !GetAtt [UserFunctionIamRole, Arn]
+                type: aws_proxy
+   
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
     Properties:
@@ -64,9 +85,9 @@ Outputs:
   UserApi:
     Description: API Gateway endpoint URL for Prod stage for Hello World function
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/dev/user/"
-  UserFunction:
+  UsersGetByIdFunction:
     Description: Hello World Lambda Function ARN
-    Value: !GetAtt UserFunction.Arn
+    Value: !GetAtt UsersGetByIdFunction.Arn
   UserFunctionIamRole:
     Description: Implicit IAM Role created for Hello World function
     Value: !GetAtt UserFunctionIamRole.Arn

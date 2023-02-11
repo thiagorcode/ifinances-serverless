@@ -5,6 +5,9 @@ jspm_packages
 # Serverless directories
 .serverless
 
+# Build directories
+.aws-sam
+
 # esbuild directories
 .esbuild
 

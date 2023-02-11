@@ -13,20 +13,14 @@ Globals:
   Api:
     TracingEnabled: true
 Resources:
-  UsersFunction:
+  UsersGetByIdFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: UsersFunction
+      CodeUri: UsersGetByIdFunction
       Handler: handler.getByUserId
       Runtime: nodejs18.x
-      Architectures:
-      - x86_64
-      Events:
-        Users:
-          Type: Api
-          Properties:
-            Path: /users
-            Method: get
+      Policies:
+      - AWSLambdaBasicExecutionRole
       Environment:
         Variables:
           NODE_OPTIONS: ' --enable-source-maps'
@@ -38,7 +32,36 @@ Resources:
         Minify: true
         Sourcemap: true
         Target: es2020
-      SamResourceId: UsersFunction
+      SamResourceId: UsersGetByIdFunction
+  UsersApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: dev
+      DefinitionBody:
+        openapi: 3.0.1
+        info:
+          title: Users API
+          version: '1.0'
+        paths:
+          /users/{id}:
+            get:
+              parameters:
+              - in: path
+                name: id
+                required: true
+                schema:
+                  type: string
+              responses:
+                '200':
+                  description: Successful response
+              x-amazon-apigateway-integration:
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${UsersGetByIdFunction.Arn}/invocations
+                credentials:
+                  Fn::GetAtt:
+                  - UserFunctionIamRole
+                  - Arn
+                type: aws_proxy
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
     Properties:
@@ -64,11 +87,11 @@ Outputs:
     Description: API Gateway endpoint URL for Prod stage for Hello World function
     Value:
       Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/dev/user/
-  UserFunction:
+  UsersGetByIdFunction:
     Description: Hello World Lambda Function ARN
     Value:
       Fn::GetAtt:
-      - UserFunction
+      - UsersGetByIdFunction
       - Arn
   UserFunctionIamRole:
     Description: Implicit IAM Role created for Hello World function

@@ -3,7 +3,7 @@ import UsersRepository from '../repository/interface/users.repository.interface'
 
 @injectable()
 class FindByUserId {
-  constructor(@inject('UserRepository') private usersRepository: UsersRepository) {}
+  constructor(@inject('UsersRepository') private usersRepository: UsersRepository) {}
 
   async execute(userId: string) {
     return this.usersRepository.findByUserId(userId);
