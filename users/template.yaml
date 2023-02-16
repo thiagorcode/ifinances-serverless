@@ -6,6 +6,32 @@ Description: >
   Sample SAM Template for users
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+
+## ____________________________ PARAMETERS 👇 __________________________________
+
+Parameters:
+  EnvBase:
+    Type: String
+    Default: local
+
+  DbNameInstance:
+    Type: String
+
+  DbHost:
+    Type: String
+
+  DbName:
+    Type: String
+  
+  DbUser:
+    Type: String
+  
+  DbPassword:
+    Type: String
+  
+  DbPort:
+    Type: Number
+
 Globals:
   Function:
     Timeout: 3
@@ -14,16 +40,84 @@ Globals:
   Api:
     TracingEnabled: true
 
+Function:
+    Timeout: 15
+    MemorySize: 128
+    Tracing: Active
+    Environment:
+      Variables:
+        DB_HOST: rr
+        DB_PORT: rrr
+        DB_USER: rrr
+        DB_PASSWORD: rrr
 Resources:
+  MyVpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      InstanceTenancy: default
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+
+  MySubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref MyVpc
+      CidrBlock: 10.0.0.0/24
+      AvailabilityZone: sa-east-1a
+
+  MyRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref MyVpc
+
+  MyRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref MyRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  MyDBInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      Engine: MySQL
+      DBInstanceIdentifier: !Ref DbNameInstance
+      DBName: !Ref DbName
+      MasterUsername: !Ref DbUser
+      MasterUserPassword: !Ref DbPassword
+      VpcSecurityGroupIds:
+        - !Ref MyDBSecurityGroup
+      DBInstanceClass: db.t3.micro
+      AllocatedStorage: 20
+      SubnetId: !Ref MySubnet
+
+  MyDBSecurityGroup:
+    Type: AWS::RDS::DBSecurityGroup
+    Properties:
+      DBSecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: !Ref DbPort
+          ToPort: !Ref DbPort
+          CidrIp: 10.0.0.0/24
+
   UsersGetByIdFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: usersFunction/
       Handler: handler.getByUserId
       Runtime: nodejs18.x
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref MyDBSecurityGroup
+        SubnetIds:
+          - !Ref MySubnet
       Policies:
         - AWSLambdaBasicExecutionRole
     Metadata: # Manage esbuild properties
+      # DockerTag: nodejs14.x
+      # DockerContext: ./usersFunction
+      # Dockerfile: Dockerfile
       BuildMethod: esbuild
       BuildProperties:
         Minify: true
@@ -36,6 +130,8 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       StageName: dev
+     
+      
       DefinitionBody:
         openapi: 3.0.1
         info:

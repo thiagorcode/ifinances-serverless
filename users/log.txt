@@ -1,9 +1,10 @@
-START RequestId: 44890411-bb4a-4fae-99da-576c206ee016 Version: $LATEST
-2023-02-11T04:51:34.546Z	44890411-bb4a-4fae-99da-576c206ee016	INFO	1
-2023-02-11T04:51:34.547Z	44890411-bb4a-4fae-99da-576c206ee016	INFO	test 2
-2023-02-11T04:51:34.547Z	44890411-bb4a-4fae-99da-576c206ee016	INFO	test 3
-2023-02-11T04:51:34.549Z	44890411-bb4a-4fae-99da-576c206ee016	INFO	{  name: 'default',  type: 'mysql',  host: 'host.docker.internal:172.17.0.1',  port: 3099,  username: 'root',  password: 'root',  entities: [ [class cr extends M8] ]}
-2023-02-11T04:51:34.572Z	44890411-bb4a-4fae-99da-576c206ee016	INFO	test 4
-2023-02-11T04:51:34.594Z	44890411-bb4a-4fae-99da-576c206ee016	INFO	Error: getaddrinfo ENOTFOUND host.docker.internal:172.17.0.1    at __node_internal_captureLargerStackTrace (node:internal/errors:491:5)    at __node_internal_ (node:internal/errors:713:10)    at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:107:26) {  errno: -3008,  code: 'ENOTFOUND',  syscall: 'getaddrinfo',  hostname: 'host.docker.internal:172.17.0.1',  fatal: true}
-END RequestId: 44890411-bb4a-4fae-99da-576c206ee016
-REPORT RequestId: 44890411-bb4a-4fae-99da-576c206ee016	Init Duration: 0.16 ms	Duration: 465.62 ms	Billed Duration: 466 ms	Memory Size: 128 MB	Max Memory Used: 128 MB	
+START RequestId: 6942a7c5-62f8-4292-abc2-c3578e77e752 Version: $LATEST
+2023-02-16T02:28:41.233Z	6942a7c5-62f8-4292-abc2-c3578e77e752	DEBUG	Invocado Database
+2023-02-16T02:28:41.233Z	6942a7c5-62f8-4292-abc2-c3578e77e752	INFO	CreateConnection
+2023-02-16T02:28:41.307Z	6942a7c5-62f8-4292-abc2-c3578e77e752	DEBUG	invocato createConnection
+2023-02-16T02:28:41.308Z	6942a7c5-62f8-4292-abc2-c3578e77e752	DEBUG	Carregou service
+2023-02-16T02:28:41.308Z	6942a7c5-62f8-4292-abc2-c3578e77e752	DEBUG	execute foi
+2023-02-16T02:28:41.308Z	6942a7c5-62f8-4292-abc2-c3578e77e752	INFO	CreateConnection
+2023-02-16T02:28:41.385Z	6942a7c5-62f8-4292-abc2-c3578e77e752	INFO	null
+END RequestId: 6942a7c5-62f8-4292-abc2-c3578e77e752
+REPORT RequestId: 6942a7c5-62f8-4292-abc2-c3578e77e752	Init Duration: 0.14 ms	Duration: 531.34 ms	Billed Duration: 532 ms	Memory Size: 128 MB	Max Memory Used: 128 MB	

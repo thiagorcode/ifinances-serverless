@@ -58,24 +58,16 @@ export class Users extends BaseEntity {
     }
 
     if (this.password && this.password.length !== 64) {
-      this.password = crypto
-        .createHash('sha256')
-        .update(`${this.username}_${this.password}`)
-        .digest('hex');
+      this.password = crypto.createHash('sha256').update(`${this.username}_${this.password}`).digest('hex');
     }
 
-    if (
-      this.password !== this[PrevPasswordSymbol] ||
-      this.email !== this[PrevEmailSymbol]
-    ) {
+    if (this.password !== this[PrevPasswordSymbol] || this.email !== this[PrevEmailSymbol]) {
       this[PrevPasswordSymbol] = this.password;
       this[PrevEmailSymbol] = this.email;
     }
   }
 
   get unmaskedPassword() {
-    return this.password === PasswordPlaceholder
-      ? this[PrevPasswordSymbol]
-      : this.password;
+    return this.password === PasswordPlaceholder ? this[PrevPasswordSymbol] : this.password;
   }
 }

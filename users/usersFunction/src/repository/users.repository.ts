@@ -5,16 +5,15 @@ import UsersRepositoryProps from './interface/users.repository.interface';
 
 export class UsersRepository implements UsersRepositoryProps {
   // Transformar em layer
-  private usersRepository: Repository<Users>;
-
-  constructor() {
-    const connection = new Database();
-    this.usersRepository = connection.dataSource.getRepository(Users);
-  }
 
   async findByUserId(userId: string): Promise<Users | null> {
-    return this.usersRepository.findOneBy({
-      id: userId,
+    const connection = new Database();
+    await connection.createConnection();
+    const usersRepository = connection.dataSource.getRepository(Users);
+    return usersRepository.findOne({
+      where: {
+        id: userId,
+      },
     });
   }
 }

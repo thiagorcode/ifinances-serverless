@@ -1,33 +1,28 @@
-import * as dotenv from 'dotenv';
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import { Database } from '@shared/database';
 import { formatJSONResponse } from '@libs/api-gateway';
 import { findByUserIdService } from '../service/findByUserId.service';
 import '@shared/container';
-dotenv.config();
 
 const handler: APIGatewayProxyHandler = async (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
   try {
-    console.log('1');
     if (!event.pathParameters) {
       throw new Error('No param id');
     }
-    console.log('test 2');
     const userId = event.pathParameters.id!;
-    console.log('test 3');
 
     const database = new Database();
-    console.log('test 4');
+    console.debug('Invocado Database');
 
     await database.createConnection();
-    console.log('test 4');
+    console.debug('invocato createConnection');
 
     const findByUserId = findByUserIdService();
-    console.log('test 5');
+    console.debug('Carregou service');
 
     const users = await findByUserId.execute(userId);
-
+    console.log(users);
     return formatJSONResponse(200, {
       message: `Consulta realizada com sucesso`,
       data: users,

@@ -6,6 +6,7 @@ class FindByUserId {
   constructor(@inject('UsersRepository') private usersRepository: UsersRepository) {}
 
   async execute(userId: string) {
+    console.debug('execute foi');
     return this.usersRepository.findByUserId(userId);
   }
 }
