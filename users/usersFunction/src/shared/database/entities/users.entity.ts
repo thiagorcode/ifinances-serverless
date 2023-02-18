@@ -43,6 +43,9 @@ export class Users extends BaseEntity {
   @UpdateDateColumn()
   dtUpdated: Date;
 
+  [PrevPasswordSymbol]: string;
+  [PrevEmailSymbol]: string;
+
   @AfterLoad()
   loadPassword() {
     this[PrevEmailSymbol] = this.email;
@@ -69,5 +72,19 @@ export class Users extends BaseEntity {
 
   get unmaskedPassword() {
     return this.password === PasswordPlaceholder ? this[PrevPasswordSymbol] : this.password;
+  }
+
+  constructor() {
+    super();
+    this.id = '';
+    this.email = '';
+    this.isActive = true;
+    this.isPasswordChange = false;
+    this.password = '';
+    this.username = '';
+    this.dtCreated = new Date();
+    this.dtUpdated = new Date();
+    this[PrevPasswordSymbol] = '';
+    this[PrevEmailSymbol] = '';
   }
 }

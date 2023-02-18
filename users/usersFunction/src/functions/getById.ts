@@ -1,10 +1,10 @@
-import { APIGatewayProxyHandler } from 'aws-lambda';
+import { APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda';
 import { Database } from '@shared/database';
 import { formatJSONResponse } from '@libs/api-gateway';
-import { findByUserIdService } from '../service/findByUserId.service';
+import { findByUserIdService } from '../services/findByUserId.service';
 import '@shared/container';
 
-const handler: APIGatewayProxyHandler = async (event, context) => {
+const handler: APIGatewayProxyHandler = async (event, context): Promise<APIGatewayProxyResult> => {
   context.callbackWaitsForEmptyEventLoop = false;
   try {
     if (!event.pathParameters) {
@@ -13,16 +13,13 @@ const handler: APIGatewayProxyHandler = async (event, context) => {
     const userId = event.pathParameters.id!;
 
     const database = new Database();
-    console.debug('Invocado Database');
 
     await database.createConnection();
-    console.debug('invocato createConnection');
 
     const findByUserId = findByUserIdService();
-    console.debug('Carregou service');
 
     const users = await findByUserId.execute(userId);
-    console.log(users);
+
     return formatJSONResponse(200, {
       message: `Consulta realizada com sucesso`,
       data: users,

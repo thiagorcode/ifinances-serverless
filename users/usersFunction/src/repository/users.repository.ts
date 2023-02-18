@@ -1,4 +1,3 @@
-import { Repository } from 'typeorm';
 import { Database } from '@shared/database';
 import { Users } from '@shared/database/entities/users.entity';
 import UsersRepositoryProps from './interface/users.repository.interface';
