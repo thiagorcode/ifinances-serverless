@@ -1,11 +1,23 @@
 import 'reflect-metadata';
-import { APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda';
-import { formatJSONResponse } from '@libs/api-gateway';
-import { findByUserIdService } from '../services/findByUserId.service';
+import { findByUserIdService } from '@/services';
+import {
+  APIGatewayProxyEvent,
+  APIGatewayProxyResult,
+  Context,
+} from 'aws-lambda';
+import { formatJSONResponse } from '../../utils/formatResponse';
 import '@shared/container';
 
-const handler: APIGatewayProxyHandler = async (event, context, callback): Promise<APIGatewayProxyResult> => {
-  context.callbackWaitsForEmptyEventLoop = false;
+export async function handler(
+  event: APIGatewayProxyEvent,
+  context: Context
+): Promise<APIGatewayProxyResult> {
+  const lambdaRequestId = context.awsRequestId;
+  const apiRequestId = event.requestContext.requestId;
+
+  console.log(
+    `API Gateway RequestId: ${apiRequestId} - Lambda RequestId: ${lambdaRequestId}`
+  );
   try {
     if (!event.pathParameters) {
       throw new Error('No param id');
@@ -13,7 +25,7 @@ const handler: APIGatewayProxyHandler = async (event, context, callback): Promis
     const userId = event.pathParameters.id!;
 
     const findByUserId = findByUserIdService();
-    console.log('21', findByUserId);
+
     const user = await findByUserId.execute(userId);
 
     if (!user) {
@@ -31,6 +43,4 @@ const handler: APIGatewayProxyHandler = async (event, context, callback): Promis
       error: String(error),
     });
   }
-};
-
-export default handler;
+}

@@ -1,8 +1,6 @@
-import { formatJSONResponse } from '@libs/api-gateway';
-import handler from '../../../functions/getById';
+import { handler } from '@functions/getByUserId/handler';
 import { findByUserIdService } from '@services/findByUserId.service';
 import { Database } from '@shared/database';
-import { Users } from '@shared/database/entities/users.entity';
 import { mockCallback, mockContext } from '../../mock/defaultVars';
 import { constructAPIGatewayEvent } from '../../mock/helpers';
 
@@ -59,7 +57,7 @@ describe('Unit test for getById handler', () => {
     jest.spyOn(findByUserId, 'execute').mockResolvedValueOnce(mockUsers as any);
     // console.log(await findByUserId.execute(mockUserId));
 
-    const result = await handler(mockEvent, mockContext, mockCallback);
+    const result = await handler(mockEvent, mockContext);
     // expect(findByUserId.execute).toHaveBeenCalledWith(mockUserId);
     expect(result).toEqual({
       statusCode: 200,

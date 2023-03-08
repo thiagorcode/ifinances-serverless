@@ -1,8 +1,7 @@
-import { APIGatewayProxyHandler } from 'aws-lambda';
 import 'reflect-metadata';
-
-// import * as createFunction from './src/functions/create'
+import { APIGatewayProxyHandler } from 'aws-lambda';
 import * as getByUserIdFunction from './src/functions/getById';
+// import * as createFunction from './src/functions/create'
 
 // import * as updateFunction from './src/functions/update'
 // import * as removeFunction from './src/functions/remove'
@@ -11,8 +10,8 @@ import * as getByUserIdFunction from './src/functions/getById';
 //   return createFunction.default(event, context);
 // };
 
-export const getByUserId: APIGatewayProxyHandler = (event, context, callback) => {
-  return getByUserIdFunction.default(event, context, callback);
+export const getByUserId: APIGatewayProxyHandler = async (event, context, callback) => {
+  return await getByUserIdFunction.default(event, context, callback);
 };
 
 // export const update: APIGatewayProxyHandler = async (event, context) => {

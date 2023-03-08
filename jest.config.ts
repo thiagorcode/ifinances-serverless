@@ -4,7 +4,7 @@ import { pathsToModuleNameMapper } from 'ts-jest';
  * For a detailed explanation regarding each configuration property and type check, visit:
  * https://jestjs.io/docs/configuration
  */
-import { compilerOptions } from './tsconfig.paths.json';
+import { compilerOptions } from './users2/tsconfig.paths.json';
 
 const config: Config.InitialOptions = {
   clearMocks: true,
@@ -17,7 +17,7 @@ const config: Config.InitialOptions = {
   coverageDirectory: 'coverage',
   coverageProvider: 'v8',
   testMatch: [
-    '__tests__/**/*.test.[jt]s?(x)',
+    '**/__tests__/**/*.test.[jt]s?(x)',
     '**/?(*.)+(spec|test).[jt]s?(x)',
   ],
   collectCoverageFrom: ['src/**/*.ts'],

@@ -9,14 +9,11 @@
       "@functions/*": [
         "src/functions/*"
       ],
-      "@utils/*": [
-        "src/utils/*"
+      "@libs/*": [
+        "src/libs/*"
       ],
       "@services/*": [
         "src/services/*"
-      ],
-      "@repository/*": [
-        "src/repository/*"
       ],
       "@shared/*": [
         "src/shared/*"

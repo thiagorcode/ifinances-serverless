@@ -2,8 +2,6 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
   users
-
-
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
@@ -19,7 +17,7 @@ Resources:
     Properties:
       CodeUri: .
       Handler: handler.getByUserId
-      Runtime: nodejs18.x
+      Runtime: nodejs16.x
       Architectures:
       - x86_64
       Policies:
@@ -38,19 +36,19 @@ Resources:
         Sourcemap: true # Enabling source maps will create the required NODE_OPTIONS environment variables on your lambda function during sam build
         EntryPoints:
         - handler.ts
-  UsersDynamoDb:
-    Type: AWS::DynamoDB::Table
-    Properties:
-      AttributeDefinitions:
-        - AttributeName: id
-          AttributeType: S
-      KeySchema:
-        - AttributeName: id
-          KeyType: HASH
-      ProvisionedThroughput:
-        ReadCapacityUnits: 5
-        WriteCapacityUnits: 5
-      TableName: users
+  # UsersDynamoDb:
+  #   Type: AWS::DynamoDB::Table
+  #   Properties:
+  #     AttributeDefinitions:
+  #       - AttributeName: id
+  #         AttributeType: S
+  #     KeySchema:
+  #       - AttributeName: id
+  #         KeyType: HASH
+  #     ProvisionedThroughput:
+  #       ReadCapacityUnits: 1
+  #       WriteCapacityUnits: 1
+  #     TableName: users
    
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
