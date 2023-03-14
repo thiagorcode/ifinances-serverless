@@ -6,7 +6,16 @@ jspm_packages
 .serverless
 
 # Build directories
-.aws-sam
+!jest.config.ts
+*.d.ts
+
+# test
+coverage
+
+# CDK asset staging directory
+.cdk.staging
+cdk.out
+dist
 
 # esbuild directories
 .esbuild

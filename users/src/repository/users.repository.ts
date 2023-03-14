@@ -1,23 +1,35 @@
 import { DynamoDB } from 'aws-sdk';
 import { Database } from '@shared/database';
-// import { Users } from '@shared/database/entities/users.entity';
 import UsersRepositoryInterface from './interface/users.repository.interface';
+import { v4 as uuid } from 'uuid';
+import { UsersTypes } from './types';
 
 export class UsersRepository implements UsersRepositoryInterface {
-  // private readonly database: DynamoDB.DocumentClient;
-  // private readonly TableName: string;
-  // constructor() {
-  //   this.database = new Database().dynamoDb;
-  //   this.TableName = 'Users';
-  // }
+  private readonly database: DynamoDB.DocumentClient;
+  private readonly TableName: string;
+  constructor() {
+    this.database = new Database().dynamoDb;
+    this.TableName = 'users';
+  }
 
   async findByUserId(userId: string) {
-    // const params = {
-    //   TableName: this.TableName,
-    //   Key: { userId },
-    // };
-    // const { Item } = await this.database.get(params).promise();
+    const params = {
+      TableName: this.TableName,
+      Key: { userId },
+    };
+    const { Item } = await this.database.get(params).promise();
 
-    return [{ userId }];
+    return Item;
+  }
+
+  async createUser(user: UsersTypes): Promise<UsersTypes> {
+    user.id = uuid();
+    await this.database
+      .put({
+        TableName: this.TableName,
+        Item: user,
+      })
+      .promise();
+    return user;
   }
 }

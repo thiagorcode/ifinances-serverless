@@ -29,17 +29,18 @@ jest.mock('../../../repository/users.repository', () => {
   return {
     UsersRepository: jest.fn().mockImplementation(() => {
       return {
-        findByUserId: jest.fn().mockReturnValue(mockUsers),
+        findByUserId: jest.fn(),
       };
     }),
   };
 });
 
 describe('Unit test for getById handler', () => {
+  const mockEvent = constructAPIGatewayEvent();
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
-  const mockEvent = constructAPIGatewayEvent();
 
   it('should mock is correct', async () => {
     const mockDatabase = new Database();
@@ -56,7 +57,6 @@ describe('Unit test for getById handler', () => {
     const findByUserId = findByUserIdService();
     jest.spyOn(findByUserId, 'execute').mockResolvedValueOnce(mockUsers as any);
     // console.log(await findByUserId.execute(mockUserId));
-
     const result = await handler(mockEvent, mockContext);
     // expect(findByUserId.execute).toHaveBeenCalledWith(mockUserId);
     expect(result).toEqual({
@@ -67,5 +67,34 @@ describe('Unit test for getById handler', () => {
       }),
     });
     // expect(mockFindByUserId.execute).toHaveBeenCalledTimes(1);
+  });
+
+  it('should return 400 when id parameter is not sent', async () => {
+    // Corrigi teste depois
+    mockEvent.pathParameters = {};
+
+    const result = await handler(mockEvent, mockContext);
+    expect(result).toEqual({
+      statusCode: 400,
+      body: JSON.stringify({
+        message: 'Não foi enviado o parâmetro ID!',
+      }),
+    });
+  });
+
+  it('should return 400 when not find user', async () => {
+    // Corrigi teste depois
+    mockEvent.pathParameters = { id: mockUserId };
+
+    const findByUserId = findByUserIdService();
+    jest.spyOn(findByUserId, 'execute').mockResolvedValueOnce(undefined);
+
+    const result = await handler(mockEvent, mockContext);
+    expect(result).toEqual({
+      statusCode: 400,
+      body: JSON.stringify({
+        message: 'Usuário não existe!',
+      }),
+    });
   });
 });

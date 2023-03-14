@@ -4,11 +4,12 @@ import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as cwlogs from 'aws-cdk-lib/aws-logs';
 import { Construct } from 'constructs';
 
-interface IFinancesApiStackProps extends cdk.StackProps {
-  usersFunctionHandler: lambdaNodeJS.NodejsFunction;
+interface IFinancesApiStackProps extends cdk.NestedStackProps {
+  getByUserIdFunctionHandler: lambdaNodeJS.NodejsFunction;
+  createUserFunctionHandler: lambdaNodeJS.NodejsFunction;
 }
 
-export class IFinancesApiStack extends cdk.Stack {
+export class IFinancesApiStack extends cdk.NestedStack {
   constructor(scope: Construct, id: string, props: IFinancesApiStackProps) {
     super(scope, id, props);
 
@@ -32,15 +33,22 @@ export class IFinancesApiStack extends cdk.Stack {
       },
     });
 
-    const usersFunctionIntegration = new apigateway.LambdaIntegration(
-      props.usersFunctionHandler
+    const getByUserIdIntegration = new apigateway.LambdaIntegration(
+      props.getByUserIdFunctionHandler
+    );
+
+    const createUserIntegration = new apigateway.LambdaIntegration(
+      props.createUserFunctionHandler
     );
 
     // "/users"
     const usersResource = api.root.addResource('users');
 
     // GET /users/{id}
-    const productIdResource = usersResource.addResource('{id}');
-    productIdResource.addMethod('GET', usersFunctionIntegration);
+    const userIDResource = usersResource.addResource('{id}');
+    userIDResource.addMethod('GET', getByUserIdIntegration);
+
+    // POST /users
+    usersResource.addMethod('POST', createUserIntegration);
   }
 }

@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { findByUserIdService } from '@/services';
+import { createService } from '@/services';
 import {
   APIGatewayProxyEvent,
   APIGatewayProxyResult,
@@ -8,6 +8,7 @@ import {
 import '@shared/container';
 import { AppErrorException } from '@/utils/appErrorException';
 import { formatJSONResponse } from '@/utils/formatResponse';
+import { UsersTypes } from '@/repository/types';
 
 export async function handler(
   event: APIGatewayProxyEvent,
@@ -15,27 +16,19 @@ export async function handler(
 ): Promise<APIGatewayProxyResult> {
   const lambdaRequestId = context.awsRequestId;
   const apiRequestId = event.requestContext.requestId;
-
   console.log(
     `API Gateway RequestId: ${apiRequestId} - Lambda RequestId: ${lambdaRequestId}`
   );
   try {
-    if (!event.pathParameters?.id) {
-      throw new AppErrorException(400, 'Não foi enviado o parâmetro ID!');
-    }
-    const userId = event.pathParameters.id!;
+    const user: UsersTypes = JSON.parse(event.body || '');
 
-    const findByUserId = findByUserIdService();
+    const createUserService = createService();
 
-    const user = await findByUserId.execute(userId);
-
-    if (!user) {
-      throw new AppErrorException(400, 'Usuário não existe!');
-    }
+    const userCreated = await createUserService.execute(user);
 
     return formatJSONResponse(200, {
       message: `Consulta realizada com sucesso`,
-      data: user,
+      data: userCreated,
     });
   } catch (error) {
     console.error(error);

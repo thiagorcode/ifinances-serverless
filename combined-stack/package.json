@@ -1,8 +1,8 @@
 {
-  "name": "users",
+  "name": "combined-stack",
   "version": "0.1.0",
   "bin": {
-    "users": "bin/users.js"
+    "combined-stack": "bin/combined-stack.js"
   },
   "engines": {
     "node": "18.x"
@@ -15,13 +15,9 @@
     "cdk:deploy": "npm run build && cdk deploy --all"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.111",
-    "@types/jest": "^29.4.0",
     "@types/node": "18.14.2",
-    "@types/uuid": "^9.0.1",
-    "aws-cdk": "2.67.0",
-    "jest": "^29.4.3",
     "ts-jest": "^29.0.5",
+    "aws-cdk": "2.67.0",
     "ts-node": "^10.9.1",
     "typescript": "~4.9.5"
   },
@@ -30,11 +26,8 @@
     "aws-lambda": "^1.0.7",
     "aws-sdk": "^2.1329.0",
     "constructs": "^10.0.0",
-    "middy": "^0.24.0",
     "reflect-metadata": "^0.1.13",
     "source-map-support": "^0.5.21",
-    "tsyringe": "^4.7.0",
-    "uuid": "^9.0.0",
-    "zod": "^3.21.4"
+    "tsyringe": "^4.7.0"
   }
 }
