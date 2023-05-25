@@ -58,7 +58,7 @@ export class UsersStack extends cdk.NestedStack {
       {
         functionName: 'getByUserIdFunction',
         runtime: lambda.Runtime.NODEJS_16_X,
-        entry: '../users/src/functions/getByUserId/handler.ts',
+        entry: '../src/functions/getByUserId/handler.ts',
         handler: 'handler',
         memorySize: 128,
         timeout: cdk.Duration.seconds(5),
@@ -78,7 +78,7 @@ export class UsersStack extends cdk.NestedStack {
       {
         functionName: 'createUserFunction',
         runtime: lambda.Runtime.NODEJS_16_X,
-        entry: '../users/src/functions/create/handler.ts',
+        entry: '../src/functions/create/handler.ts',
         handler: 'handler',
         memorySize: 128,
         timeout: cdk.Duration.seconds(5),

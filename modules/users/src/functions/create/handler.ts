@@ -1,15 +1,15 @@
 import 'reflect-metadata';
-import { CreateUserService } from '@/services';
+import '@shared/container';
 import {
   APIGatewayProxyEvent,
   APIGatewayProxyResult,
   Context,
 } from 'aws-lambda';
-import '@shared/container';
-import { AppErrorException } from '@/utils/appErrorException';
-import { formatJSONResponse } from '@/utils/formatResponse';
-import { UsersTypes } from '@/repository/types';
 import { container } from 'tsyringe';
+import { CreateUserService } from '../../services';
+import { AppErrorException } from '../../utils/appErrorException';
+import { formatJSONResponse } from '../../utils/formatResponse';
+import { UsersTypes } from '../../repository/types';
 
 export async function handler(
   event: APIGatewayProxyEvent,

@@ -1,13 +1,13 @@
 import 'reflect-metadata';
+import '../../shared/container';
 import {
   APIGatewayProxyEvent,
   APIGatewayProxyResult,
   Context,
 } from 'aws-lambda';
-import { findByUserIdService } from '@/services';
-import { AppErrorException } from '@/utils/appErrorException';
-import { formatJSONResponse } from '@/utils/formatResponse';
-import '@shared/container';
+import { findByUserIdService } from '../../services';
+import { AppErrorException } from '../../utils/appErrorException';
+import { formatJSONResponse } from '../../utils/formatResponse';
 
 export async function handler(
   event: APIGatewayProxyEvent,

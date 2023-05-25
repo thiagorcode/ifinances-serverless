@@ -3,7 +3,7 @@ import * as cloudformation from 'aws-cdk-lib/aws-cloudformation';
 import { Construct } from 'constructs';
 
 import { IFinancesApiStack } from './ifinancesApi-stack';
-import { UsersStack } from '../../users/lib/users-stack';
+import { UsersStack } from '../modules/users/lib/users-stack';
 
 export class CombinedStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {

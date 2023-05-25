@@ -1,5 +1,5 @@
 import { DynamoDB } from 'aws-sdk';
-import { Database } from '@shared/database';
+import { Database } from '../shared/database';
 import UsersRepositoryInterface from './interface/users.repository.interface';
 import { v4 as uuid } from 'uuid';
 import { UsersTypes } from './types';

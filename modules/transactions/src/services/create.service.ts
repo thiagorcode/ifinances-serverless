@@ -1,4 +1,4 @@
-import { AppErrorException } from '@/utils/appErrorException';
+import { AppErrorException } from '../utils/appErrorException';
 import { injectable, inject } from 'tsyringe';
 import { usersSchema } from './../repository/schemas/users.schema';
 import { UsersTypes } from './../repository/types/users.types';
