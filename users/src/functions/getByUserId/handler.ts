@@ -1,13 +1,13 @@
 import 'reflect-metadata';
-import { findByUserIdService } from '@/services';
 import {
   APIGatewayProxyEvent,
   APIGatewayProxyResult,
   Context,
 } from 'aws-lambda';
-import '@shared/container';
+import { findByUserIdService } from '@/services';
 import { AppErrorException } from '@/utils/appErrorException';
 import { formatJSONResponse } from '@/utils/formatResponse';
+import '@shared/container';
 
 export async function handler(
   event: APIGatewayProxyEvent,
@@ -23,7 +23,7 @@ export async function handler(
     if (!event.pathParameters?.id) {
       throw new AppErrorException(400, 'Não foi enviado o parâmetro ID!');
     }
-    const userId = event.pathParameters.id!;
+    const userId = event.pathParameters.id;
 
     const findByUserId = findByUserIdService();
 

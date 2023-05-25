@@ -4,7 +4,8 @@ import UsersRepository from '../repository/interface/users.repository.interface'
 @injectable()
 class FindByUserId {
   constructor(
-    @inject('UsersRepository') private usersRepository: UsersRepository
+    @inject('UsersRepository')
+    private usersRepository: UsersRepository
   ) {}
 
   async execute(userId: string) {
@@ -15,5 +16,6 @@ class FindByUserId {
 
 export const findByUserIdService = () => {
   const service = container.resolve(FindByUserId);
+  console.info('Resolve service findByUserId');
   return service;
 };

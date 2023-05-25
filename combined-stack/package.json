@@ -5,7 +5,7 @@
     "combined-stack": "bin/combined-stack.js"
   },
   "engines": {
-    "node": "18.x"
+    "node": "16.x"
   },
   "scripts": {
     "build": "tsc",

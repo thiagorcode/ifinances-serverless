@@ -12,14 +12,14 @@ export class UsersRepository implements UsersRepositoryInterface {
     this.TableName = 'users';
   }
 
-  async findByUserId(userId: string) {
+  async findByUserId(userId: string): Promise<UsersTypes | undefined> {
     const params = {
       TableName: this.TableName,
-      Key: { userId },
+      Key: { id: userId },
     };
     const { Item } = await this.database.get(params).promise();
 
-    return Item;
+    return Item as UsersTypes;
   }
 
   async createUser(user: UsersTypes): Promise<UsersTypes> {

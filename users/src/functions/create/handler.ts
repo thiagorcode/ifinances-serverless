@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { createService } from '@/services';
+import { CreateUserService } from '@/services';
 import {
   APIGatewayProxyEvent,
   APIGatewayProxyResult,
@@ -9,6 +9,7 @@ import '@shared/container';
 import { AppErrorException } from '@/utils/appErrorException';
 import { formatJSONResponse } from '@/utils/formatResponse';
 import { UsersTypes } from '@/repository/types';
+import { container } from 'tsyringe';
 
 export async function handler(
   event: APIGatewayProxyEvent,
@@ -22,12 +23,12 @@ export async function handler(
   try {
     const user: UsersTypes = JSON.parse(event.body || '');
 
-    const createUserService = createService();
+    const createUserService = container.resolve(CreateUserService);
 
     const userCreated = await createUserService.execute(user);
 
     return formatJSONResponse(200, {
-      message: `Consulta realizada com sucesso`,
+      message: `Usuário criado com sucesso!`,
       data: userCreated,
     });
   } catch (error) {
