@@ -1,4 +1,4 @@
-import { TransactionsTypes } from '@/repository/types';
+import { TransactionsTypes } from '../repository/types';
 
 type Totalizers = {
   recipe: number;

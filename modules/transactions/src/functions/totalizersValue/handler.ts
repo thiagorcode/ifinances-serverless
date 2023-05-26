@@ -8,10 +8,10 @@ import {
 import { container } from 'tsyringe';
 import { AppErrorException } from '../../utils/appErrorException';
 import { formatJSONResponse } from '../../utils/formatResponse';
-import { TotalizersValueService } from '@/services';
-import { FindAllWithQueryDto } from '@/repository/types';
-import { findAllWithQuerySchema } from '@/repository/schemas';
-import { HttpStatus } from '@/enums/httpStatus';
+import { TotalizersValueService } from '../../services';
+import { FindAllWithQueryDto } from '../../repository/types';
+import { findAllWithQuerySchema } from '../../repository/schemas';
+import { HttpStatus } from '../../enums/httpStatus';
 
 export async function handler(
   event: APIGatewayProxyEvent,

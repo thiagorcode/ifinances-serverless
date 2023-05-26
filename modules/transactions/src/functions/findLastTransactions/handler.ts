@@ -8,7 +8,7 @@ import {
 import { container } from 'tsyringe';
 import { AppErrorException } from '../../utils/appErrorException';
 import { formatJSONResponse } from '../../utils/formatResponse';
-import { FindLastService } from '@/services/findLast.service';
+import { FindLastService } from '../../services/findLast.service';
 
 export async function handler(
   event: APIGatewayProxyEvent,

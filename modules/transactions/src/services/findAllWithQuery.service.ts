@@ -1,6 +1,6 @@
-import { FindAllWithQueryDto } from '@/repository/types';
 import 'reflect-metadata';
 import { injectable, inject } from 'tsyringe';
+import { FindAllWithQueryDto } from '../repository/types';
 import { TransactionsRepositoryInterface } from '../repository/interface/transactions.repository.interface';
 @injectable()
 export class FindAllWithQueryService {

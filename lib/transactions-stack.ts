@@ -38,7 +38,7 @@ export class TransactionsStack extends cdk.NestedStack {
       'createTransactionsFunctionHandler',
       {
         ...lambdaDefaultConfig,
-        functionName: 'financesCreateTransactionsFunction',
+        functionName: 'finances-create-transaction',
         entry: 'modules/transactions/src/functions/create/handler.ts',
       }
     );
@@ -48,7 +48,7 @@ export class TransactionsStack extends cdk.NestedStack {
       'findTransactionFunctionHandler',
       {
         ...lambdaDefaultConfig,
-        functionName: 'financesFindTransactionFunction',
+        functionName: 'finances-find-transaction',
         entry: 'modules/transactions/src/functions/find/handler.ts',
       }
     );

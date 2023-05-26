@@ -1,5 +1,5 @@
-import { FindAllWithQueryDto } from '@/repository/types';
-import { totalizersValue } from '@/utils/totalizersValue';
+import { FindAllWithQueryDto } from '../repository/types';
+import { totalizersValue } from '../utils/totalizersValue';
 import 'reflect-metadata';
 import { injectable, container, inject } from 'tsyringe';
 import { TransactionsRepositoryInterface } from '../repository/interface/transactions.repository.interface';
