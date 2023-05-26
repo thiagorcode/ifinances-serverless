@@ -22,6 +22,7 @@ export async function handler(
     `API Gateway RequestId: ${apiRequestId} - Lambda RequestId: ${lambdaRequestId}`
   );
   try {
+    console.log('path query', event.queryStringParameters);
     if (!event.queryStringParameters) {
       throw new Error('Query not valid');
     }

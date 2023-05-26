@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { injectable, container, inject } from 'tsyringe';
+import { injectable, inject } from 'tsyringe';
 import { TransactionsRepositoryInterface } from '../repository/interface/transactions.repository.interface';
 @injectable()
 export class FindService {

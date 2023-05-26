@@ -3,6 +3,6 @@ import { TransactionsRepositoryInterface } from '../../repository/interface/tran
 import { TransactionsRepository } from '../../repository/transactions.repository';
 
 container.registerSingleton<TransactionsRepositoryInterface>(
-  'TransactionRepository',
+  'TransactionsRepository',
   TransactionsRepository
 );

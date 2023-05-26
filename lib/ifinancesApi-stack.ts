@@ -5,10 +5,14 @@ import * as cwlogs from 'aws-cdk-lib/aws-logs';
 import { Construct } from 'constructs';
 
 interface IFinancesApiStackProps extends cdk.NestedStackProps {
-  getByUserIdFunctionHandler: lambdaNodeJS.NodejsFunction;
-  createUserFunctionHandler: lambdaNodeJS.NodejsFunction;
+  getByUserIdFunction: lambdaNodeJS.NodejsFunction;
+  createUserFunction: lambdaNodeJS.NodejsFunction;
   //transactions
-  createTransactionsFunctionHandler: lambdaNodeJS.NodejsFunction;
+  createTransactionsFunction: lambdaNodeJS.NodejsFunction;
+  findTransactionsFunction: lambdaNodeJS.NodejsFunction;
+  findLastTransactionsFunction: lambdaNodeJS.NodejsFunction;
+  findAllWithQueryTransactionsFunction: lambdaNodeJS.NodejsFunction;
+  totalizersValueTransactionsFunction: lambdaNodeJS.NodejsFunction;
 }
 
 export class IFinancesApiStack extends cdk.NestedStack {
@@ -35,28 +39,53 @@ export class IFinancesApiStack extends cdk.NestedStack {
       },
     });
 
-    // "/users"
-    const getByUserIdIntegration = new apigateway.LambdaIntegration(
-      props.getByUserIdFunctionHandler
-    );
+    const resources = [
+      { path: 'users', methods: ['POST', 'GET'] },
+      { path: 'transactions', methods: ['POST', 'GET'] },
+    ];
 
-    const createUserIntegration = new apigateway.LambdaIntegration(
-      props.createUserFunctionHandler
-    );
+    const integrations = [
+      {
+        function: props.getByUserIdFunction,
+        resourcePath: 'users/{id}',
+        method: 'GET',
+      },
+      {
+        function: props.createUserFunction,
+        resourcePath: 'users',
+        method: 'POST',
+      },
+      {
+        function: props.createTransactionsFunction,
+        resourcePath: 'transactions',
+        method: 'POST',
+      },
+      {
+        function: props.findTransactionsFunction,
+        resourcePath: 'transactions/{id}',
+        method: 'GET',
+      },
+      {
+        function: props.findAllWithQueryTransactionsFunction,
+        resourcePath: 'transactions/user/{userId}',
+        method: 'GET',
+      },
+    ];
 
-    const usersResource = api.root.addResource('users');
+    for (const resource of resources) {
+      const resourceObj = api.root.addResource(resource.path);
 
-    // POST /users
-    usersResource.addMethod('POST', createUserIntegration);
-    // GET /users/{id}
-    const userIDResource = usersResource.addResource('{id}');
-    userIDResource.addMethod('GET', getByUserIdIntegration);
-
-    // transactions
-    const createTransactionIntegration = new apigateway.LambdaIntegration(
-      props.createTransactionsFunctionHandler
-    );
-    const transactionsResource = api.root.addResource('transactions');
-    transactionsResource.addMethod('POST', createTransactionIntegration);
+      for (const method of resource.methods) {
+        const integration = integrations.find(
+          (i) => i.resourcePath === resource.path && i.method === method
+        );
+        if (integration) {
+          const lambdaIntegration = new apigateway.LambdaIntegration(
+            integration.function
+          );
+          resourceObj.addMethod(method, lambdaIntegration);
+        }
+      }
+    }
   }
 }

@@ -6,7 +6,7 @@ import { TransactionsRepositoryInterface } from '../repository/interface/transac
 @injectable()
 export class CreateTransactionService {
   constructor(
-    @inject('TransactionRepository')
+    @inject('TransactionsRepository')
     private transactionsRepository: TransactionsRepositoryInterface
   ) {}
 
@@ -14,6 +14,7 @@ export class CreateTransactionService {
     console.info('create transaction service');
     try {
       const transactionValidate = transactionsSchema.parse(transaction);
+      console.log('transactionValidate', transactionValidate);
       return this.transactionsRepository.create(transactionValidate);
     } catch (error) {
       throw new AppErrorException(400, 'Erro no envio dos dados!@', error);

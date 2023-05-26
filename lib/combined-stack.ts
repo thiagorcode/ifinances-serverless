@@ -21,11 +21,16 @@ export class CombinedStack extends cdk.Stack {
     });
 
     new IFinancesApiStack(this, 'IFinancesApiStack', {
-      getByUserIdFunctionHandler: usersStack.getByUserIdFunctionHandler,
-      createUserFunctionHandler: usersStack.createUserFunctionHandler,
+      getByUserIdFunction: usersStack.getByUserIdFunctionHandler,
+      createUserFunction: usersStack.createUserFunctionHandler,
       // transactions
-      createTransactionsFunctionHandler:
-        transactionsStack.createTransactionsFunctionHandler,
+      createTransactionsFunction: transactionsStack.createTransactionsFunction,
+      findTransactionsFunction: transactionsStack.findTransactionFunction,
+      findAllWithQueryTransactionsFunction:
+        transactionsStack.findAllWithQueryFunction,
+      findLastTransactionsFunction: transactionsStack.findLastFunction,
+      totalizersValueTransactionsFunction:
+        transactionsStack.totalizersValueFunction,
     });
   }
 }

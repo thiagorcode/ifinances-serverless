@@ -10,13 +10,18 @@ import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
 import { LambdaConfigurator } from './utils/config-lambda';
 export class TransactionsStack extends cdk.NestedStack {
-  readonly createTransactionsFunctionHandler: lambdaNodeJS.NodejsFunction;
-  readonly findTransactionFunctionHandler: lambdaNodeJS.NodejsFunction;
+  readonly createTransactionsFunction: lambdaNodeJS.NodejsFunction;
+  readonly findTransactionFunction: lambdaNodeJS.NodejsFunction;
+  readonly findAllWithQueryFunction: lambdaNodeJS.NodejsFunction;
+  readonly findLastFunction: lambdaNodeJS.NodejsFunction;
+  readonly totalizersValueFunction: lambdaNodeJS.NodejsFunction;
+
   readonly transactionsDdb: dynamodb.Table;
   readonly tableName: string;
 
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+
     this.tableName = 'finances-transactions';
     const lambdaConfigurator = new LambdaConfigurator(this.tableName);
     const lambdaDefaultConfig = lambdaConfigurator.configureLambda();
@@ -33,7 +38,7 @@ export class TransactionsStack extends cdk.NestedStack {
       writeCapacity: 1,
     });
 
-    this.createTransactionsFunctionHandler = new lambdaNodeJS.NodejsFunction(
+    this.createTransactionsFunction = new lambdaNodeJS.NodejsFunction(
       this,
       'createTransactionsFunctionHandler',
       {
@@ -43,7 +48,7 @@ export class TransactionsStack extends cdk.NestedStack {
       }
     );
 
-    this.findTransactionFunctionHandler = new lambdaNodeJS.NodejsFunction(
+    this.findTransactionFunction = new lambdaNodeJS.NodejsFunction(
       this,
       'findTransactionFunctionHandler',
       {
@@ -53,11 +58,46 @@ export class TransactionsStack extends cdk.NestedStack {
       }
     );
 
-    this.transactionsDdb.grantWriteData(this.findTransactionFunctionHandler);
-    this.transactionsDdb.grantReadData(this.createTransactionsFunctionHandler);
+    this.findAllWithQueryFunction = new lambdaNodeJS.NodejsFunction(
+      this,
+      'findAllWithQueryFunctionHandler',
+      {
+        ...lambdaDefaultConfig,
+        functionName: 'finances-find-all-query-transaction',
+        entry: 'modules/transactions/src/functions/findAllWithQuery/handler.ts',
+      }
+    );
+
+    // this.findLastFunction = new lambdaNodeJS.NodejsFunction(
+    //   this,
+    //   'findLastFunctionHandler',
+    //   {
+    //     ...lambdaDefaultConfig,
+    //     functionName: 'finances-find-last-transaction',
+    //     entry: 'modules/transactions/src/functions/findLast/handler.ts',
+    //   }
+    // );
+
+    // this.totalizersValueFunction = new lambdaNodeJS.NodejsFunction(
+    //   this,
+    //   'totalizersValueFunctionHandler',
+    //   {
+    //     ...lambdaDefaultConfig,
+    //     functionName: 'finances-find-last-transaction',
+    //     entry: 'modules/transactions/src/functions/totalizersValue/handler.ts',
+    //   }
+    // );
+
+    this.transactionsDdb.grantReadData(this.findTransactionFunction);
+    this.transactionsDdb.grantReadData(this.findAllWithQueryFunction);
+    // this.transactionsDdb.grantReadData(this.findLastFunction);
+    // this.transactionsDdb.grantReadData(this.totalizersValueFunction);
+
+    this.transactionsDdb.grantWriteData(this.createTransactionsFunction);
+
     new cdk.CfnOutput(this, 'UsersFunctionArn', {
-      value: this.createTransactionsFunctionHandler.functionArn,
-      exportName: `${this.stackName}-UsersFunctionArn`,
+      value: this.createTransactionsFunction.functionArn,
+      exportName: `${this.stackName}-TransactionsFunctionArn`,
     });
   }
 }
