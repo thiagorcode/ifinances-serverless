@@ -41,7 +41,7 @@ export class UsersStack extends cdk.NestedStack {
     // });
 
     this.usersDdb = new dynamodb.Table(this, 'UsersDdb', {
-      tableName: 'users',
+      tableName: 'finances-users',
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       partitionKey: {
         name: 'id',
@@ -56,9 +56,9 @@ export class UsersStack extends cdk.NestedStack {
       this,
       'getByUserIdFunctionHandler',
       {
-        functionName: 'getByUserIdFunction',
+        functionName: 'financesGetByUserIdFunction',
         runtime: lambda.Runtime.NODEJS_16_X,
-        entry: '../src/functions/getByUserId/handler.ts',
+        entry: 'modules/users/src/functions/getByUserId/handler.ts',
         handler: 'handler',
         memorySize: 128,
         timeout: cdk.Duration.seconds(5),
@@ -76,9 +76,9 @@ export class UsersStack extends cdk.NestedStack {
       this,
       'createUserFunctionHandler',
       {
-        functionName: 'createUserFunction',
+        functionName: 'financesCreateUserFunction',
         runtime: lambda.Runtime.NODEJS_16_X,
-        entry: '../src/functions/create/handler.ts',
+        entry: 'modules/users/src/functions/create/handler.ts',
         handler: 'handler',
         memorySize: 128,
         timeout: cdk.Duration.seconds(5),
@@ -94,6 +94,7 @@ export class UsersStack extends cdk.NestedStack {
 
     this.usersDdb.grantReadData(this.getByUserIdFunctionHandler);
     this.usersDdb.grantWriteData(this.createUserFunctionHandler);
+
     new cdk.CfnOutput(this, 'UsersFunctionArn', {
       value: this.getByUserIdFunctionHandler.functionArn,
       exportName: `${this.stackName}-UsersFunctionArn`,

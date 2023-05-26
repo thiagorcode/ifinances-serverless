@@ -1,22 +1,22 @@
 import { AppErrorException } from '../utils/appErrorException';
 import { injectable, inject } from 'tsyringe';
-import { usersSchema } from './../repository/schemas/users.schema';
-import { UsersTypes } from './../repository/types/users.types';
-import UsersRepository from '../repository/interface/users.repository.interface';
+import { transactionsSchema } from '../repository/schemas/transactions.schema';
+import { TransactionsTypes } from '../repository/types/transactions.types';
+import { TransactionsRepositoryInterface } from '../repository/interface/transactions.repository.interface';
 @injectable()
-export class CreateUserService {
+export class CreateTransactionService {
   constructor(
-    @inject('UsersRepository')
-    private usersRepository: UsersRepository
+    @inject('TransactionRepository')
+    private transactionsRepository: TransactionsRepositoryInterface
   ) {}
 
-  async execute(user: UsersTypes) {
-    console.info('create service');
+  async execute(transaction: TransactionsTypes) {
+    console.info('create transaction service');
     try {
-      const userValidate = usersSchema.parse(user);
-      return this.usersRepository.createUser(userValidate);
+      const transactionValidate = transactionsSchema.parse(transaction);
+      return this.transactionsRepository.create(transactionValidate);
     } catch (error) {
-      throw new AppErrorException(400, 'Erro no envio dos dados!@');
+      throw new AppErrorException(400, 'Erro no envio dos dados!@', error);
     }
   }
 }

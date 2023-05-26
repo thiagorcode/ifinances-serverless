@@ -6,10 +6,10 @@ import {
   Context,
 } from 'aws-lambda';
 import { container } from 'tsyringe';
-import { CreateUserService } from '../../services';
+import { CreateTransactionService } from '../../services';
 import { AppErrorException } from '../../utils/appErrorException';
 import { formatJSONResponse } from '../../utils/formatResponse';
-import { UsersTypes } from '../../repository/types';
+import { TransactionsTypes } from '../../repository/types';
 
 export async function handler(
   event: APIGatewayProxyEvent,
@@ -21,15 +21,19 @@ export async function handler(
     `API Gateway RequestId: ${apiRequestId} - Lambda RequestId: ${lambdaRequestId}`
   );
   try {
-    const user: UsersTypes = JSON.parse(event.body || '');
+    const transaction: TransactionsTypes = JSON.parse(event.body || '');
 
-    const createUserService = container.resolve(CreateUserService);
+    const createTransactionService = container.resolve(
+      CreateTransactionService
+    );
 
-    const userCreated = await createUserService.execute(user);
+    const transactionsCreated = await createTransactionService.execute(
+      transaction
+    );
 
-    return formatJSONResponse(200, {
-      message: `Usuário criado com sucesso!`,
-      user: userCreated,
+    return formatJSONResponse(201, {
+      message: `Transactions created successfully`,
+      transaction: transactionsCreated,
     });
   } catch (error) {
     console.error(error);
@@ -37,6 +41,7 @@ export async function handler(
     if (error instanceof AppErrorException) {
       return formatJSONResponse(error.statusCode, {
         message: error.message,
+        error: error.dataError,
       });
     }
     return formatJSONResponse(500, {

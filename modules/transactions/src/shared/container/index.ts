@@ -1,8 +1,8 @@
 import { container } from 'tsyringe';
-import UsersRepositoryProps from '../../repository/interface/users.repository.interface';
-import { UsersRepository } from '../../repository/users.repository';
+import { TransactionsRepositoryInterface } from '../../repository/interface/transactions.repository.interface';
+import { TransactionsRepository } from '../../repository/transactions.repository';
 
-container.registerSingleton<UsersRepositoryProps>(
-  'UsersRepository',
-  UsersRepository
+container.registerSingleton<TransactionsRepositoryInterface>(
+  'TransactionRepository',
+  TransactionsRepository
 );

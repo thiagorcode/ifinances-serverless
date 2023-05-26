@@ -1,16 +1,16 @@
 import 'reflect-metadata';
 import { injectable, container, inject } from 'tsyringe';
-import UsersRepository from '../repository/interface/users.repository.interface';
+import { TransactionsRepositoryInterface } from '../repository/interface/transactions.repository.interface';
 @injectable()
 class FindByUserId {
   constructor(
-    @inject('UsersRepository')
-    private usersRepository: UsersRepository
+    @inject('TransactionsRepository')
+    private transactionsRepository: TransactionsRepositoryInterface
   ) {}
 
   async execute(userId: string) {
     console.log('service', userId);
-    return this.usersRepository.findByUserId(userId);
+    return this.transactionsRepository.findByUserId(userId);
   }
 }
 

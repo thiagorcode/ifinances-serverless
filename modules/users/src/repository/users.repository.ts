@@ -9,7 +9,7 @@ export class UsersRepository implements UsersRepositoryInterface {
   private readonly TableName: string;
   constructor() {
     this.database = new Database().dynamoDb;
-    this.TableName = 'users';
+    this.TableName = 'finances-users';
   }
 
   async findByUserId(userId: string): Promise<UsersTypes | undefined> {

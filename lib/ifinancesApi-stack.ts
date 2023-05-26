@@ -7,6 +7,8 @@ import { Construct } from 'constructs';
 interface IFinancesApiStackProps extends cdk.NestedStackProps {
   getByUserIdFunctionHandler: lambdaNodeJS.NodejsFunction;
   createUserFunctionHandler: lambdaNodeJS.NodejsFunction;
+  //transactions
+  createTransactionsFunctionHandler: lambdaNodeJS.NodejsFunction;
 }
 
 export class IFinancesApiStack extends cdk.NestedStack {
@@ -33,6 +35,7 @@ export class IFinancesApiStack extends cdk.NestedStack {
       },
     });
 
+    // "/users"
     const getByUserIdIntegration = new apigateway.LambdaIntegration(
       props.getByUserIdFunctionHandler
     );
@@ -41,14 +44,19 @@ export class IFinancesApiStack extends cdk.NestedStack {
       props.createUserFunctionHandler
     );
 
-    // "/users"
     const usersResource = api.root.addResource('users');
 
+    // POST /users
+    usersResource.addMethod('POST', createUserIntegration);
     // GET /users/{id}
     const userIDResource = usersResource.addResource('{id}');
     userIDResource.addMethod('GET', getByUserIdIntegration);
 
-    // POST /users
-    usersResource.addMethod('POST', createUserIntegration);
+    // transactions
+    const createTransactionIntegration = new apigateway.LambdaIntegration(
+      props.createTransactionsFunctionHandler
+    );
+    const transactionsResource = api.root.addResource('transactions');
+    transactionsResource.addMethod('POST', createTransactionIntegration);
   }
 }

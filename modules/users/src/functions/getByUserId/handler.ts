@@ -35,7 +35,7 @@ export async function handler(
 
     return formatJSONResponse(200, {
       message: `Consulta realizada com sucesso`,
-      data: user,
+      user: user,
     });
   } catch (error) {
     console.error(error);
