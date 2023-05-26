@@ -1,7 +1,7 @@
 import { AppErrorException } from '../utils/appErrorException';
 import { injectable, inject } from 'tsyringe';
 import { transactionsSchema } from '../repository/schemas/transactions.schema';
-import { CreateTransactionsDto } from '../repository/types/createTransactions.types';
+import { TransactionsTypes } from '../repository/types/transactions.types';
 import { TransactionsRepositoryInterface } from '../repository/interface/transactions.repository.interface';
 @injectable()
 export class CreateTransactionService {
@@ -10,7 +10,7 @@ export class CreateTransactionService {
     private transactionsRepository: TransactionsRepositoryInterface
   ) {}
 
-  async execute(transaction: CreateTransactionsDto) {
+  async execute(transaction: TransactionsTypes) {
     console.info('create transaction service');
     try {
       const transactionValidate = transactionsSchema.parse(transaction);

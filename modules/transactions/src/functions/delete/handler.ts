@@ -10,6 +10,7 @@ import { CreateTransactionService } from '../../services';
 import { AppErrorException } from '../../utils/appErrorException';
 import { formatJSONResponse } from '../../utils/formatResponse';
 import { CreateTransactionsDto } from '../../repository/types';
+import { FindService } from '@/services/find.service';
 
 export async function handler(
   event: APIGatewayProxyEvent,
@@ -21,19 +22,18 @@ export async function handler(
     `API Gateway RequestId: ${apiRequestId} - Lambda RequestId: ${lambdaRequestId}`
   );
   try {
-    const transaction: CreateTransactionsDto = JSON.parse(event.body || '');
+    if (!event.pathParameters?.id) {
+      throw new AppErrorException(400, 'Não foi enviado o parâmetro ID!');
+    }
+    const transactionId = event.pathParameters.id;
 
-    const createTransactionService = container.resolve(
-      CreateTransactionService
-    );
+    const findService = container.resolve(FindService);
 
-    const transactionsCreated = await createTransactionService.execute(
-      transaction
-    );
+    const transaction = await findService.execute(transactionId);
 
-    return formatJSONResponse(201, {
-      message: `Transactions created successfully`,
-      transaction: transactionsCreated,
+    return formatJSONResponse(200, {
+      message: `Transactions fetched successfully`,
+      transaction: transaction,
     });
   } catch (error) {
     console.error(error);

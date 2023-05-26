@@ -8,15 +8,21 @@ import * as lambdaNodeJS from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as cdk from 'aws-cdk-lib';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
+import { LambdaConfigurator } from './utils/config-lambda';
 export class TransactionsStack extends cdk.NestedStack {
   readonly createTransactionsFunctionHandler: lambdaNodeJS.NodejsFunction;
+  readonly findTransactionFunctionHandler: lambdaNodeJS.NodejsFunction;
   readonly transactionsDdb: dynamodb.Table;
+  readonly tableName: string;
 
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+    this.tableName = 'finances-transactions';
+    const lambdaConfigurator = new LambdaConfigurator(this.tableName);
+    const lambdaDefaultConfig = lambdaConfigurator.configureLambda();
 
     this.transactionsDdb = new dynamodb.Table(this, 'TransactionsDdb', {
-      tableName: 'finances-transactions',
+      tableName: this.tableName,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       partitionKey: {
         name: 'id',
@@ -31,23 +37,24 @@ export class TransactionsStack extends cdk.NestedStack {
       this,
       'createTransactionsFunctionHandler',
       {
+        ...lambdaDefaultConfig,
         functionName: 'financesCreateTransactionsFunction',
-        runtime: lambda.Runtime.NODEJS_16_X,
         entry: 'modules/transactions/src/functions/create/handler.ts',
-        handler: 'handler',
-        memorySize: 128,
-        timeout: cdk.Duration.seconds(5),
-        bundling: {
-          minify: true,
-          sourceMap: false,
-        },
-        environment: {
-          TABLE_DDB: this.transactionsDdb.tableName,
-        },
       }
     );
 
-    this.transactionsDdb.grantWriteData(this.createTransactionsFunctionHandler);
+    this.findTransactionFunctionHandler = new lambdaNodeJS.NodejsFunction(
+      this,
+      'findTransactionFunctionHandler',
+      {
+        ...lambdaDefaultConfig,
+        functionName: 'financesFindTransactionFunction',
+        entry: 'modules/transactions/src/functions/find/handler.ts',
+      }
+    );
+
+    this.transactionsDdb.grantWriteData(this.findTransactionFunctionHandler);
+    this.transactionsDdb.grantReadData(this.createTransactionsFunctionHandler);
     new cdk.CfnOutput(this, 'UsersFunctionArn', {
       value: this.createTransactionsFunctionHandler.functionArn,
       exportName: `${this.stackName}-UsersFunctionArn`,

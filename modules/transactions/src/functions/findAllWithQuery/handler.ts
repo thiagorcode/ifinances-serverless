@@ -9,7 +9,13 @@ import { container } from 'tsyringe';
 import { CreateTransactionService } from '../../services';
 import { AppErrorException } from '../../utils/appErrorException';
 import { formatJSONResponse } from '../../utils/formatResponse';
-import { CreateTransactionsDto } from '../../repository/types';
+import {
+  CreateTransactionsDto,
+  FindAllWithQueryDto,
+} from '../../repository/types';
+import { FindService } from '@/services/find.service';
+import { findAllWithQuerySchema } from '@/repository/schemas';
+import { FindAllWithQueryService } from '@/services/findAllWithQuery.service';
 
 export async function handler(
   event: APIGatewayProxyEvent,
@@ -21,19 +27,19 @@ export async function handler(
     `API Gateway RequestId: ${apiRequestId} - Lambda RequestId: ${lambdaRequestId}`
   );
   try {
-    const transaction: CreateTransactionsDto = JSON.parse(event.body || '');
+    if (!event.queryStringParameters) {
+      throw new Error('Query not valid');
+    }
+    const query: FindAllWithQueryDto = event.queryStringParameters;
+    findAllWithQuerySchema.parse(query);
 
-    const createTransactionService = container.resolve(
-      CreateTransactionService
-    );
+    const findAllWithQueryService = container.resolve(FindAllWithQueryService);
 
-    const transactionsCreated = await createTransactionService.execute(
-      transaction
-    );
+    const transactions = await findAllWithQueryService.execute(query);
 
-    return formatJSONResponse(201, {
-      message: `Transactions created successfully`,
-      transaction: transactionsCreated,
+    return formatJSONResponse(200, {
+      message: `Transactions fetched successfully`,
+      transactions,
     });
   } catch (error) {
     console.error(error);

@@ -9,7 +9,7 @@ import { container } from 'tsyringe';
 import { CreateTransactionService } from '../../services';
 import { AppErrorException } from '../../utils/appErrorException';
 import { formatJSONResponse } from '../../utils/formatResponse';
-import { CreateTransactionsDto } from '../../repository/types';
+import { TransactionsTypes } from '../../repository/types';
 
 export async function handler(
   event: APIGatewayProxyEvent,
@@ -21,7 +21,7 @@ export async function handler(
     `API Gateway RequestId: ${apiRequestId} - Lambda RequestId: ${lambdaRequestId}`
   );
   try {
-    const transaction: CreateTransactionsDto = JSON.parse(event.body || '');
+    const transaction: TransactionsTypes = JSON.parse(event.body || '');
 
     const createTransactionService = container.resolve(
       CreateTransactionService
