@@ -5,7 +5,7 @@ import {
 } from '../types';
 
 export interface TransactionsRepositoryInterface {
-  findByUserId(userId: string): Promise<TransactionsTypes | undefined>;
+  findByUserId(userId: string): Promise<TransactionsTypes[]>;
   create(transaction: CreateTransactionsDto): Promise<CreateTransactionsDto>;
   find(id: string): Promise<TransactionsTypes>;
   findAllWithQuery(query: FindAllWithQueryDto): Promise<TransactionsTypes[]>;

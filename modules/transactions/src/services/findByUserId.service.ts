@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { injectable, container, inject } from 'tsyringe';
 import { TransactionsRepositoryInterface } from '../repository/interface/transactions.repository.interface';
 @injectable()
-class FindByUserId {
+class FindByUserIdService {
   constructor(
     @inject('TransactionsRepository')
     private transactionsRepository: TransactionsRepositoryInterface
@@ -13,9 +13,3 @@ class FindByUserId {
     return this.transactionsRepository.findByUserId(userId);
   }
 }
-
-export const findByUserIdService = () => {
-  const service = container.resolve(FindByUserId);
-  console.info('Resolve service findByUserId');
-  return service;
-};

@@ -18,14 +18,17 @@ export class TransactionsRepository implements TransactionsRepositoryInterface {
     this.TableName = 'finances-transactions';
   }
 
-  async findByUserId(userId: string): Promise<TransactionsTypes | undefined> {
+  async findByUserId(userId: string): Promise<TransactionsTypes[]> {
     const params = {
       TableName: this.TableName,
-      Key: { userId },
+      KeyConditionExpression: 'userId = :userId',
+      ExpressionAttributeValues: {
+        ':userId': userId,
+      },
     };
-    const { Item } = await this.database.get(params).promise();
+    const { Items } = await this.database.query(params).promise();
 
-    return Item as TransactionsTypes;
+    return Items as TransactionsTypes[];
   }
 
   async findAllWithQuery({
