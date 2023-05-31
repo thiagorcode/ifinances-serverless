@@ -8,12 +8,17 @@ import * as lambdaNodeJS from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as cdk from 'aws-cdk-lib';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
+import { LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
+interface UserNestedStackProps extends cdk.StackProps {
+  readonly restApiId: string;
+  readonly rootResourceId: string;
+}
 export class UsersStack extends cdk.NestedStack {
   readonly getByUserIdFunctionHandler: lambdaNodeJS.NodejsFunction;
   readonly createUserFunctionHandler: lambdaNodeJS.NodejsFunction;
   readonly usersDdb: dynamodb.Table;
 
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: Construct, id: string, props?: UserNestedStackProps) {
     super(scope, id, props);
 
     // AWS.config.update({
@@ -94,6 +99,24 @@ export class UsersStack extends cdk.NestedStack {
 
     this.usersDdb.grantReadData(this.getByUserIdFunctionHandler);
     this.usersDdb.grantWriteData(this.createUserFunctionHandler);
+
+    const getByUserIdIntegration = new LambdaIntegration(
+      this.getByUserIdFunctionHandler
+    );
+    const createUserIntegration = new LambdaIntegration(
+      this.createUserFunctionHandler
+    );
+
+    const api = RestApi.fromRestApiAttributes(this, 'RestApiFinances', {
+      restApiId: props?.restApiId ?? '',
+      rootResourceId: props?.rootResourceId ?? '',
+    });
+
+    const usersResource = api.root.addResource('users');
+    usersResource.addMethod('POST', createUserIntegration);
+    const userIDResource = usersResource.addResource('{id}');
+    userIDResource.addMethod('GET', getByUserIdIntegration);
+    // Deu erro com a mudança do código
 
     new cdk.CfnOutput(this, 'UsersFunctionArn', {
       value: this.getByUserIdFunctionHandler.functionArn,

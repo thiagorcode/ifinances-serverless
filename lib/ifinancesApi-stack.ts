@@ -41,50 +41,55 @@ export class IFinancesApiStack extends cdk.NestedStack {
 
     const resources = [
       { path: 'users', methods: ['POST', 'GET'] },
+      { path: 'users/{id+}', methods: ['GET'] },
       { path: 'transactions', methods: ['POST', 'GET'] },
+      { path: 'transactions/{id+}', methods: ['GET'] },
+      { path: 'transactions/user/{userId+}', methods: ['GET'] },
     ];
-
     const integrations = [
       {
-        function: props.getByUserIdFunction,
-        resourcePath: 'users/{id}',
-        method: 'GET',
+        path: 'users',
+        methods: [
+          { httpMethod: 'POST', functionHandler: props.createUserFunction },
+          {
+            httpMethod: 'GET',
+            path: '{id}',
+            functionHandler: props.getByUserIdFunction,
+          },
+        ],
       },
       {
-        function: props.createUserFunction,
-        resourcePath: 'users',
-        method: 'POST',
-      },
-      {
-        function: props.createTransactionsFunction,
-        resourcePath: 'transactions',
-        method: 'POST',
-      },
-      {
-        function: props.findTransactionsFunction,
-        resourcePath: 'transactions/{id}',
-        method: 'GET',
-      },
-      {
-        function: props.findAllWithQueryTransactionsFunction,
-        resourcePath: 'transactions/user/{userId}',
-        method: 'GET',
+        path: 'transactions',
+        methods: [
+          {
+            httpMethod: 'POST',
+            functionHandler: props.createTransactionsFunction,
+          },
+          {
+            httpMethod: 'GET',
+            path: '{id}',
+            functionHandler: props.findTransactionsFunction,
+          },
+          {
+            httpMethod: 'GET',
+            path: 'user/{userId}/last',
+            functionHandler: props.findLastTransactionsFunction,
+          },
+        ],
       },
     ];
 
-    for (const resource of resources) {
-      const resourceObj = api.root.addResource(resource.path);
+    for (const integration of integrations) {
+      const resource = api.root.addResource(integration.path);
 
-      for (const method of resource.methods) {
-        const integration = integrations.find(
-          (i) => i.resourcePath === resource.path && i.method === method
+      for (const method of integration.methods) {
+        const integrationFunction = new apigateway.LambdaIntegration(
+          method.functionHandler
         );
-        if (integration) {
-          const lambdaIntegration = new apigateway.LambdaIntegration(
-            integration.function
-          );
-          resourceObj.addMethod(method, lambdaIntegration);
-        }
+        resource.addMethod(method.httpMethod, integrationFunction, {
+          authorizationType: apigateway.AuthorizationType.NONE,
+          methodResponses: [{ statusCode: '200' }],
+        });
       }
     }
   }

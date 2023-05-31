@@ -9,6 +9,11 @@ import * as cdk from 'aws-cdk-lib';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
 import { LambdaConfigurator } from './utils/config-lambda';
+interface TransactionsNestedStackProps extends cdk.StackProps {
+  readonly restApiId: string;
+  readonly rootResourceId: string;
+}
+
 export class TransactionsStack extends cdk.NestedStack {
   readonly createTransactionsFunction: lambdaNodeJS.NodejsFunction;
   readonly findTransactionFunction: lambdaNodeJS.NodejsFunction;
@@ -19,7 +24,11 @@ export class TransactionsStack extends cdk.NestedStack {
   readonly transactionsDdb: dynamodb.Table;
   readonly tableName: string;
 
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    props?: TransactionsNestedStackProps
+  ) {
     super(scope, id, props);
 
     this.tableName = 'finances-transactions';
