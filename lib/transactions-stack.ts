@@ -95,17 +95,11 @@ export class TransactionsStack extends cdk.NestedStack {
         name: 'id',
         type: dynamodb.AttributeType.STRING,
       },
+      sortKey: {
+        name: 'dtCreated',
+        type: dynamodb.AttributeType.STRING,
+      },
     });
-    this.findLastFunction.addToRolePolicy(
-      new PolicyStatement({
-        effect: Effect.ALLOW,
-        actions: ['dynamodb:Query'],
-        resources: [
-          this.transactionsDdb.tableArn,
-          `${this.transactionsDdb.tableArn}/index/user-find-index`,
-        ],
-      })
-    );
 
     this.totalizersValueFunction = new lambdaNodeJS.NodejsFunction(
       this,
