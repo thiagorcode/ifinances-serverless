@@ -11,6 +11,7 @@ import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
 import { LambdaConfigurator } from './utils/config-lambda';
 import { LambdaIntegration } from 'aws-cdk-lib/aws-apigateway';
+import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 interface TransactionsNestedStackProps extends cdk.StackProps {
   stackApi: RestApiStack;
 }
@@ -87,7 +88,15 @@ export class TransactionsStack extends cdk.NestedStack {
         entry: 'modules/transactions/src/functions/findLast/handler.ts',
       }
     );
-
+    this.findLastFunction.addToRolePolicy(
+      new PolicyStatement({
+        actions: ['dynamodb:Query'],
+        resources: [
+          this.transactionsDdb.tableArn,
+          `${this.transactionsDdb.tableArn}/index/user-find-index`,
+        ],
+      })
+    );
     this.totalizersValueFunction = new lambdaNodeJS.NodejsFunction(
       this,
       'totalizersValueFunctionHandler',
