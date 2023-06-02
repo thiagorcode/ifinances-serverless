@@ -54,7 +54,7 @@ export class TransactionsStack extends cdk.NestedStack {
       'createTransactionsFunctionHandler',
       {
         ...lambdaDefaultConfig,
-        functionName: 'finances-create-transaction',
+        functionName: 'finances-transaction-create',
         entry: 'modules/transactions/src/functions/create/handler.ts',
       }
     );
@@ -64,7 +64,7 @@ export class TransactionsStack extends cdk.NestedStack {
       'findTransactionFunctionHandler',
       {
         ...lambdaDefaultConfig,
-        functionName: 'finances-find-transaction',
+        functionName: 'finances-transaction-find',
         entry: 'modules/transactions/src/functions/find/handler.ts',
       }
     );
@@ -74,7 +74,7 @@ export class TransactionsStack extends cdk.NestedStack {
       'findAllWithQueryFunctionHandler',
       {
         ...lambdaDefaultConfig,
-        functionName: 'finances-find-all-query-transaction',
+        functionName: 'finances-transaction-find-all-query',
         entry: 'modules/transactions/src/functions/findAllWithQuery/handler.ts',
       }
     );
@@ -84,7 +84,7 @@ export class TransactionsStack extends cdk.NestedStack {
       'findLastFunctionHandler',
       {
         ...lambdaDefaultConfig,
-        functionName: 'finances-find-last-transaction',
+        functionName: 'finances-transaction-find-last',
         entry: 'modules/transactions/src/functions/findLast/handler.ts',
       }
     );
@@ -102,7 +102,7 @@ export class TransactionsStack extends cdk.NestedStack {
       'totalizersValueFunctionHandler',
       {
         ...lambdaDefaultConfig,
-        functionName: 'finances-totalizers',
+        functionName: 'finances-transaction-totalizers',
         entry: 'modules/transactions/src/functions/totalizersValue/handler.ts',
       }
     );
