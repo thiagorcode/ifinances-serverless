@@ -92,7 +92,7 @@ export class TransactionsStack extends cdk.NestedStack {
     this.transactionsDdb.addGlobalSecondaryIndex({
       indexName: 'UserFindIndex',
       partitionKey: {
-        name: 'id',
+        name: 'userId',
         type: dynamodb.AttributeType.STRING,
       },
       sortKey: {
