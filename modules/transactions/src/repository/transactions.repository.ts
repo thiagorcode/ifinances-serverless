@@ -134,7 +134,7 @@ export class TransactionsRepository implements TransactionsRepositoryInterface {
   async findLast(userId: string): Promise<TransactionsTypes[]> {
     const params: DynamoDB.DocumentClient.QueryInput = {
       TableName: this.TableName,
-      IndexName: 'user-find',
+      IndexName: 'user-find-index',
       KeyConditionExpression: 'userId = :userId',
       ExpressionAttributeValues: {
         ':userId': userId,
