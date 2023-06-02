@@ -93,10 +93,11 @@ export class TransactionsStack extends cdk.NestedStack {
         actions: ['dynamodb:Query'],
         resources: [
           this.transactionsDdb.tableArn,
-          `${this.transactionsDdb.tableArn}/index/user-find-index`,
+          `${this.transactionsDdb.tableArn}/index/user-find`,
         ],
       })
     );
+
     this.totalizersValueFunction = new lambdaNodeJS.NodejsFunction(
       this,
       'totalizersValueFunctionHandler',

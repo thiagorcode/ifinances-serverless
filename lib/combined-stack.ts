@@ -16,7 +16,6 @@ import { RestApiStack } from './restApi-stack';
 export class CombinedStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
-    const logGroup = new LogGroup(this, 'IFinancesApiLogs');
 
     const apiRest = new RestApiStack(this, 'RestApiFinances', {
       env: props?.env,
