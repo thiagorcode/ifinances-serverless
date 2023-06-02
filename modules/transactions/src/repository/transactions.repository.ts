@@ -133,15 +133,17 @@ export class TransactionsRepository implements TransactionsRepositoryInterface {
 
   async findLast(userId: string): Promise<TransactionsTypes[]> {
     const params: DynamoDB.DocumentClient.QueryInput = {
-      TableName: this.TableName, // Substitua pelo nome correto da tabela
-      IndexName: 'user-find-index', // Substitua pelo nome correto do índice
+      TableName: this.TableName,
+      IndexName: 'user-find-index',
       KeyConditionExpression: 'userId = :userId',
       ExpressionAttributeValues: {
         ':userId': userId,
+        ':isPaidValue': true,
       },
-      FilterExpression: 'isPaid = :isPaid',
+      FilterExpression: '#isPaid = :isPaidValue',
       ExpressionAttributeNames: {
         '#categoryName': 'category.name',
+        '#isPaid': 'isPaid',
       },
       ProjectionExpression: 'id, #categoryName',
       Limit: 10,

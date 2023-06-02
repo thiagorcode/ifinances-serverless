@@ -1,3 +1,4 @@
+import { RestApiStack } from './restApi-stack';
 //https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_lambda-readme.html
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as AWS from 'aws-sdk';
@@ -9,9 +10,9 @@ import * as cdk from 'aws-cdk-lib';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
 import { LambdaConfigurator } from './utils/config-lambda';
+import { LambdaIntegration } from 'aws-cdk-lib/aws-apigateway';
 interface TransactionsNestedStackProps extends cdk.StackProps {
-  readonly restApiId: string;
-  readonly rootResourceId: string;
+  stackApi: RestApiStack;
 }
 
 export class TransactionsStack extends cdk.NestedStack {
@@ -27,7 +28,7 @@ export class TransactionsStack extends cdk.NestedStack {
   constructor(
     scope: Construct,
     id: string,
-    props?: TransactionsNestedStackProps
+    props: TransactionsNestedStackProps
   ) {
     super(scope, id, props);
 
@@ -77,36 +78,65 @@ export class TransactionsStack extends cdk.NestedStack {
       }
     );
 
-    // this.findLastFunction = new lambdaNodeJS.NodejsFunction(
-    //   this,
-    //   'findLastFunctionHandler',
-    //   {
-    //     ...lambdaDefaultConfig,
-    //     functionName: 'finances-find-last-transaction',
-    //     entry: 'modules/transactions/src/functions/findLast/handler.ts',
-    //   }
-    // );
+    this.findLastFunction = new lambdaNodeJS.NodejsFunction(
+      this,
+      'findLastFunctionHandler',
+      {
+        ...lambdaDefaultConfig,
+        functionName: 'finances-find-last-transaction',
+        entry: 'modules/transactions/src/functions/findLast/handler.ts',
+      }
+    );
 
-    // this.totalizersValueFunction = new lambdaNodeJS.NodejsFunction(
-    //   this,
-    //   'totalizersValueFunctionHandler',
-    //   {
-    //     ...lambdaDefaultConfig,
-    //     functionName: 'finances-find-last-transaction',
-    //     entry: 'modules/transactions/src/functions/totalizersValue/handler.ts',
-    //   }
-    // );
+    this.totalizersValueFunction = new lambdaNodeJS.NodejsFunction(
+      this,
+      'totalizersValueFunctionHandler',
+      {
+        ...lambdaDefaultConfig,
+        functionName: 'finances-totalizers',
+        entry: 'modules/transactions/src/functions/totalizersValue/handler.ts',
+      }
+    );
 
     this.transactionsDdb.grantReadData(this.findTransactionFunction);
     this.transactionsDdb.grantReadData(this.findAllWithQueryFunction);
-    // this.transactionsDdb.grantReadData(this.findLastFunction);
-    // this.transactionsDdb.grantReadData(this.totalizersValueFunction);
-
+    this.transactionsDdb.grantReadData(this.findLastFunction);
+    this.transactionsDdb.grantReadData(this.totalizersValueFunction);
     this.transactionsDdb.grantWriteData(this.createTransactionsFunction);
 
-    new cdk.CfnOutput(this, 'UsersFunctionArn', {
-      value: this.createTransactionsFunction.functionArn,
-      exportName: `${this.stackName}-TransactionsFunctionArn`,
-    });
+    const createIntegration = new LambdaIntegration(
+      this.createTransactionsFunction
+    );
+    const findIntegration = new LambdaIntegration(this.findTransactionFunction);
+    const findAllWithQueryIntegration = new LambdaIntegration(
+      this.findAllWithQueryFunction
+    );
+    const findLastIntegration = new LambdaIntegration(this.findLastFunction);
+    const totalizersIntegration = new LambdaIntegration(
+      this.totalizersValueFunction
+    );
+
+    const transactionsResource =
+      props.stackApi.restApi.root.addResource('transaction');
+
+    transactionsResource.addMethod('POST', createIntegration);
+    const transactionsIdResource = transactionsResource.addResource('{id}');
+    transactionsIdResource.addMethod('GET', findIntegration);
+    // GET - transactions/user/{userId}
+    const transactionsUserResource = transactionsResource.addResource('user');
+    const transactionsUserIdResource =
+      transactionsUserResource.addResource('{userId}');
+    transactionsUserIdResource.addMethod('GET', findAllWithQueryIntegration);
+    // GET - transactions/user/{userId}/last
+    const transactionsUserIdLastResource =
+      transactionsUserIdResource.addResource('last');
+    transactionsUserIdLastResource.addMethod('GET', findLastIntegration);
+    // GET - transactions/user/{userId}/totalizer
+    const transactionsUserIdTotalizersResource =
+      transactionsUserIdResource.addResource('totalizer');
+    transactionsUserIdTotalizersResource.addMethod(
+      'GET',
+      totalizersIntegration
+    );
   }
 }

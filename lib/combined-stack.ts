@@ -11,44 +11,27 @@ import {
   RestApi,
 } from 'aws-cdk-lib/aws-apigateway';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
+import { RestApiStack } from './restApi-stack';
 
 export class CombinedStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
     const logGroup = new LogGroup(this, 'IFinancesApiLogs');
 
-    const restApi = new RestApi(this, 'RestApiFinances', {
-      cloudWatchRole: true,
-      restApiName: 'IFinancesApi',
-      deployOptions: {
-        stageName: 'dev',
-        accessLogDestination: new LogGroupLogDestination(logGroup),
-        accessLogFormat: AccessLogFormat.jsonWithStandardFields({
-          httpMethod: true,
-          ip: true,
-          protocol: true,
-          requestTime: true,
-          resourcePath: true,
-          responseLength: true,
-          status: true,
-          caller: true,
-          user: true,
-        }),
-      },
+    const apiRest = new RestApiStack(this, 'RestApiFinances', {
+      env: props?.env,
+      tags: props?.tags,
     });
-
     const usersStack = new UsersStack(this, 'UsersStack', {
       env: props?.env,
       tags: props?.tags,
-      restApiId: restApi.restApiId,
-      rootResourceId: restApi.restApiRootResourceId,
+      stackApi: apiRest,
     });
 
     const transactionsStack = new TransactionsStack(this, 'TransactionsStack', {
       env: props?.env,
       tags: props?.tags,
-      restApiId: restApi.restApiId,
-      rootResourceId: restApi.restApiRootResourceId,
+      stackApi: apiRest,
     });
 
     // new IFinancesApiStack(this, 'IFinancesApiStack', {

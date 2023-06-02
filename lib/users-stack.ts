@@ -3,22 +3,22 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as AWS from 'aws-sdk';
 //https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_lambda_nodejs-readme.html
 import * as lambdaNodeJS from 'aws-cdk-lib/aws-lambda-nodejs';
-
+import { Method } from 'aws-cdk-lib/aws-apigateway';
 //https://docs.aws.amazon.com/cdk/api/v2/docs/aws-construct-library.html
 import * as cdk from 'aws-cdk-lib';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
 import { LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
+import { Stack } from 'aws-cdk-lib';
+import { RestApiStack } from './restApi-stack';
 interface UserNestedStackProps extends cdk.StackProps {
-  readonly restApiId: string;
-  readonly rootResourceId: string;
+  stackApi: RestApiStack;
 }
 export class UsersStack extends cdk.NestedStack {
   readonly getByUserIdFunctionHandler: lambdaNodeJS.NodejsFunction;
   readonly createUserFunctionHandler: lambdaNodeJS.NodejsFunction;
   readonly usersDdb: dynamodb.Table;
-
-  constructor(scope: Construct, id: string, props?: UserNestedStackProps) {
+  constructor(scope: Construct, id: string, props: UserNestedStackProps) {
     super(scope, id, props);
 
     // AWS.config.update({
@@ -106,17 +106,18 @@ export class UsersStack extends cdk.NestedStack {
     const createUserIntegration = new LambdaIntegration(
       this.createUserFunctionHandler
     );
+    // QUando quiser exportar para cada repositório
+    // const restApiId = Stack.of(this).resolve('RestApiFinances');
+    // const restApi = RestApi.fromRestApiAttributes(
+    //   this,
+    //   'FinancesRestApiId',
+    //   restApiId
+    // );
 
-    const api = RestApi.fromRestApiAttributes(this, 'RestApiFinances', {
-      restApiId: props?.restApiId ?? '',
-      rootResourceId: props?.rootResourceId ?? '',
-    });
-
-    const usersResource = api.root.addResource('users');
+    const usersResource = props.stackApi.restApi.root.addResource('users');
     usersResource.addMethod('POST', createUserIntegration);
     const userIDResource = usersResource.addResource('{id}');
     userIDResource.addMethod('GET', getByUserIdIntegration);
-    // Deu erro com a mudança do código
 
     new cdk.CfnOutput(this, 'UsersFunctionArn', {
       value: this.getByUserIdFunctionHandler.functionArn,
