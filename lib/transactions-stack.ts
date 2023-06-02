@@ -93,14 +93,14 @@ export class TransactionsStack extends cdk.NestedStack {
         actions: ['dynamodb:Query'],
         resources: [
           this.transactionsDdb.tableArn,
-          `${this.transactionsDdb.tableArn}/index/user-find`,
+          `${this.transactionsDdb.tableArn}/index/user-find-index`,
         ],
       })
     );
 
     this.totalizersValueFunction = new lambdaNodeJS.NodejsFunction(
       this,
-      'totalizersValueFunctionHandler',
+      'totalizersFunctionHandler',
       {
         ...lambdaDefaultConfig,
         functionName: 'finances-transaction-totalizers',
@@ -111,7 +111,7 @@ export class TransactionsStack extends cdk.NestedStack {
     this.transactionsDdb.grantReadData(this.findTransactionFunction);
     this.transactionsDdb.grantReadData(this.findAllWithQueryFunction);
     this.transactionsDdb.grantReadData(this.findLastFunction);
-    this.transactionsDdb.grantFullAccess(this.findLastFunction);
+    this.transactionsDdb.grantReadData(this.findLastFunction);
     this.transactionsDdb.grantReadData(this.totalizersValueFunction);
     this.transactionsDdb.grantWriteData(this.createTransactionsFunction);
 
