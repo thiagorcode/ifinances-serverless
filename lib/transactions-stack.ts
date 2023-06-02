@@ -101,6 +101,7 @@ export class TransactionsStack extends cdk.NestedStack {
     this.transactionsDdb.grantReadData(this.findTransactionFunction);
     this.transactionsDdb.grantReadData(this.findAllWithQueryFunction);
     this.transactionsDdb.grantReadData(this.findLastFunction);
+    this.transactionsDdb.grantFullAccess(this.findLastFunction);
     this.transactionsDdb.grantReadData(this.totalizersValueFunction);
     this.transactionsDdb.grantWriteData(this.createTransactionsFunction);
 
