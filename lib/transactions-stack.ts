@@ -11,7 +11,7 @@ import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
 import { LambdaConfigurator } from './utils/config-lambda';
 import { LambdaIntegration } from 'aws-cdk-lib/aws-apigateway';
-import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 interface TransactionsNestedStackProps extends cdk.StackProps {
   stackApi: RestApiStack;
 }
@@ -90,6 +90,7 @@ export class TransactionsStack extends cdk.NestedStack {
     );
     this.findLastFunction.addToRolePolicy(
       new PolicyStatement({
+        effect: Effect.ALLOW,
         actions: ['dynamodb:Query'],
         resources: [
           this.transactionsDdb.tableArn,
