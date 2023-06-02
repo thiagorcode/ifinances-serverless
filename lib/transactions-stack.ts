@@ -88,6 +88,14 @@ export class TransactionsStack extends cdk.NestedStack {
         entry: 'modules/transactions/src/functions/findLast/handler.ts',
       }
     );
+
+    this.transactionsDdb.addGlobalSecondaryIndex({
+      indexName: 'UserFindIndex',
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING,
+      },
+    });
     this.findLastFunction.addToRolePolicy(
       new PolicyStatement({
         effect: Effect.ALLOW,
