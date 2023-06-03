@@ -29,12 +29,7 @@ export async function handler(
       throw new AppErrorException(400, 'Não foi enviado o parâmetro ID!');
     }
 
-    if (!event.queryStringParameters) {
-      throw new Error('Query not valid');
-    }
-
     const query = event.queryStringParameters as FindAllWithQueryOriginDto;
-    findAllWithQuerySchema.parse(query);
 
     const totalizersValueService = container.resolve(TotalizersValueService);
 

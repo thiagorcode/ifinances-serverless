@@ -31,9 +31,7 @@ export async function handler(
     }
 
     console.log('path query', event.queryStringParameters);
-    if (!event.queryStringParameters) {
-      throw new Error('Query not valid');
-    }
+
     const query = event.queryStringParameters as FindAllWithQueryOriginDto;
 
     const findAllWithQueryService = container.resolve(FindAllWithQueryService);
