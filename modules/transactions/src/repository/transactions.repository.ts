@@ -40,6 +40,7 @@ export class TransactionsRepository implements TransactionsRepositoryInterface {
   }: FindAllWithQueryDto): Promise<TransactionsTypes[]> {
     const params: DynamoDB.DocumentClient.QueryInput = {
       TableName: this.TableName, // Substitua pelo nome correto da tabela
+      IndexName: 'UserFindIndex',
       KeyConditionExpression: 'userId = :userId',
       ExpressionAttributeValues: {
         ':userId': userId,
