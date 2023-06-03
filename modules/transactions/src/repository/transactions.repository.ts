@@ -45,14 +45,15 @@ export class TransactionsRepository implements TransactionsRepositoryInterface {
         ':userId': userId,
       },
       ProjectionExpression:
-        'id, #type, #date, userId, #value, isPaid, bank, #description, #categoryName, #categoryId',
+        // 'id, #type, #date, userId, #value, isPaid, bank, #description, #categoryName, #categoryId',
+        'id, #type, #date, userId, #value, isPaid, bank, #description',
       ExpressionAttributeNames: {
         '#type': 'type',
         '#date': 'date',
         '#value': 'value',
         '#description': 'description',
-        '#categoryName': 'category.name',
-        '#categoryId': 'category.id',
+        // '#categoryName': 'category.name',
+        // '#categoryId': 'category.id',
       },
       ScanIndexForward: false,
     };
