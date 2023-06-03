@@ -22,6 +22,11 @@ export async function handler(
     `API Gateway RequestId: ${apiRequestId} - Lambda RequestId: ${lambdaRequestId}`
   );
   try {
+    const userId = event.pathParameters?.userId;
+    if (!userId) {
+      throw new AppErrorException(400, 'Não foi enviado o parâmetro ID!');
+    }
+
     console.log('path query', event.queryStringParameters);
     if (!event.queryStringParameters) {
       throw new Error('Query not valid');
@@ -31,7 +36,13 @@ export async function handler(
 
     const findAllWithQueryService = container.resolve(FindAllWithQueryService);
 
-    const transactions = await findAllWithQueryService.execute(query);
+    const transactions = await findAllWithQueryService.execute({
+      userId,
+      categoryId: query.categoryId,
+      date: query.date,
+      isPaid: query.isPaid,
+      type: query.type,
+    });
 
     return formatJSONResponse(200, {
       message: `Transactions fetched successfully`,

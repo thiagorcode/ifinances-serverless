@@ -142,10 +142,10 @@ export class TransactionsRepository implements TransactionsRepositoryInterface {
       },
       FilterExpression: '#isPaid = :isPaidValue',
       ExpressionAttributeNames: {
-        '#categoryName': 'category.name',
+        // '#categoryName': 'category.name',
         '#isPaid': 'isPaid',
       },
-      ProjectionExpression: 'id, #categoryName',
+      // ProjectionExpression: 'id, #categoryName',
       Limit: 10,
       ScanIndexForward: false,
     };

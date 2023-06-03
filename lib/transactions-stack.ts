@@ -49,6 +49,18 @@ export class TransactionsStack extends cdk.NestedStack {
       writeCapacity: 1,
     });
 
+    this.transactionsDdb.addGlobalSecondaryIndex({
+      indexName: 'UserFindIndex',
+      partitionKey: {
+        name: 'userId',
+        type: dynamodb.AttributeType.STRING,
+      },
+      sortKey: {
+        name: 'date',
+        type: dynamodb.AttributeType.STRING,
+      },
+    });
+
     this.createTransactionsFunction = new lambdaNodeJS.NodejsFunction(
       this,
       'createTransactionsFunctionHandler',
@@ -89,18 +101,6 @@ export class TransactionsStack extends cdk.NestedStack {
       }
     );
 
-    this.transactionsDdb.addGlobalSecondaryIndex({
-      indexName: 'UserFindIndex',
-      partitionKey: {
-        name: 'userId',
-        type: dynamodb.AttributeType.STRING,
-      },
-      sortKey: {
-        name: 'dtCreated',
-        type: dynamodb.AttributeType.STRING,
-      },
-    });
-
     this.totalizersValueFunction = new lambdaNodeJS.NodejsFunction(
       this,
       'totalizersFunctionHandler',
@@ -134,6 +134,7 @@ export class TransactionsStack extends cdk.NestedStack {
       props.stackApi.restApi.root.addResource('transaction');
 
     transactionsResource.addMethod('POST', createIntegration);
+
     const transactionsIdResource = transactionsResource.addResource('{id}');
     transactionsIdResource.addMethod('GET', findIntegration);
     // GET - transactions/user/{userId}

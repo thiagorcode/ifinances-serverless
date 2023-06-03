@@ -22,16 +22,29 @@ export async function handler(
   console.log(
     `API Gateway RequestId: ${apiRequestId} - Lambda RequestId: ${lambdaRequestId}`
   );
+
   try {
+    const userId = event.pathParameters?.userId;
+    if (!userId) {
+      throw new AppErrorException(400, 'Não foi enviado o parâmetro ID!');
+    }
+
     if (!event.queryStringParameters) {
       throw new Error('Query not valid');
     }
+
     const query: FindAllWithQueryDto = event.queryStringParameters;
     findAllWithQuerySchema.parse(query);
 
     const totalizersValueService = container.resolve(TotalizersValueService);
 
-    const totalizers = await totalizersValueService.execute(query);
+    const totalizers = await totalizersValueService.execute({
+      userId,
+      categoryId: query.categoryId,
+      date: query.date,
+      isPaid: query.isPaid,
+      type: query.type,
+    });
 
     return formatJSONResponse(HttpStatus.OK, {
       message: 'Totalizers fetched successfully',
