@@ -38,10 +38,10 @@ export async function handler(
 
     const transactions = await findAllWithQueryService.execute({
       userId,
-      categoryId: query.categoryId,
-      date: query.date,
-      isPaid: query.isPaid,
-      type: query.type,
+      categoryId: query?.categoryId,
+      date: query?.date,
+      isPaid: query?.isPaid,
+      type: query?.type,
     });
 
     return formatJSONResponse(200, {

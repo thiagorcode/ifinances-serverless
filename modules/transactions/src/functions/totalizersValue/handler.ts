@@ -29,16 +29,17 @@ export async function handler(
       throw new AppErrorException(400, 'Não foi enviado o parâmetro ID!');
     }
 
-    const query = event.queryStringParameters as FindAllWithQueryOriginDto;
+    const query =
+      event.queryStringParameters as FindAllWithQueryOriginDto | null;
 
     const totalizersValueService = container.resolve(TotalizersValueService);
 
     const totalizers = await totalizersValueService.execute({
       userId,
-      categoryId: query.categoryId,
-      date: query.date,
-      isPaid: query.isPaid,
-      type: query.type,
+      categoryId: query?.categoryId,
+      date: query?.date,
+      isPaid: query?.isPaid,
+      type: query?.type,
     });
 
     return formatJSONResponse(HttpStatus.OK, {
