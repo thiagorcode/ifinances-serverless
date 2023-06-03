@@ -9,7 +9,7 @@ import { container } from 'tsyringe';
 import { AppErrorException } from '../../utils/appErrorException';
 import { formatJSONResponse } from '../../utils/formatResponse';
 import { TotalizersValueService } from '../../services';
-import { FindAllWithQueryDto } from '../../repository/types';
+import { FindAllWithQueryOriginDto } from '../../repository/types';
 import { findAllWithQuerySchema } from '../../repository/schemas';
 import { HttpStatus } from '../../enums/httpStatus';
 
@@ -33,7 +33,7 @@ export async function handler(
       throw new Error('Query not valid');
     }
 
-    const query: FindAllWithQueryDto = event.queryStringParameters;
+    const query = event.queryStringParameters as FindAllWithQueryOriginDto;
     findAllWithQuerySchema.parse(query);
 
     const totalizersValueService = container.resolve(TotalizersValueService);

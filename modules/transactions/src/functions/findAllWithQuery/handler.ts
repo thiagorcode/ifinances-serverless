@@ -8,7 +8,10 @@ import {
 import { container } from 'tsyringe';
 import { AppErrorException } from '../../utils/appErrorException';
 import { formatJSONResponse } from '../../utils/formatResponse';
-import { FindAllWithQueryDto } from '../../repository/types';
+import {
+  FindAllWithQueryDto,
+  FindAllWithQueryOriginDto,
+} from '../../repository/types';
 import { findAllWithQuerySchema } from '../../repository/schemas';
 import { FindAllWithQueryService } from '../../services/findAllWithQuery.service';
 
@@ -31,8 +34,7 @@ export async function handler(
     if (!event.queryStringParameters) {
       throw new Error('Query not valid');
     }
-    const query: FindAllWithQueryDto = event.queryStringParameters;
-    findAllWithQuerySchema.parse(query);
+    const query = event.queryStringParameters as FindAllWithQueryOriginDto;
 
     const findAllWithQueryService = container.resolve(FindAllWithQueryService);
 

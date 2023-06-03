@@ -12,7 +12,7 @@ const booleanStringSchema = z
   });
 
 export const findAllWithQuerySchema = z.object({
-  userId: z.string().optional(),
+  userId: z.string().uuid(),
   categoryId: z.string().optional(),
   date: z.string().optional(),
   type: z.string().optional(),
