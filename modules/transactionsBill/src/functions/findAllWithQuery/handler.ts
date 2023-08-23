@@ -6,10 +6,15 @@ import {
   Context,
 } from 'aws-lambda';
 import { container } from 'tsyringe';
-import { CreateTransactionService } from '../../services';
 import { AppErrorException } from '../../utils/appErrorException';
 import { formatJSONResponse } from '../../utils/formatResponse';
-import { CreateTransactionsDto } from '../../repository/types';
+import {
+  FindAllWithQueryDto,
+  FindAllWithQueryOriginDto,
+} from '../../repository/types';
+import { findAllWithQuerySchema } from '../../repository/schemas';
+import { FindAllWithQueryService } from '../../services/findAllWithQuery.service';
+
 export async function handler(
   event: APIGatewayProxyEvent,
   context: Context
@@ -20,19 +25,28 @@ export async function handler(
     `API Gateway RequestId: ${apiRequestId} - Lambda RequestId: ${lambdaRequestId}`
   );
   try {
-    const transaction: CreateTransactionsDto = JSON.parse(event.body || '');
+    const userId = event.pathParameters?.userId;
+    if (!userId) {
+      throw new AppErrorException(400, 'Não foi enviado o parâmetro ID!');
+    }
 
-    const createTransactionService = container.resolve(
-      CreateTransactionService
-    );
+    console.log('path query', event.queryStringParameters);
 
-    const transactionsCreated = await createTransactionService.execute(
-      transaction
-    );
+    const query = event.queryStringParameters as FindAllWithQueryOriginDto;
 
-    return formatJSONResponse(201, {
-      message: `Transactions created successfully`,
-      transaction: transactionsCreated,
+    const findAllWithQueryService = container.resolve(FindAllWithQueryService);
+
+    const transactions = await findAllWithQueryService.execute({
+      userId,
+      categoryId: query?.categoryId,
+      date: query?.date,
+      isPaid: query?.isPaid,
+      type: query?.type,
+    });
+
+    return formatJSONResponse(200, {
+      message: `Transactions fetched successfully`,
+      transactions,
     });
   } catch (error) {
     console.error(error);

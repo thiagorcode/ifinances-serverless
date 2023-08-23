@@ -6,7 +6,7 @@ export class Database {
   }
   public async createConnection(): Promise<DynamoDB.DocumentClient> {
     // Logger.info(`Database.getConnection()-creating connection ...`)
-    console.info('creating connection ...');
+    console.info('connection created');
     return this.dynamoDb;
   }
 }

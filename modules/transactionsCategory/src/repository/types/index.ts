@@ -1,1 +1,1 @@
-export * from './transactions.types';
+export * from './transactionCategory.types';

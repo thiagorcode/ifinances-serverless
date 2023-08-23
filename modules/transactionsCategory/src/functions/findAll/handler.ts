@@ -6,10 +6,9 @@ import {
   Context,
 } from 'aws-lambda';
 import { container } from 'tsyringe';
-import { CreateTransactionService } from '../../services';
 import { AppErrorException } from '../../utils/appErrorException';
 import { formatJSONResponse } from '../../utils/formatResponse';
-import { TransactionsTypes } from '../../repository/types';
+import { FindService } from '../../services/findAll.service';
 
 export async function handler(
   event: APIGatewayProxyEvent,
@@ -21,19 +20,13 @@ export async function handler(
     `API Gateway RequestId: ${apiRequestId} - Lambda RequestId: ${lambdaRequestId}`
   );
   try {
-    const transaction: TransactionsTypes = JSON.parse(event.body || '');
+    const findService = container.resolve(FindService);
 
-    const createTransactionService = container.resolve(
-      CreateTransactionService
-    );
+    const category = await findService.execute();
 
-    const transactionsCreated = await createTransactionService.execute(
-      transaction
-    );
-
-    return formatJSONResponse(201, {
-      message: `Transactions created successfully`,
-      transaction: transactionsCreated,
+    return formatJSONResponse(200, {
+      message: `Category fetched successfully`,
+      category,
     });
   } catch (error) {
     console.error(error);

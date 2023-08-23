@@ -6,10 +6,13 @@ import {
   Context,
 } from 'aws-lambda';
 import { container } from 'tsyringe';
-import { CreateTransactionService } from '../../services';
 import { AppErrorException } from '../../utils/appErrorException';
 import { formatJSONResponse } from '../../utils/formatResponse';
-import { CreateTransactionsDto } from '../../repository/types';
+import { TotalizersValueService } from '../../services';
+import { FindAllWithQueryOriginDto } from '../../repository/types';
+import { findAllWithQuerySchema } from '../../repository/schemas';
+import { HttpStatus } from '../../enums/httpStatus';
+
 export async function handler(
   event: APIGatewayProxyEvent,
   context: Context
@@ -19,20 +22,29 @@ export async function handler(
   console.log(
     `API Gateway RequestId: ${apiRequestId} - Lambda RequestId: ${lambdaRequestId}`
   );
+
   try {
-    const transaction: CreateTransactionsDto = JSON.parse(event.body || '');
+    const userId = event.pathParameters?.userId;
+    if (!userId) {
+      throw new AppErrorException(400, 'Não foi enviado o parâmetro ID!');
+    }
 
-    const createTransactionService = container.resolve(
-      CreateTransactionService
-    );
+    const query =
+      event.queryStringParameters as FindAllWithQueryOriginDto | null;
 
-    const transactionsCreated = await createTransactionService.execute(
-      transaction
-    );
+    const totalizersValueService = container.resolve(TotalizersValueService);
 
-    return formatJSONResponse(201, {
-      message: `Transactions created successfully`,
-      transaction: transactionsCreated,
+    const totalizers = await totalizersValueService.execute({
+      userId,
+      categoryId: query?.categoryId,
+      date: query?.date,
+      isPaid: query?.isPaid,
+      type: query?.type,
+    });
+
+    return formatJSONResponse(HttpStatus.OK, {
+      message: 'Totalizers fetched successfully',
+      totalizers: totalizers,
     });
   } catch (error) {
     console.error(error);

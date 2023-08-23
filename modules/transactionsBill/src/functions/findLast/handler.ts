@@ -6,10 +6,10 @@ import {
   Context,
 } from 'aws-lambda';
 import { container } from 'tsyringe';
-import { CreateTransactionService } from '../../services';
 import { AppErrorException } from '../../utils/appErrorException';
 import { formatJSONResponse } from '../../utils/formatResponse';
-import { CreateTransactionsDto } from '../../repository/types';
+import { FindLastService } from '../../services/findLast.service';
+
 export async function handler(
   event: APIGatewayProxyEvent,
   context: Context
@@ -20,19 +20,18 @@ export async function handler(
     `API Gateway RequestId: ${apiRequestId} - Lambda RequestId: ${lambdaRequestId}`
   );
   try {
-    const transaction: CreateTransactionsDto = JSON.parse(event.body || '');
+    if (!event.pathParameters?.userId) {
+      throw new AppErrorException(400, 'Não foi enviado o parâmetro UserId!');
+    }
+    const userId = event.pathParameters.userId;
 
-    const createTransactionService = container.resolve(
-      CreateTransactionService
-    );
+    const findLastService = container.resolve(FindLastService);
 
-    const transactionsCreated = await createTransactionService.execute(
-      transaction
-    );
+    const transaction = await findLastService.execute(userId);
 
-    return formatJSONResponse(201, {
-      message: `Transactions created successfully`,
-      transaction: transactionsCreated,
+    return formatJSONResponse(200, {
+      message: `Transactions fetched successfully`,
+      transaction: transaction,
     });
   } catch (error) {
     console.error(error);

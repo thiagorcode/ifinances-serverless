@@ -1,6 +1,5 @@
-import { TransactionsTypes } from '../types';
+import { TransactionsCategoryTypes } from '../types';
 
-export interface TransactionsRepositoryInterface {
-  findByUserId(userId: string): Promise<TransactionsTypes | undefined>;
-  create(user: TransactionsTypes): Promise<TransactionsTypes>;
+export interface TransactionsCategoryRepositoryInterface {
+  findAll(): Promise<TransactionsCategoryTypes | undefined>;
 }

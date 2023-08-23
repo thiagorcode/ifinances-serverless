@@ -1,8 +1,8 @@
 import { container } from 'tsyringe';
-import { TransactionsRepositoryInterface } from '../../repository/interface/transactions.repository.interface';
-import { TransactionsRepository } from '../../repository/transactions.repository';
+import { TransactionsCategoryRepositoryInterface } from '../../repository/interface/transactions.repository.interface';
+import { TransactionsCategoryRepository } from '../../repository/transactions.repository';
 
-container.registerSingleton<TransactionsRepositoryInterface>(
-  'TransactionRepository',
-  TransactionsRepository
+container.registerSingleton<TransactionsCategoryRepositoryInterface>(
+  'TransactionsCategoryRepository',
+  TransactionsCategoryRepository
 );
