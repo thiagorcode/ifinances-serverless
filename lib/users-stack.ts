@@ -61,7 +61,7 @@ export class UsersStack extends cdk.NestedStack {
       this,
       'getByUserIdFunctionHandler',
       {
-        functionName: 'finances-get-by-userid',
+        functionName: 'finances-user-get-by-userid',
         runtime: lambda.Runtime.NODEJS_16_X,
         entry: 'modules/users/src/functions/getByUserId/handler.ts',
         handler: 'handler',
@@ -81,7 +81,7 @@ export class UsersStack extends cdk.NestedStack {
       this,
       'createUserFunctionHandler',
       {
-        functionName: 'finances-create-user',
+        functionName: 'finances-user-create',
         runtime: lambda.Runtime.NODEJS_16_X,
         entry: 'modules/users/src/functions/create/handler.ts',
         handler: 'handler',
