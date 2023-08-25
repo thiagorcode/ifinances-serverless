@@ -1,6 +1,6 @@
 {
   "name": "ifinances_lambdas",
-  "version": "0.0.1",
+  "version": "0.5.1",
   "bin": {
     "users": "bin/combined-stack.ts"
   },

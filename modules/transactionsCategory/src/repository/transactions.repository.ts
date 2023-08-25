@@ -12,13 +12,22 @@ export class TransactionsCategoryRepository
   private readonly TableName: string;
   constructor() {
     this.database = new Database().dynamoDb;
-    this.TableName = 'finances-transactionsCategory';
+    this.TableName = 'finances-transactions-category';
   }
 
   async findAll(): Promise<TransactionsCategoryTypes> {
     const params = {
       TableName: this.TableName,
       Key: {},
+    };
+    const { Item } = await this.database.get(params).promise();
+
+    return Item as TransactionsCategoryTypes;
+  }
+  async find(id: string): Promise<TransactionsCategoryTypes> {
+    const params = {
+      TableName: this.TableName,
+      Key: { id },
     };
     const { Item } = await this.database.get(params).promise();
 

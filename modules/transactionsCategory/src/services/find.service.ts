@@ -2,14 +2,14 @@ import 'reflect-metadata';
 import { injectable, inject } from 'tsyringe';
 import { TransactionsCategoryRepositoryInterface } from '../repository/interface/transactions.repository.interface';
 @injectable()
-export class FindAllService {
+export class FindService {
   constructor(
     @inject('TransactionsCategoryRepository')
     private transactionsRepository: TransactionsCategoryRepositoryInterface
   ) {}
 
-  async execute() {
-    console.log('service findAll');
-    return this.transactionsRepository.findAll();
+  async execute(id: string) {
+    console.log(`Service find ${id}`);
+    return this.transactionsRepository.find(id);
   }
 }
