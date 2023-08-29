@@ -15,14 +15,14 @@ export class TransactionsCategoryRepository
     this.TableName = 'finances-transactions-category';
   }
 
-  async findAll(): Promise<TransactionsCategoryTypes> {
+  async findAll(): Promise<TransactionsCategoryTypes[] | undefined> {
     const params = {
       TableName: this.TableName,
       Key: {},
     };
-    const { Item } = await this.database.get(params).promise();
+    const { Items } = await this.database.scan(params).promise();
 
-    return Item as TransactionsCategoryTypes;
+    return Items as TransactionsCategoryTypes[] | undefined;
   }
   async find(id: string): Promise<TransactionsCategoryTypes> {
     const params = {

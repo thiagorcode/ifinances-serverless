@@ -12,6 +12,7 @@ import {
 } from 'aws-cdk-lib/aws-apigateway';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import { RestApiStack } from './restApi-stack';
+import { TransactionsCategoryStack } from './transactionsCategory-stack';
 
 export class CombinedStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -33,6 +34,11 @@ export class CombinedStack extends cdk.Stack {
       stackApi: apiRest,
     });
 
+    new TransactionsCategoryStack(this, 'TransactionsCategoryStack', {
+      env: props?.env,
+      tags: props?.tags,
+      stackApi: apiRest,
+    });
     // new IFinancesApiStack(this, 'IFinancesApiStack', {
     //   getByUserIdFunction: usersStack.getByUserIdFunctionHandler,
     //   createUserFunction: usersStack.createUserFunctionHandler,

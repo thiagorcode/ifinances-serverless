@@ -11,5 +11,5 @@ export type FindAllWithQueryOriginDto = {
 export type FindAllWithQueryServiceDto = FindAllWithQueryOriginDto & {
   userId: string;
 };
-
+// TODO: REFACTOR changed name
 export type FindAllWithQueryDto = z.infer<typeof findAllWithQuerySchema>;

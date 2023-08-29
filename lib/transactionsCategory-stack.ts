@@ -52,7 +52,7 @@ export class TransactionsCategoryStack extends cdk.NestedStack {
       {
         ...lambdaDefaultConfig,
         functionName: 'finances-transaction-category-find',
-        entry: 'modules/transactions/src/handlers/find.ts',
+        entry: 'modules/transactionsCategory/src/handlers/find.ts',
       }
     );
 
@@ -76,16 +76,17 @@ export class TransactionsCategoryStack extends cdk.NestedStack {
       this.findAllTransactionCategoryFunction
     );
 
-    const transactionsResource =
-      props.stackApi.restApi.root.addResource('transaction');
-    const transactionsCategoryResource =
-      transactionsResource.addResource('category');
+    const transactionsResource = props.stackApi.restApi.root.addResource(
+      'transactions-category'
+    );
 
+    const transactionsCategoryFindResource =
+      transactionsResource.addResource('find');
     const transactionsCategoryIdResource =
-      transactionsCategoryResource.addResource('{id}');
+      transactionsCategoryFindResource.addResource('{id}');
 
     transactionsCategoryIdResource.addMethod('GET', findIntegration);
 
-    transactionsCategoryResource.addMethod('GET', findAll);
+    transactionsResource.addMethod('GET', findAll);
   }
 }

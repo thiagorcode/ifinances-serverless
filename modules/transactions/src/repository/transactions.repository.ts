@@ -1,6 +1,7 @@
 import { DynamoDB } from 'aws-sdk';
 import { addMonths, parseISO } from 'date-fns';
 import { v4 as uuid } from 'uuid';
+import { TransactionTypesEnum } from '../enums';
 import { Database } from '../shared/database';
 import { TransactionsRepositoryInterface } from './interface/transactions.repository.interface';
 import {
@@ -120,7 +121,10 @@ export class TransactionsRepository implements TransactionsRepositoryInterface {
   ): Promise<CreateTransactionsDto> {
     transaction.id = uuid();
 
-    if (transaction.finalInstallment && transaction.type === '-') {
+    if (
+      transaction.finalInstallment &&
+      transaction.type === TransactionTypesEnum.EXPENSE
+    ) {
       await this.createInstallmentTransaction(transaction);
     }
 
