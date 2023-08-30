@@ -2,15 +2,19 @@ import { NodejsFunctionProps } from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 
-export class LambdaConfigurator {
-  private readonly tableName: string;
+interface LambdaConfiguratorInterface {
+  tableName?: string;
+}
 
-  constructor(tableName: string) {
-    this.tableName = tableName;
+export class LambdaConfigurator {
+  private readonly config: LambdaConfiguratorInterface;
+
+  constructor(config: LambdaConfiguratorInterface) {
+    this.config = config;
   }
 
   public configureLambda(): NodejsFunctionProps {
-    const { tableName } = this;
+    const { tableName } = this.config;
 
     return {
       runtime: lambda.Runtime.NODEJS_16_X,
@@ -22,7 +26,7 @@ export class LambdaConfigurator {
         sourceMap: false,
       },
       environment: {
-        TABLE_DDB: tableName,
+        TABLE_DDB: tableName ?? '',
       },
     };
   }

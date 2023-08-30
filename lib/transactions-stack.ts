@@ -35,10 +35,16 @@ export class TransactionsStack extends cdk.NestedStack {
     super(scope, id, props);
 
     this.tableName = 'finances-transactions';
-    const lambdaConfigurator = new LambdaConfigurator(this.tableName);
+    const lambdaConfigurator = new LambdaConfigurator({
+      tableName: this.tableName,
+    });
     const lambdaDefaultConfig = lambdaConfigurator.configureLambda();
 
-    const reportsTransactions = new ReportsTransactionStack(this, id, props);
+    const reportsTransactionsStack = new ReportsTransactionStack(
+      this,
+      id,
+      props
+    );
 
     this.transactionsDdb = new dynamodb.Table(this, 'TransactionsDdb', {
       tableName: this.tableName,
@@ -71,6 +77,11 @@ export class TransactionsStack extends cdk.NestedStack {
         ...lambdaDefaultConfig,
         functionName: 'finances-transaction-create',
         entry: 'modules/transactions/src/handlers/create.ts',
+        environment: {
+          TABLE_DDB: this.tableName,
+          REPORTS_TRANSACTIONS_QUEUE:
+            reportsTransactionsStack.transactionsEventsQueueUrl,
+        },
       }
     );
 

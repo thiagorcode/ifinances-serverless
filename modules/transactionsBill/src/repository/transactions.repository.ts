@@ -15,7 +15,7 @@ export class TransactionsRepository implements TransactionsRepositoryInterface {
   private readonly TableName: string;
   constructor() {
     this.database = new Database().dynamoDb;
-    this.TableName = 'finances-transactions';
+    this.TableName = process.env.TABLE_DDB ?? '';
   }
 
   async findByUserId(userId: string): Promise<TransactionsTypes[]> {

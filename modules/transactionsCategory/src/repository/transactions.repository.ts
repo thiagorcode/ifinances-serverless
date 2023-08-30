@@ -12,7 +12,7 @@ export class TransactionsCategoryRepository
   private readonly TableName: string;
   constructor() {
     this.database = new Database().dynamoDb;
-    this.TableName = 'finances-transactions-category';
+    this.TableName = process.env.TABLE_DDB ?? '';
   }
 
   async findAll(): Promise<TransactionsCategoryTypes[] | undefined> {

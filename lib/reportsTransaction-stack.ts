@@ -17,14 +17,16 @@ export class ReportsTransactionStack extends cdk.NestedStack {
   readonly reportsTransactionsMonthlyFunction: lambdaNodeJS.NodejsFunction;
   readonly transactionsEventsQueue: sqs.Queue;
 
+  public readonly transactionsEventsQueueUrl: string;
   readonly reportsTransactionMonthlyDdb: dynamodb.Table;
   readonly tableName: string;
-
   constructor(scope: Construct, id: string, props: cdk.StackProps) {
     super(scope, id, props);
 
     this.tableName = 'finances-reports-transactions-monthly';
-    const lambdaConfigurator = new LambdaConfigurator(this.tableName);
+    const lambdaConfigurator = new LambdaConfigurator({
+      tableName: this.tableName,
+    });
     const lambdaDefaultConfig = lambdaConfigurator.configureLambda();
 
     this.transactionsEventsQueue = new sqs.Queue(
@@ -36,6 +38,7 @@ export class ReportsTransactionStack extends cdk.NestedStack {
         encryption: sqs.QueueEncryption.UNENCRYPTED,
       }
     );
+    this.transactionsEventsQueueUrl = this.transactionsEventsQueue.queueUrl;
 
     this.reportsTransactionMonthlyDdb = new dynamodb.Table(
       this,

@@ -22,7 +22,8 @@ export async function handler(
   );
   const sqs = new AWS.SQS();
   try {
-    const transaction: CreateTransactionsDto = JSON.parse(event.body || '');
+    // Refactor JSON.parse()
+    const transaction: CreateTransactionsDto = JSON.parse(event.body ?? '');
 
     const createTransactionService = container.resolve(
       CreateTransactionService
@@ -35,7 +36,7 @@ export async function handler(
       .sendMessage({
         DelaySeconds: 3,
         MessageBody: JSON.stringify(transactionsCreated),
-        QueueUrl: 'SQSReportsTransactionsQueue',
+        QueueUrl: process.env.REPORTS_TRANSACTIONS_QUEUE ?? '',
       })
       .promise();
     console.log('SQS messageId', result.MessageId);

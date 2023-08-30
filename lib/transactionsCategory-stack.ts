@@ -31,7 +31,9 @@ export class TransactionsCategoryStack extends cdk.NestedStack {
     super(scope, id, props);
 
     this.tableName = 'finances-transactions-category';
-    const lambdaConfigurator = new LambdaConfigurator(this.tableName);
+    const lambdaConfigurator = new LambdaConfigurator({
+      tableName: this.tableName,
+    });
     const lambdaDefaultConfig = lambdaConfigurator.configureLambda();
 
     this.transactionsDdb = new dynamodb.Table(this, 'TransactionsCategoryDdb', {
