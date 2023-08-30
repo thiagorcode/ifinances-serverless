@@ -1,3 +1,4 @@
+import { ReportsTransactionStack } from './reportsTransaction-stack';
 import { RestApiStack } from './restApi-stack';
 //https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_lambda-readme.html
 import * as lambda from 'aws-cdk-lib/aws-lambda';
@@ -37,6 +38,8 @@ export class TransactionsStack extends cdk.NestedStack {
     const lambdaConfigurator = new LambdaConfigurator(this.tableName);
     const lambdaDefaultConfig = lambdaConfigurator.configureLambda();
 
+    const reportsTransactions = new ReportsTransactionStack(this, id, props);
+
     this.transactionsDdb = new dynamodb.Table(this, 'TransactionsDdb', {
       tableName: this.tableName,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -67,7 +70,7 @@ export class TransactionsStack extends cdk.NestedStack {
       {
         ...lambdaDefaultConfig,
         functionName: 'finances-transaction-create',
-        entry: 'modules/transactions/src/functions/create/handler.ts',
+        entry: 'modules/transactions/src/handlers/create.ts',
       }
     );
 
@@ -77,7 +80,7 @@ export class TransactionsStack extends cdk.NestedStack {
       {
         ...lambdaDefaultConfig,
         functionName: 'finances-transaction-find',
-        entry: 'modules/transactions/src/functions/find/handler.ts',
+        entry: 'modules/transactions/src/handlers/find.ts',
       }
     );
 
@@ -87,7 +90,7 @@ export class TransactionsStack extends cdk.NestedStack {
       {
         ...lambdaDefaultConfig,
         functionName: 'finances-transaction-find-all-query',
-        entry: 'modules/transactions/src/functions/findAllWithQuery/handler.ts',
+        entry: 'modules/transactions/src/handlers/findAllWithQuery.ts',
       }
     );
 
@@ -97,7 +100,7 @@ export class TransactionsStack extends cdk.NestedStack {
       {
         ...lambdaDefaultConfig,
         functionName: 'finances-transaction-find-last',
-        entry: 'modules/transactions/src/functions/findLast/handler.ts',
+        entry: 'modules/transactions/src/handlers/findLast.ts',
       }
     );
 
@@ -107,7 +110,7 @@ export class TransactionsStack extends cdk.NestedStack {
       {
         ...lambdaDefaultConfig,
         functionName: 'finances-transaction-totalizers',
-        entry: 'modules/transactions/src/functions/totalizersValue/handler.ts',
+        entry: 'modules/transactions/src/handlers/totalizersValue.ts',
       }
     );
 

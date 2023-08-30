@@ -1,19 +1,19 @@
 import 'reflect-metadata';
-import '../../shared/container';
+import '../shared/container';
 import {
   APIGatewayProxyEvent,
   APIGatewayProxyResult,
   Context,
 } from 'aws-lambda';
 import { container } from 'tsyringe';
-import { AppErrorException } from '../../utils/appErrorException';
-import { formatJSONResponse } from '../../utils/formatResponse';
+import { AppErrorException } from '../utils/appErrorException';
+import { formatJSONResponse } from '../utils/formatResponse';
 import {
   FindAllWithQueryDto,
   FindAllWithQueryOriginDto,
-} from '../../repository/types';
-import { findAllWithQuerySchema } from '../../repository/schemas';
-import { FindAllWithQueryService } from '../../services/findAllWithQuery.service';
+} from '../repository/types';
+import { findAllWithQuerySchema } from '../repository/schemas';
+import { FindAllWithQueryService } from '../services/findAllWithQuery.service';
 
 export async function handler(
   event: APIGatewayProxyEvent,

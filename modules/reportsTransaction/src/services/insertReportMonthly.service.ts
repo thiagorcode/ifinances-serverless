@@ -18,7 +18,7 @@ import {
 @injectable()
 export class InsertReportMonthlyService {
   constructor(
-    @inject('ReportsTransactions')
+    @inject('ReportsTransactionsMonthly')
     private reportsTransactionsRepository: ReportsTransactionsRepositoryInterface
   ) {}
 

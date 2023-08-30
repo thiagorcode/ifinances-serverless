@@ -59,7 +59,8 @@ export class ReportsTransactionStack extends cdk.NestedStack {
       {
         ...lambdaDefaultConfig,
         functionName: 'finances-sqsreports-transactions-monthly',
-        entry: 'modules/reportsTransaction/src/handlers/find.ts',
+        entry:
+          'modules/reportsTransaction/src/handlers/sqsReportsTransactionsMonthly.ts',
       }
     );
 

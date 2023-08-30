@@ -1,17 +1,17 @@
 import 'reflect-metadata';
-import '../../shared/container';
+import '../shared/container';
 import {
   APIGatewayProxyEvent,
   APIGatewayProxyResult,
   Context,
 } from 'aws-lambda';
 import { container } from 'tsyringe';
-import { AppErrorException } from '../../utils/appErrorException';
-import { formatJSONResponse } from '../../utils/formatResponse';
-import { TotalizersValueService } from '../../services';
-import { FindAllWithQueryOriginDto } from '../../repository/types';
-import { findAllWithQuerySchema } from '../../repository/schemas';
-import { HttpStatus } from '../../enums/httpStatus';
+import { AppErrorException } from '../utils/appErrorException';
+import { formatJSONResponse } from '../utils/formatResponse';
+import { TotalizersValueService } from '../services';
+import { FindAllWithQueryOriginDto } from '../repository/types';
+import { findAllWithQuerySchema } from '../repository/schemas';
+import { HttpStatus } from '../enums/httpStatus';
 
 export async function handler(
   event: APIGatewayProxyEvent,

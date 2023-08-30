@@ -8,7 +8,6 @@ import {
 import { container } from 'tsyringe';
 import { AppErrorException } from '../utils/appErrorException';
 import { formatJSONResponse } from '../utils/formatResponse';
-import { FindAllService } from '../services/findAll.service';
 
 export async function handler(
   event: APIGatewayProxyEvent,
@@ -20,13 +19,13 @@ export async function handler(
     `API Gateway RequestId: ${apiRequestId} - Lambda RequestId: ${lambdaRequestId}`
   );
   try {
-    const findAllService = container.resolve(FindAllService);
+    // const findAllService = container.resolve(FindAllService);
 
-    const category = await findAllService.execute();
+    // const category = await findAllService.execute();
 
     return formatJSONResponse(200, {
       message: `Category fetched successfully`,
-      category,
+      // category,
     });
   } catch (error) {
     console.error(error);

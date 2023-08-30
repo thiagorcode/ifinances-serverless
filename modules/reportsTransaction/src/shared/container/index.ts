@@ -1,8 +1,8 @@
 import { container } from 'tsyringe';
-import { ReportsTransactionsInterface } from '../../repository/interface/reportsTransactionsRepository.interface';
-import { ReportsTransactions } from '../../repository/reportsTransactionsMonthly.repository';
+import { ReportsTransactionsRepositoryInterface } from '../../repository/interface/reportsTransactionsRepository.interface';
+import { ReportsTransactionsMonthly } from '../../repository/reportsTransactionsMonthly.repository';
 
-container.registerSingleton<ReportsTransactionsInterface>(
-  'ReportsTransactions',
-  ReportsTransactions
+container.registerSingleton<ReportsTransactionsRepositoryInterface>(
+  'ReportsTransactionsMonthly',
+  ReportsTransactionsMonthly
 );

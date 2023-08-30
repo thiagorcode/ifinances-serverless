@@ -1,14 +1,14 @@
 import 'reflect-metadata';
-import '../../shared/container';
+import '../shared/container';
 import {
   APIGatewayProxyEvent,
   APIGatewayProxyResult,
   Context,
 } from 'aws-lambda';
 import { container } from 'tsyringe';
-import { AppErrorException } from '../../utils/appErrorException';
-import { formatJSONResponse } from '../../utils/formatResponse';
-import { FindService } from '../../services/find.service';
+import { AppErrorException } from '../utils/appErrorException';
+import { formatJSONResponse } from '../utils/formatResponse';
+import { FindService } from '../services/find.service';
 
 export async function handler(
   event: APIGatewayProxyEvent,

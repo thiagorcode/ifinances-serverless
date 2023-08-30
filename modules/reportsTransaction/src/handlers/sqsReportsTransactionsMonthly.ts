@@ -17,6 +17,8 @@ export async function handler(
 
     event.Records.forEach((record) => {
       console.log(`MessageId: ${record.messageId} `);
+      console.log(`Record: ${JSON.parse(JSON.stringify(record))} `);
+      // usar outra coisa sem ser JSON.parse
       const body = JSON.parse(record.body);
       insertReportMonthlyService.execute(body);
     });
