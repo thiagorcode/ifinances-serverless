@@ -84,7 +84,9 @@ export class TransactionsStack extends cdk.NestedStack {
         },
       }
     );
-
+    reportsTransactionsStack.transactionsEventsQueue.grantSendMessages(
+      this.createTransactionsFunction
+    );
     this.findTransactionFunction = new lambdaNodeJS.NodejsFunction(
       this,
       'findTransactionFunctionHandler',
@@ -143,10 +145,15 @@ export class TransactionsStack extends cdk.NestedStack {
     const totalizersIntegration = new LambdaIntegration(
       this.totalizersValueFunction
     );
-
+    const reportIntegration = new LambdaIntegration(
+      reportsTransactionsStack.createTransactionsReportFunction
+    );
     const transactionsResource =
       props.stackApi.restApi.root.addResource('transaction');
-
+    const reportTransactionsReport = transactionsResource
+      .addResource('report')
+      .addResource('test');
+    reportTransactionsReport.addMethod('POST', reportIntegration);
     transactionsResource.addMethod('POST', createIntegration);
 
     const transactionsIdResource = transactionsResource.addResource('{id}');

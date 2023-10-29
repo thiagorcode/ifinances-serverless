@@ -127,6 +127,7 @@ export class TransactionsRepository implements TransactionsRepositoryInterface {
     ) {
       await this.createInstallmentTransaction(transaction);
     }
+    console.log('database', this.database);
 
     await this.database
       .put({

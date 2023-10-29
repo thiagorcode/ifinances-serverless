@@ -23,7 +23,7 @@ export class InsertReportMonthlyService {
   ) {}
 
   async execute(transaction: TransactionsTypes) {
-    console.log(`Service InsertReportMonthly`);
+    console.info(`Service InsertReportMonthly`);
     try {
       const reportMonthly = await this.reportsTransactionsRepository.find({
         year: transaction.year,
@@ -31,6 +31,7 @@ export class InsertReportMonthlyService {
         userId: transaction.userId,
       });
       const { type, value } = transaction;
+      console.debug('reportMonthly', { type, value });
 
       if (!reportMonthly) {
         // TODO: Object - > Refatorar para gerar variável em outro lugar.
@@ -67,6 +68,7 @@ export class InsertReportMonthlyService {
         );
         return;
       }
+
       if (type === TransactionTypesEnum.EXPENSE) {
         const updateReportMonthly: UpdateExpenseValueMonthlyType = {
           expenseValue: calculateNewExpenseValue(
@@ -83,10 +85,11 @@ export class InsertReportMonthlyService {
         );
         return;
       }
-      console.log();
+      console.log('sem retorno - ERROR');
       return;
     } catch (error) {
-      console.error(error);
+      console.error('error', String(error));
+      throw new Error(String(error));
     }
   }
 }

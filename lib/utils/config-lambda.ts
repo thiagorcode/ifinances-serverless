@@ -15,7 +15,7 @@ export class LambdaConfigurator {
 
   public configureLambda(): NodejsFunctionProps {
     const { tableName } = this.config;
-
+    // Update version node
     return {
       runtime: lambda.Runtime.NODEJS_16_X,
       handler: 'handler',

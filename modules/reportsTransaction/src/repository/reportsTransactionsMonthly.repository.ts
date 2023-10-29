@@ -16,21 +16,44 @@ export class ReportsTransactionsMonthly
   private readonly TableName: string;
   constructor() {
     this.database = new Database().dynamoDb;
-    this.TableName = 'finances-reports-transactions-monthly';
+    this.TableName = process.env.TABLE_DDB ?? '';
   }
 
   async find({
     year,
     yearMonth,
     userId,
-  }: FindReportMonthlyTypes): Promise<ReportsMonthlyTypes | undefined> {
-    const params = {
-      TableName: this.TableName,
-      Key: { year, yearMonth, userId },
-    };
-    const { Item } = await this.database.get(params).promise();
+  }: FindReportMonthlyTypes): Promise<ReportsMonthlyTypes | null> {
+    try {
+      console.log('find', {
+        year,
+        yearMonth,
+        userId,
+      });
+      const params = {
+        TableName: this.TableName,
+        KeyConditionExpression:
+          'year = :year AND yearMonth = :yearMonth AND userId = :userId',
+        ExpressionAttributeValues: {
+          ':year': year,
+          ':yearMonth': yearMonth,
+          ':userId': userId,
+        },
+      };
+      console.log(params);
 
-    return Item as ReportsMonthlyTypes | undefined;
+      console.log('database', await this.database.query(params).promise());
+
+      const { Items } = await this.database.query(params).promise();
+      console.log('Items', Items);
+      if (!Items) {
+        return null;
+      }
+      return Items[0] as ReportsMonthlyTypes;
+    } catch (error) {
+      console.log('error', error);
+      return null;
+    }
   }
 
   async updateRecipeValue(

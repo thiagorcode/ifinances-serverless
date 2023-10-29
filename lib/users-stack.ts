@@ -11,6 +11,7 @@ import { Construct } from 'constructs';
 import { LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
 import { Stack } from 'aws-cdk-lib';
 import { RestApiStack } from './restApi-stack';
+import { LambdaConfigurator } from './utils/config-lambda';
 interface UserNestedStackProps extends cdk.StackProps {
   stackApi: RestApiStack;
 }
@@ -18,35 +19,19 @@ export class UsersStack extends cdk.NestedStack {
   readonly getByUserIdFunctionHandler: lambdaNodeJS.NodejsFunction;
   readonly createUserFunctionHandler: lambdaNodeJS.NodejsFunction;
   readonly usersDdb: dynamodb.Table;
+  private readonly tableName: string;
   constructor(scope: Construct, id: string, props: UserNestedStackProps) {
     super(scope, id, props);
 
-    // AWS.config.update({
-    //   region: 'us-west-2',
-    //   dynamodb: {
-    //     endpoint: 'http://localhost:8000',
-    //   },
-    // });
+    this.tableName = 'finances-users';
 
-    // const dynamoDB = new AWS.DynamoDB();
-
-    // const params: AWS.DynamoDB.CreateTableInput = {
-    //   TableName: 'users',
-    //   KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
-    //   AttributeDefinitions: [{ AttributeName: 'id', AttributeType: 'S' }],
-    //   BillingMode: 'PAY_PER_REQUEST',
-    // };
-
-    // dynamoDB.createTable(params, function (err, data) {
-    //   if (err) {
-    //     console.error('Error creating table: ', err);
-    //   } else {
-    //     console.log('Table created successfully: ', data);
-    //   }
-    // });
+    const lambdaConfigurator = new LambdaConfigurator({
+      tableName: this.tableName,
+    });
+    const lambdaDefaultConfig = lambdaConfigurator.configureLambda();
 
     this.usersDdb = new dynamodb.Table(this, 'UsersDdb', {
-      tableName: 'finances-users',
+      tableName: this.tableName,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       partitionKey: {
         name: 'id',
@@ -61,19 +46,9 @@ export class UsersStack extends cdk.NestedStack {
       this,
       'getByUserIdFunctionHandler',
       {
+        ...lambdaDefaultConfig,
         functionName: 'finances-user-get-by-userid',
-        runtime: lambda.Runtime.NODEJS_16_X,
         entry: 'modules/users/src/functions/getByUserId/handler.ts',
-        handler: 'handler',
-        memorySize: 128,
-        timeout: cdk.Duration.seconds(5),
-        bundling: {
-          minify: true,
-          sourceMap: false,
-        },
-        environment: {
-          TABLE_DDB: this.usersDdb.tableName,
-        },
       }
     );
 
@@ -81,19 +56,9 @@ export class UsersStack extends cdk.NestedStack {
       this,
       'createUserFunctionHandler',
       {
+        ...lambdaDefaultConfig,
         functionName: 'finances-user-create',
-        runtime: lambda.Runtime.NODEJS_16_X,
         entry: 'modules/users/src/functions/create/handler.ts',
-        handler: 'handler',
-        memorySize: 128,
-        timeout: cdk.Duration.seconds(5),
-        bundling: {
-          minify: true,
-          sourceMap: false,
-        },
-        environment: {
-          TABLE_DDB: this.usersDdb.tableName,
-        },
       }
     );
 

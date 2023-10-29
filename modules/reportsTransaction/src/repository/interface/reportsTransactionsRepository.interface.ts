@@ -1,4 +1,4 @@
-import { ReportsMonthlyTypes, TransactionsTypes } from '../../types';
+import { ReportsMonthlyTypes } from '../../types';
 import {
   CreateReportMonthlyType,
   FindReportMonthlyTypes,
@@ -7,9 +7,7 @@ import {
 } from '../types';
 
 export interface ReportsTransactionsRepositoryInterface {
-  find(
-    params: FindReportMonthlyTypes
-  ): Promise<ReportsMonthlyTypes | undefined>;
+  find(params: FindReportMonthlyTypes): Promise<ReportsMonthlyTypes | null>;
   create(reportMonthly: CreateReportMonthlyType): void;
   updateRecipeValue(
     id: string,

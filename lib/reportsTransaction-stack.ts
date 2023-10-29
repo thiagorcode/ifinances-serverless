@@ -15,6 +15,7 @@ import { LambdaIntegration } from 'aws-cdk-lib/aws-apigateway';
 
 export class ReportsTransactionStack extends cdk.NestedStack {
   readonly reportsTransactionsMonthlyFunction: lambdaNodeJS.NodejsFunction;
+  readonly createTransactionsReportFunction: lambdaNodeJS.NodejsFunction;
   readonly transactionsEventsQueue: sqs.Queue;
 
   public readonly transactionsEventsQueueUrl: string;
@@ -36,6 +37,13 @@ export class ReportsTransactionStack extends cdk.NestedStack {
         queueName: 'SQSReportsTransactionsQueue',
         enforceSSL: false,
         encryption: sqs.QueueEncryption.UNENCRYPTED,
+
+        deadLetterQueue: {
+          queue: new sqs.Queue(this, 'ReportsDLQueue', {
+            queueName: 'ReportsTransactionsDLQueue',
+          }),
+          maxReceiveCount: 1,
+        },
       }
     );
     this.transactionsEventsQueueUrl = this.transactionsEventsQueue.queueUrl;
@@ -50,6 +58,7 @@ export class ReportsTransactionStack extends cdk.NestedStack {
           name: 'id',
           type: dynamodb.AttributeType.STRING,
         },
+
         billingMode: dynamodb.BillingMode.PROVISIONED,
         readCapacity: 1,
         writeCapacity: 1,
@@ -64,6 +73,19 @@ export class ReportsTransactionStack extends cdk.NestedStack {
         functionName: 'finances-sqsreports-transactions-monthly',
         entry:
           'modules/reportsTransaction/src/handlers/sqsReportsTransactionsMonthly.ts',
+        timeout: cdk.Duration.seconds(5),
+      }
+    );
+
+    this.createTransactionsReportFunction = new lambdaNodeJS.NodejsFunction(
+      this,
+      'createReportsTransactionsMonthlyFunctionHandler',
+      {
+        ...lambdaDefaultConfig,
+        functionName: 'finances-create-reports-transactions-monthly',
+        entry:
+          'modules/reportsTransaction/src/handlers/createReportsTransactionsMonthly.ts',
+        timeout: cdk.Duration.seconds(5),
       }
     );
 
@@ -74,7 +96,10 @@ export class ReportsTransactionStack extends cdk.NestedStack {
       this.reportsTransactionsMonthlyFunction
     );
 
-    this.reportsTransactionMonthlyDdb.grantWriteData(
+    this.reportsTransactionMonthlyDdb.grantReadWriteData(
+      this.createTransactionsReportFunction
+    );
+    this.reportsTransactionMonthlyDdb.grantReadWriteData(
       this.reportsTransactionsMonthlyFunction
     );
   }

@@ -32,14 +32,14 @@ export async function handler(
     const transactionsCreated = await createTransactionService.execute(
       transaction
     );
-    const result = await sqs
+    await sqs
       .sendMessage({
         DelaySeconds: 3,
         MessageBody: JSON.stringify(transactionsCreated),
         QueueUrl: process.env.REPORTS_TRANSACTIONS_QUEUE ?? '',
       })
       .promise();
-    console.log('SQS messageId', result.MessageId);
+
     return formatJSONResponse(201, {
       message: `Transactions created successfully`,
       transaction: transactionsCreated,
