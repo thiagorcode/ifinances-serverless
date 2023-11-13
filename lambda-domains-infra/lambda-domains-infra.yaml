@@ -6,16 +6,54 @@ Parameters:
   EnvName:
     Description: Nome do ambiente
     Type: String
-    
+  FindUser:
+    Type: String
+    Description: FindUser Function ARN
+  CreateUser:
+    Type: String
+    Description: CreateUser Function ARN
+  FindByIdUser:
+    Type: String
+    Description: FindByIdUser Function ARN
 Resources:
-  LambdaServicesHttpApi:
+  IFinancesServicesHttpApi:
     Type: AWS::Serverless::HttpApi
     Properties:
-      Name: LambdaServicesHttpApi
       StageName: dev
-
+      DefinitionBody:
+        "Fn::Transform":
+          Name: "AWS::Include"
+          Parameters:
+            Location: openapi.yaml
+  ApiGwExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - apigateway.amazonaws.com
+            Action:
+              - "sts:AssumeRole"
+      Policies:
+        - PolicyName: ApiGwExecutionPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              # - Action: sqs:SendMessage
+              #   Effect: Allow
+              #   Resource:
+              #     - Ref: OrderQueueArn
+              - Action: lambda:*
+                Effect: Allow
+                Resource:
+                  - Ref: CreateUser
+                  - Ref: FindUser
+                  - Ref: FindByIdUser
 Outputs:
   ServerlessHttpApiId:
-    Value: !Ref LambdaServicesHttpApi
+    Value: !Ref IFinancesServicesHttpApi
     Export:
       Name: !Sub ${AWS::StackName}-ServerlessHttpApi

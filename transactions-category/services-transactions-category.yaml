@@ -25,36 +25,39 @@ Resources:
         - nodejs18.x
       RetentionPolicy: Retain
   
-  UsersHttpApi:
-    Type: AWS::Serverless::HttpApi
-    Properties:
-      StageName: LIVE
-      CorsConfiguration:
-        AllowHeaders:
-          - "*"
-        AllowMethods:
-          - "*"
-        AllowOrigins:
-          - "*"
-      # AccessLogSettings:
-      #   Format: "$context.requestId | $context.error.message | $context.integrationErrorMessage | $context.authorizer.error"
-      
-  # Criar tabela de users
-  CreateUserFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+  IFinancesTransactionsCategory:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ifinances-transactions-category
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+  FindTransactionsCategoryFunction:
+    Type: AWS::Serverless::Function
     Metadata:
       BuildMethod: makefile
     Properties:
-      Handler: dist/handlers/create.handler
+      Handler: dist/handlers/find.handler
       FunctionName:
         Fn::Join:
         - '-'
         - - Ref: AWS::StackName
-          - create-user
+          - user-find
       Architectures:
       - x86_64
-      
-           
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref IFinancesTransactionsCategory
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref IFinancesTransactionsCategory
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
     Properties:
@@ -76,3 +79,16 @@ Resources:
       AutoConfigurationEnabled: 'true'
     DependsOn: ApplicationResourceGroup
 
+
+Outputs:
+  FindUser:
+    Description: "FindUser Lambda Function ARN"
+    Value: !GetAtt FindUserFunction.Arn
+
+  FindByIdUser:
+    Description: "FindById Lambda Function ARN"
+    Value: !GetAtt FindByIdUserFunction.Arn
+
+  CreateUser:
+    Description: "CreateUser Lambda Function ARN"
+    Value: !GetAtt CreateUserFunction.Arn

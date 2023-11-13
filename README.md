@@ -1,4 +1,4 @@
-# lambda-services
+# ifinances-services
 
 ## Default Architecture
 
