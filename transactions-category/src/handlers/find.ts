@@ -1,19 +1,19 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { DynamoDBRepository } from '../repository/dynamodb.repository'
 import { AppErrorException, formatResponse } from '../utils'
-import { FindUsersCore } from '../core/findUsers.core'
+import { FindAllCore } from '../core/find.core'
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {
     console.debug('Event:', event)
 
     const repository = new DynamoDBRepository()
-    const findUsersCore = new FindUsersCore(repository)
+    const findAllCore = new FindAllCore(repository)
 
-    const users = await findUsersCore.execute()
+    const category = await findAllCore.execute()
     return formatResponse(200, {
       message: 'Buscas realizada com sucesso!',
-      users,
+      category,
     })
   } catch (err) {
     console.error(err)

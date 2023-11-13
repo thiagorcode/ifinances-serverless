@@ -1,7 +1,5 @@
-import { UsersTypes } from '../../shared/types'
+import { TransactionsCategoryTypes } from '../../shared/types'
 
 export default interface DynamoDBRepositoryInterface {
-  findById(id: string): Promise<UsersTypes | undefined>
-  findAll(): Promise<UsersTypes[]>
-  createUser(user: UsersTypes): Promise<void>
+  findAll(): Promise<TransactionsCategoryTypes[]>
 }

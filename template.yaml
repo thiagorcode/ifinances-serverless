@@ -18,3 +18,7 @@ Resources:
     Type: AWS::Serverless::Application
     Properties:
       Location: ./users/services-users.yaml
+  TransactionsCategoryApplication:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: ./transactions-category/services-transactions-category.yaml

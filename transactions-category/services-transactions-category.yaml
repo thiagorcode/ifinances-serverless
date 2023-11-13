@@ -25,7 +25,7 @@ Resources:
         - nodejs18.x
       RetentionPolicy: Retain
   
-  IFinancesTransactionsCategory:
+  IFinancesTransactionsCategoryTable:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: ifinances-transactions-category
@@ -49,15 +49,15 @@ Resources:
         Fn::Join:
         - '-'
         - - Ref: AWS::StackName
-          - user-find
+          - category-find
       Architectures:
       - x86_64
       Environment:
         Variables:
-          TABLE_NAME: !Ref IFinancesTransactionsCategory
+          TABLE_NAME: !Ref IFinancesTransactionsCategoryTable
       Policies:
         - DynamoDBReadPolicy:
-            TableName: !Ref IFinancesTransactionsCategory
+            TableName: !Ref IFinancesTransactionsCategoryTable
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
     Properties:
@@ -81,14 +81,6 @@ Resources:
 
 
 Outputs:
-  FindUser:
-    Description: "FindUser Lambda Function ARN"
-    Value: !GetAtt FindUserFunction.Arn
-
-  FindByIdUser:
-    Description: "FindById Lambda Function ARN"
-    Value: !GetAtt FindByIdUserFunction.Arn
-
-  CreateUser:
-    Description: "CreateUser Lambda Function ARN"
-    Value: !GetAtt CreateUserFunction.Arn
+  FindTransactionsCategoryFunction:
+    Description: "FindTransactionsCategoryFunction Lambda Function ARN"
+    Value: !GetAtt FindTransactionsCategoryFunction.Arn
