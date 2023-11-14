@@ -1,20 +1,34 @@
 import { TransactionTypesEnum } from '../enums'
 
-export const calculateNewRecipeValue = (type: string, currentRecipeValue: number, newValue: number) => {
-  if (type === TransactionTypesEnum.RECIPE) return currentRecipeValue + newValue
+export const calculateUpdateValueReport = (
+  type: string,
+  transactionValue: number,
+  currentReportValue: number,
+  currentReportTotalValue: number,
+) => {
+  const recipeValue = type === TransactionTypesEnum.RECIPE ? currentReportValue + transactionValue : currentReportValue
+  const expenseValue =
+    type === TransactionTypesEnum.EXPENSE ? currentReportValue - transactionValue : currentReportValue
+  const totalValue =
+    type === TransactionTypesEnum.RECIPE
+      ? currentReportTotalValue + transactionValue
+      : currentReportTotalValue - transactionValue
 
-  return currentRecipeValue
+  return {
+    expense: expenseValue,
+    recipe: recipeValue,
+    total: totalValue,
+  }
 }
 
-export const calculateNewExpenseValue = (type: string, currentExpenseValue: number, newValue: number) => {
-  if (type === TransactionTypesEnum.EXPENSE) return currentExpenseValue + newValue
+export const calculateNewValueReport = (type: string, transactionValue: number) => {
+  const recipeValue = type === TransactionTypesEnum.RECIPE ? transactionValue : 0
+  const expenseValue = type === TransactionTypesEnum.EXPENSE ? transactionValue : 0
+  const totalValue = type === TransactionTypesEnum.RECIPE ? transactionValue : -transactionValue
 
-  return currentExpenseValue
-}
-
-export const calculateNewTotalValue = (type: string, currentTotalValue: number, newValue: number) => {
-  if (type === TransactionTypesEnum.RECIPE) return currentTotalValue + newValue
-  if (type === TransactionTypesEnum.EXPENSE) return currentTotalValue - newValue
-
-  return 0
+  return {
+    expense: expenseValue,
+    recipe: recipeValue,
+    total: totalValue,
+  }
 }
