@@ -1,11 +1,13 @@
 import { DynamoDB } from '@aws-sdk/client-dynamodb'
-import { PutCommand, ScanCommand, DynamoDBDocumentClient, QueryCommand } from '@aws-sdk/lib-dynamodb'
+import { PutCommand, ScanCommand, DynamoDBDocumentClient, QueryCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb'
 
 import {
   CreateReportMonthlyType,
   FindReportMonthlyTypes,
   ReportsMonthlyTypes,
   TransactionsTypes,
+  UpdateExpenseValueMonthlyType,
+  UpdateRecipeValueMonthlyType,
 } from '../shared/types'
 import ReportsTransactionInterface from './interface/reportsTransaction.interface'
 
@@ -69,5 +71,32 @@ export class ReportsTransactionsRepository implements ReportsTransactionInterfac
       return null
     }
     return Items[0] as ReportsMonthlyTypes
+  }
+  async updateRecipeValue(id: string, currentReport: UpdateRecipeValueMonthlyType): Promise<void> {
+    const params = new UpdateCommand({
+      TableName: process.env.TABLE_REPORTS_TRANSACTION,
+      Key: { id },
+      UpdateExpression: 'SET recipeValue = :recipeValue, total = :total, dtUpdated = :dtUpdated',
+      ExpressionAttributeValues: {
+        ':recipeValue': currentReport.recipeValue,
+        ':total': currentReport.total,
+        ':dtUpdated': new Date().toISOString(),
+      },
+    })
+    await this.dynamodbDocumentClient.send(params)
+  }
+
+  async updateExpenseValue(id: string, currentReport: UpdateExpenseValueMonthlyType): Promise<void> {
+    const params = new UpdateCommand({
+      TableName: process.env.TABLE_REPORTS_TRANSACTION,
+      Key: { id },
+      UpdateExpression: 'SET expenseValue = :expenseValue, total = :total, dtUpdated = :dtUpdated',
+      ExpressionAttributeValues: {
+        ':expenseValue': currentReport.expenseValue,
+        ':total': currentReport.total,
+        ':dtUpdated': new Date().toISOString(),
+      },
+    })
+    await this.dynamodbDocumentClient.send(params)
   }
 }
