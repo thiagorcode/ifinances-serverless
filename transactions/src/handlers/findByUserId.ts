@@ -1,19 +1,22 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import { DynamoDBRepository } from '../repository/dynamodb.repository'
+import { TransactionRepository } from '../repository/transactions.repository'
 import { AppErrorException, formatResponse } from '../utils'
-import { FindByIdCore } from '../core/findById.core'
+import { FindCore } from '../core/find.core'
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {
     console.debug('Event:', event)
-    const userId = event.pathParameters?.id
-    const repository = new DynamoDBRepository()
-    const findByIdCore = new FindByIdCore(repository)
-    const users = await findByIdCore.execute(userId)
+    const userId = event.pathParameters?.userId
+    if (!userId) {
+      throw new AppErrorException(400, 'Não foi enviado o parâmetro transactionId!')
+    }
+    const repository = new TransactionRepository()
+    const findByIdCore = new FindCore(repository)
+    const transactions = await findByIdCore.execute(userId)
 
     return formatResponse(200, {
       message: 'Buscas realizada com sucesso!',
-      users,
+      transactions,
     })
   } catch (err) {
     console.error(err)

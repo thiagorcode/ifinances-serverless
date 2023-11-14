@@ -48,6 +48,7 @@ Resources:
         Fn::Join:
         - '-'
         - - Ref: AWS::StackName
+        - - lambda
           - user-create
       Architectures:
       - x86_64
@@ -68,6 +69,7 @@ Resources:
         Fn::Join:
         - '-'
         - - Ref: AWS::StackName
+        - - lambda
           - user-find
       Architectures:
       - x86_64
@@ -85,6 +87,7 @@ Resources:
         Fn::Join:
         - '-'
         - - Ref: AWS::StackName
+          - lambda
           - user-find-by-id
       Architectures:
       - x86_64

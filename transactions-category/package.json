@@ -1,5 +1,5 @@
 {
-  "name": "ifinances-service-users",
+  "name": "ifinances-service-transactions-category",
   "version": "0.0.1",
   "description": "Users Crud",
   "main": "app.js",

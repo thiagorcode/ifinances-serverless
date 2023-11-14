@@ -4,6 +4,11 @@ Description: API de Users
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
+  Parameters:
+    StackName:
+      Description: Nome da stack
+      Type: String
+    
   Function:
     Timeout: 15
     Tracing: Active
@@ -25,10 +30,10 @@ Resources:
         - nodejs18.x
       RetentionPolicy: Retain
   
-  IFinancesUsersTable:
+  IFinancesTransactionsTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ifinances-users
+        TableName: ifinances-transactions
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
@@ -38,8 +43,33 @@ Resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-  CreateUserFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+  ReportsTransactionsQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: sqs-transactions-reports
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt ReportsTransactionsDLQueue.Arn
+        maxReceiveCount: 5
+
+  ReportsTransactionsDLQueue:
+    Type: AWS::SQS::Queue
+
+  ReportsTransactionsQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Action:
+              - sqs:*
+            Effect: Allow
+            Principal:
+              AWS: !Ref AWS::AccountId
+            Resource: !GetAtt ReportsTransactionsQueue.Arn
+      Queues:
+        - !Ref ReportsTransactionsQueue
+  CreateTransactionFunction:
+    Type: AWS::Serverless::Function 
     Metadata:
       BuildMethod: makefile
     Properties:
@@ -48,17 +78,20 @@ Resources:
         Fn::Join:
         - '-'
         - - Ref: AWS::StackName
-          - user-create
+        - - lambda
+          - !Ref StackName
+          - create
       Architectures:
       - x86_64
       Environment:
         Variables:
-          TABLE_NAME: !Ref IFinancesUsersTable
+          TABLE_NAME: !Ref IFinancesTransactionsTable
+          REPORTS_TRANSACTIONS_QUEUE_NAME: !Ref ReportsTransactionsQueue.QueueName
       Policies:
         - DynamoDBWritePolicy:
-            TableName: !Ref IFinancesUsersTable
+            TableName: !Ref IFinancesTransactionsTable
         
-  FindUserFunction:
+  FindTransactionFunction:
     Type: AWS::Serverless::Function
     Metadata:
       BuildMethod: makefile
@@ -68,29 +101,66 @@ Resources:
         Fn::Join:
         - '-'
         - - Ref: AWS::StackName
-          - user-find
+        - - lambda
+          - !Ref StackName
+          - find
       Architectures:
       - x86_64
       Policies:
         - DynamoDBReadPolicy:
-            TableName: !Ref IFinancesUsersTable
+            TableName: !Ref IFinancesTransactionsTable
 
-  FindByIdUserFunction:
+  FindByUserIdTransactionFunction:
     Type: AWS::Serverless::Function
     Metadata:
       BuildMethod: makefile
     Properties:
-      Handler: dist/handlers/findById.handler
+      Handler: dist/handlers/findByUserId.handler
       FunctionName:
         Fn::Join:
         - '-'
         - - Ref: AWS::StackName
-          - user-find-by-id
+          - !Ref StackName
+          - find-by-userId
       Architectures:
       - x86_64
       Policies:
         - DynamoDBReadPolicy:
-            TableName: !Ref IFinancesUsersTable
+            TableName: !Ref IFinancesTransactionsTable
+  FindLastTransactionFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/findLast.handler
+      FunctionName:
+        Fn::Join:
+        - '-'
+        - - Ref: AWS::StackName
+          - !Ref StackName
+          - find-by-userId
+      Architectures:
+      - x86_64
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref IFinancesTransactionsTable
+  FindAllTransactionFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/findAll.handler
+      FunctionName:
+        Fn::Join:
+        - '-'
+        - - Ref: AWS::StackName
+          - !Ref StackName
+          - find-all
+      Architectures:
+      - x86_64
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref IFinancesTransactionsTable
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
     Properties:
@@ -111,17 +181,3 @@ Resources:
           - Ref: AWS::StackName
       AutoConfigurationEnabled: 'true'
     DependsOn: ApplicationResourceGroup
-
-
-Outputs:
-  FindUser:
-    Description: "FindUser Lambda Function ARN"
-    Value: !GetAtt FindUserFunction.Arn
-
-  FindByIdUser:
-    Description: "FindById Lambda Function ARN"
-    Value: !GetAtt FindByIdUserFunction.Arn
-
-  CreateUser:
-    Description: "CreateUser Lambda Function ARN"
-    Value: !GetAtt CreateUserFunction.Arn

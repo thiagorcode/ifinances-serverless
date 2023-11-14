@@ -1,14 +1,20 @@
-.PHONY: build-CreateUserFunction build-FindUserFunction build-FindByIdUserFunction
+.PHONY: build-CreateTransactionFunction build-FindTransactionFunction build-FindByIdUserFunction build-FindAllTransactionFunction build-FindLastTransactionFunction
 .PHONY: build-RuntimeDependenciesLayer build-lambda-common 
 
-build-CreateUserFunction:
+build-CreateTransactionFunction:
 	$(MAKE) HANDLER=src/handlers/create.ts build-lambda-common
 
-build-FindUserFunction:
+build-FindTransactionFunction:
 	$(MAKE) HANDLER=src/handlers/find.ts build-lambda-common
 
 build-FindByIdUserFunction:
-	$(MAKE) HANDLER=src/handlers/findById.ts build-lambda-common
+	$(MAKE) HANDLER=src/handlers/findByUserId.ts build-lambda-common
+
+build-FindLastTransactionFunction:
+	$(MAKE) HANDLER=src/handlers/findLast.ts build-lambda-common
+
+build-FindAllTransactionFunction:
+	$(MAKE) HANDLER=src/handlers/findAll.ts build-lambda-common
 
 build-lambda-common:
 	npm install

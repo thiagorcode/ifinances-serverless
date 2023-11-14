@@ -49,6 +49,7 @@ Resources:
         Fn::Join:
         - '-'
         - - Ref: AWS::StackName
+        - - lambda
           - category-find
       Architectures:
       - x86_64
