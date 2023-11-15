@@ -1,11 +1,9 @@
-.PHONY: build-CreateUserFunction build-FindUserFunction build-FindByIdUserFunction
+.PHONY: build-CreateUserFunction  build-FindByIdUserFunction
 .PHONY: build-RuntimeDependenciesLayer build-lambda-common 
 
 build-CreateUserFunction:
 	$(MAKE) HANDLER=src/handlers/create.ts build-lambda-common
 
-build-FindUserFunction:
-	$(MAKE) HANDLER=src/handlers/find.ts build-lambda-common
 
 build-FindByIdUserFunction:
 	$(MAKE) HANDLER=src/handlers/findById.ts build-lambda-common

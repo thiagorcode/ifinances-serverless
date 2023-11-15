@@ -63,23 +63,6 @@ Resources:
       Policies:
         - DynamoDBWritePolicy:
             TableName: !Ref IFinancesUsersTable
-        
-  FindUserFunction:
-    Type: AWS::Serverless::Function
-    Metadata:
-      BuildMethod: makefile
-    Properties:
-      Handler: dist/handlers/find.handler
-      FunctionName:
-        Fn::Join:
-        - '-'
-        - - Ref: StackName
-          - lambda-user-find
-      Architectures:
-      - x86_64
-      Policies:
-        - DynamoDBReadPolicy:
-            TableName: !Ref IFinancesUsersTable
 
   FindByIdUserFunction:
     Type: AWS::Serverless::Function
@@ -120,10 +103,6 @@ Resources:
 
 
 Outputs:
-  FindUser:
-    Description: "FindUser Lambda Function ARN"
-    Value: !GetAtt FindUserFunction.Arn
-
   FindByIdUser:
     Description: "FindById Lambda Function ARN"
     Value: !GetAtt FindByIdUserFunction.Arn
