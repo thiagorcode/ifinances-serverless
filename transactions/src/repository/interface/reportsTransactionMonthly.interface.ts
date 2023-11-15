@@ -7,7 +7,7 @@ import {
   UpdateRecipeValueMonthlyType,
 } from '../../shared/types'
 
-export default interface ReportsTransactionInterface {
+export default interface ReportsTransactionMonthlyInterface {
   create(transaction: CreateReportMonthlyType): Promise<void>
   findAll(userId: string): Promise<TransactionsTypes[]>
   findByUserId(userId: string): Promise<TransactionsTypes[]>

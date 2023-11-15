@@ -9,9 +9,9 @@ import {
   UpdateExpenseValueMonthlyType,
   UpdateRecipeValueMonthlyType,
 } from '../shared/types'
-import ReportsTransactionInterface from './interface/reportsTransaction.interface'
+import ReportsTransactionMonthlyInterface from './interface/reportsTransactionMonthly.interface'
 
-export class ReportsTransactionsRepository implements ReportsTransactionInterface {
+export class ReportsTransactionsMonthlyRepository implements ReportsTransactionMonthlyInterface {
   private dynamodbClient: DynamoDB
   private dynamodbDocumentClient: DynamoDBDocumentClient
 
@@ -73,7 +73,7 @@ export class ReportsTransactionsRepository implements ReportsTransactionInterfac
   async updateRecipeValue(id: string, currentReport: UpdateRecipeValueMonthlyType): Promise<void> {
     const params = new UpdateCommand({
       TableName: process.env.TABLE_NAME,
-      Key: { id },
+      Key: { id: { S: id } },
       UpdateExpression: 'SET recipeValue = :recipeValue, #totalValue = :total, dtUpdated = :dtUpdated',
       ExpressionAttributeNames: {
         '#totalValue': 'total',
@@ -90,7 +90,7 @@ export class ReportsTransactionsRepository implements ReportsTransactionInterfac
   async updateExpenseValue(id: string, currentReport: UpdateExpenseValueMonthlyType): Promise<void> {
     const params = new UpdateCommand({
       TableName: process.env.TABLE_NAME,
-      Key: { id },
+      Key: { id: { S: id } },
       UpdateExpression: 'SET expenseValue = :expenseValue, #totalValue = :total, dtUpdated = :dtUpdated',
       ExpressionAttributeNames: {
         '#totalValue': 'total',

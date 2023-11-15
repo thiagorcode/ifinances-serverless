@@ -4,17 +4,14 @@ import {
   UpdateExpenseValueMonthlyType,
   UpdateRecipeValueMonthlyType,
 } from '../shared/types'
-import { AppErrorException } from '../utils'
 import { createReportMonthlySchema, transactionsSchema } from '../shared/schemas'
 import { randomUUID } from 'crypto'
-import { addMonths, parseISO } from 'date-fns'
-import { SQSRepository } from '../repository/sqs.repository'
-import { ReportsTransactionsRepository } from '../repository/reportsTransactions.repository'
+import { ReportsTransactionsMonthlyRepository } from '../repository/reportsTransactionsMonthly.repository'
 import { calculateNewValueReport, calculateUpdateValueReport } from '../utils/calculateNewValues'
 import { TransactionTypesEnum } from '../enums'
 
-export class CreateReportsTransactionCore {
-  constructor(private repository: ReportsTransactionsRepository) {}
+export class CreateReportsTransactionMonthlyCore {
+  constructor(private repository: ReportsTransactionsMonthlyRepository) {}
 
   async execute(transaction: CreateTransactionsType) {
     console.info('init CreateReportsTransactionCore service')
@@ -38,6 +35,7 @@ export class CreateReportsTransactionCore {
           year: transaction.year,
           yearMonth: transaction.yearMonth,
           userId: transaction.userId,
+          id: randomUUID(),
         }
         const reportValidateSchema = createReportMonthlySchema.parse(report)
         console.log('validate', reportValidateSchema)
@@ -46,6 +44,7 @@ export class CreateReportsTransactionCore {
       }
       // TODO: Refatorar esse trecho, para não ter duas funções de atualização
       if (type === TransactionTypesEnum.RECIPE) {
+        console.info('call updateRecipeValue')
         const valuesReport = calculateUpdateValueReport(type, value, reportMonthly.recipeValue, reportMonthly.total)
 
         const updateReportMonthly: UpdateRecipeValueMonthlyType = {
@@ -59,6 +58,8 @@ export class CreateReportsTransactionCore {
       }
 
       if (type === TransactionTypesEnum.EXPENSE) {
+        console.info('call updateExpenseValue')
+
         const valuesReport = calculateUpdateValueReport(type, value, reportMonthly.expenseValue, reportMonthly.total)
 
         const updateReportMonthly: UpdateExpenseValueMonthlyType = {
