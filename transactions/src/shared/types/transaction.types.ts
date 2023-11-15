@@ -10,7 +10,7 @@ export type TransactionsTypes = {
   isPaid: boolean
   type: string
   specification: string
-  bank: string
+  card: string
   userId: string
   dtCreated: string
   dtUpdated: string

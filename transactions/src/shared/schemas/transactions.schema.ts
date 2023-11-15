@@ -2,7 +2,7 @@ import * as z from 'zod'
 
 export const transactionsSchema = z
   .object({
-    id: z.string().uuid(),
+    id: z.string().uuid().optional(),
     description: z.string().optional().default(''),
     value: z.number().positive(),
     categoryId: z.string().uuid(),
@@ -13,7 +13,7 @@ export const transactionsSchema = z
     isPaid: z.boolean(),
     type: z.string(),
     specification: z.string().optional().default(''),
-    bank: z.string().optional().default(''),
+    card: z.string().optional().default(''),
     userId: z.string().uuid(),
     dtCreated: z.string().default(new Date().toISOString()),
     dtUpdated: z.string().default(new Date().toISOString()),

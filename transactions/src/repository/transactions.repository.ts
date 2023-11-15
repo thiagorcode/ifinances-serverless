@@ -91,8 +91,8 @@ export class TransactionRepository implements TransactionRepositoryInterface {
         ':userId': userId,
       },
       ProjectionExpression:
-        // 'id, #type, #date, userId, #value, isPaid, bank, #description, #categoryName, #categoryId',
-        'id, #type, #date, userId, #value, isPaid, bank, #description',
+        // 'id, #type, #date, userId, #value, isPaid, card, #description, #categoryName, #categoryId',
+        'id, #type, #date, userId, #value, isPaid, card, #description',
       ExpressionAttributeNames: {
         '#type': 'type',
         '#date': 'date',
