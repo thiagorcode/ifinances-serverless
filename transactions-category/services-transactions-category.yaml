@@ -3,6 +3,13 @@ Transform: AWS::Serverless-2016-10-31
 Description: API de Users
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Parameters:
+  ServiceName:
+    Description: Service name
+    Type: String
+  StackName:
+    Description: Stack name
+    Type: String
 Globals:
   Function:
     Timeout: 15
@@ -28,6 +35,7 @@ Resources:
   IFinancesTransactionsCategoryTable:
       Type: AWS::DynamoDB::Table
       Properties:
+        BillingMode: PAY_PER_REQUEST
         TableName: ifinances-transactions-category
         AttributeDefinitions:
           - AttributeName: id
@@ -35,9 +43,6 @@ Resources:
         KeySchema:
           - AttributeName: id
             KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
 
   FindTransactionsCategoryFunction:
     Type: AWS::Serverless::Function
@@ -46,11 +51,7 @@ Resources:
     Properties:
       Handler: dist/handlers/find.handler
       FunctionName:
-        Fn::Join:
-        - '-'
-        - - Ref: AWS::StackName
-        - - lambda
-          - category-find
+        Fn::Join:  ["-", [Ref: "StackName",  "lambda", Ref: "ServiceName", "find"]]
       Architectures:
       - x86_64
       Environment:

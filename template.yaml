@@ -18,7 +18,22 @@ Resources:
     Type: AWS::Serverless::Application
     Properties:
       Location: ./users/services-users.yaml
+      Parameters:
+        ServiceName: transactions
+        StackName: cfstack-ifinances
+  
+  TransactionsApplication:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: ./transactions/services-transactions.yaml
+      Parameters:
+        ServiceName: transactions
+        StackName: cfstack-ifinances
+
   TransactionsCategoryApplication:
     Type: AWS::Serverless::Application
     Properties:
       Location: ./transactions-category/services-transactions-category.yaml
+      Parameters:
+        ServiceName: transactions-category
+        StackName: cfstack-ifinances

@@ -3,6 +3,13 @@ Transform: AWS::Serverless-2016-10-31
 Description: API de Users
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Parameters:
+  ServiceName:
+    Description: Service name
+    Type: String
+  StackName:
+    Description: Stack name
+    Type: String
 Globals:
   Function:
     Timeout: 15
@@ -28,6 +35,7 @@ Resources:
   IFinancesUsersTable:
       Type: AWS::DynamoDB::Table
       Properties:
+        BillingMode: "PAY_PER_REQUEST"
         TableName: ifinances-users
         AttributeDefinitions:
           - AttributeName: id
@@ -35,9 +43,7 @@ Resources:
         KeySchema:
           - AttributeName: id
             KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
+
   CreateUserFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Metadata:
@@ -47,9 +53,8 @@ Resources:
       FunctionName:
         Fn::Join:
         - '-'
-        - - Ref: AWS::StackName
-        - - lambda
-          - user-create
+        - - Ref: StackName
+          - lambda-user-create
       Architectures:
       - x86_64
       Environment:
@@ -68,9 +73,8 @@ Resources:
       FunctionName:
         Fn::Join:
         - '-'
-        - - Ref: AWS::StackName
-        - - lambda
-          - user-find
+        - - Ref: StackName
+          - lambda-user-find
       Architectures:
       - x86_64
       Policies:
@@ -86,9 +90,8 @@ Resources:
       FunctionName:
         Fn::Join:
         - '-'
-        - - Ref: AWS::StackName
-          - lambda
-          - user-find-by-id
+        - - Ref: StackName
+          - lambda-user-find-by-id
       Architectures:
       - x86_64
       Policies:
