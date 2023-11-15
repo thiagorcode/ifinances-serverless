@@ -67,9 +67,24 @@ Resources:
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: yearMonth
+            AttributeType: S
         KeySchema:
           - AttributeName: id
             KeyType: HASH
+          - AttributeName: yearMonth
+            KeyType: RANGE
+        GlobalSecondaryIndexes:
+          - IndexName: UserYearMonthIndex
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+              - AttributeName: yearMonth
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL 
 
   ReportsTransactionsQueue:
     Type: AWS::SQS::Queue
@@ -96,6 +111,7 @@ Resources:
             Resource: !GetAtt ReportsTransactionsQueue.Arn
       Queues:
         - !Ref ReportsTransactionsQueue
+
   CreateTransactionFunction:
     Type: AWS::Serverless::Function 
     Metadata:
@@ -113,6 +129,8 @@ Resources:
       Policies:
         - DynamoDBWritePolicy:
             TableName: !Ref IFinancesTransactionsTable
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt ReportsTransactionsQueue.QueueName
 
   SQSReportsTransactionFunction:
     Type: AWS::Serverless::Function 
@@ -129,6 +147,8 @@ Resources:
           TABLE_NAME: !Ref IFinancesReportsTransactionsTable
       Policies:
         - DynamoDBWritePolicy:
+            TableName: !Ref IFinancesReportsTransactionsTable
+        - DynamoDBReadPolicy:
             TableName: !Ref IFinancesReportsTransactionsTable
       Events:
         SQSEvent:
