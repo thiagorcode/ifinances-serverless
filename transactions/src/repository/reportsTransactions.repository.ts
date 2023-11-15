@@ -22,7 +22,7 @@ export class ReportsTransactionsRepository implements ReportsTransactionInterfac
 
   async create(data: CreateReportMonthlyType): Promise<void> {
     const params = new PutCommand({
-      TableName: process.env.TABLE_REPORTS_TRANSACTION,
+      TableName: process.env.TABLE_NAME,
       Item: data,
     })
 
@@ -31,7 +31,7 @@ export class ReportsTransactionsRepository implements ReportsTransactionInterfac
 
   async findAll(): Promise<TransactionsTypes[]> {
     const params = new ScanCommand({
-      TableName: process.env.TABLE_REPORTS_TRANSACTION,
+      TableName: process.env.TABLE_NAME,
     })
 
     const result = await this.dynamodbDocumentClient.send(params)
@@ -42,7 +42,7 @@ export class ReportsTransactionsRepository implements ReportsTransactionInterfac
 
   async findByUserId(userId: string): Promise<TransactionsTypes[]> {
     const params = new QueryCommand({
-      TableName: process.env.TABLE_REPORTS_TRANSACTION,
+      TableName: process.env.TABLE_NAME,
       KeyConditionExpression: 'userId = :userId',
       ExpressionAttributeValues: {
         ':userId': userId,
@@ -55,16 +55,14 @@ export class ReportsTransactionsRepository implements ReportsTransactionInterfac
   }
   async find({ year, yearMonth, userId }: FindReportMonthlyTypes): Promise<ReportsMonthlyTypes | null> {
     const params = new QueryCommand({
-      TableName: process.env.TABLE_REPORTS_TRANSACTION,
-      KeyConditionExpression: 'year = :year AND yearMonth = :yearMonth AND userId = :userId',
+      TableName: process.env.TABLE_NAME,
+      KeyConditionExpression: 'userId = :userId AND yearMonth = :yearMonth',
+      IndexName: 'UserYearMonthIndex',
       ExpressionAttributeValues: {
-        ':year': year,
         ':yearMonth': yearMonth,
         ':userId': userId,
       },
     })
-
-    console.log('params', params)
 
     const { Items } = await this.dynamodbDocumentClient.send(params)
     if (!Items) {
@@ -74,9 +72,12 @@ export class ReportsTransactionsRepository implements ReportsTransactionInterfac
   }
   async updateRecipeValue(id: string, currentReport: UpdateRecipeValueMonthlyType): Promise<void> {
     const params = new UpdateCommand({
-      TableName: process.env.TABLE_REPORTS_TRANSACTION,
+      TableName: process.env.TABLE_NAME,
       Key: { id },
-      UpdateExpression: 'SET recipeValue = :recipeValue, total = :total, dtUpdated = :dtUpdated',
+      UpdateExpression: 'SET recipeValue = :recipeValue, #totalValue = :total, dtUpdated = :dtUpdated',
+      ExpressionAttributeNames: {
+        '#totalValue': 'total',
+      },
       ExpressionAttributeValues: {
         ':recipeValue': currentReport.recipeValue,
         ':total': currentReport.total,
@@ -88,9 +89,12 @@ export class ReportsTransactionsRepository implements ReportsTransactionInterfac
 
   async updateExpenseValue(id: string, currentReport: UpdateExpenseValueMonthlyType): Promise<void> {
     const params = new UpdateCommand({
-      TableName: process.env.TABLE_REPORTS_TRANSACTION,
+      TableName: process.env.TABLE_NAME,
       Key: { id },
-      UpdateExpression: 'SET expenseValue = :expenseValue, total = :total, dtUpdated = :dtUpdated',
+      UpdateExpression: 'SET expenseValue = :expenseValue, #totalValue = :total, dtUpdated = :dtUpdated',
+      ExpressionAttributeNames: {
+        '#totalValue': 'total',
+      },
       ExpressionAttributeValues: {
         ':expenseValue': currentReport.expenseValue,
         ':total': currentReport.total,
