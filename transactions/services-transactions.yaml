@@ -86,6 +86,56 @@ Resources:
             Projection:
               ProjectionType: ALL 
 
+  IFinancesReportsTransactionsCategoryTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        BillingMode: PAY_PER_REQUEST
+        TableName: ifinances-reports-transactions-category
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: yearMonth
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: UserCategoryIndex
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+              - AttributeName: yearMonth
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL 
+  
+  IFinancesReportsTransactionsCardTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        BillingMode: PAY_PER_REQUEST
+        TableName: ifinances-reports-transactions-card
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: yearMonth
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: UserCardIndex
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+              - AttributeName: yearMonth
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL 
+
   ReportsTransactionsQueue:
     Type: AWS::SQS::Queue
     Properties:
@@ -132,12 +182,12 @@ Resources:
         - SQSSendMessagePolicy:
             QueueName: !GetAtt ReportsTransactionsQueue.QueueName
 
-  SQSReportsTransactionFunction:
+  SQSReportsTransactionMonthlyFunction:
     Type: AWS::Serverless::Function 
     Metadata:
       BuildMethod: makefile
     Properties:
-      Handler: dist/handlers/sqsReportsTransactions.handler
+      Handler: dist/handlers/sqsReportsTransactionsMonthly.handler
       FunctionName:
         Fn::Join: ["-", [Ref: "StackName", "lambda", Ref: "ServiceName", "sqs-reports"]]
       Architectures:
@@ -150,6 +200,54 @@ Resources:
             TableName: !Ref IFinancesReportsTransactionsTable
         - DynamoDBReadPolicy:
             TableName: !Ref IFinancesReportsTransactionsTable
+      Events:
+        SQSEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt ReportsTransactionsQueue.Arn
+
+  SQSReportsTransactionCategoryFunction:
+    Type: AWS::Serverless::Function 
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/sqsReportsTransactionsCategory.handler
+      FunctionName:
+        Fn::Join: ["-", [Ref: "StackName", "lambda", Ref: "ServiceName", "sqs-reports-category"]]
+      Architectures:
+      - x86_64
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref IFinancesReportsTransactionsCategoryTable
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref IFinancesReportsTransactionsCategoryTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref IFinancesReportsTransactionsCategoryTable
+      Events:
+        SQSEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt ReportsTransactionsQueue.Arn
+
+  SQSReportsTransactionCardFunction:
+    Type: AWS::Serverless::Function 
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/sqsReportsTransactionsCard.handler
+      FunctionName:
+        Fn::Join: ["-", [Ref: "StackName", "lambda", Ref: "ServiceName", "sqs-reports-card"]]
+      Architectures:
+      - x86_64
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref IFinancesReportsTransactionsCardTable
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref IFinancesReportsTransactionsCardTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref IFinancesReportsTransactionsCardTable
       Events:
         SQSEvent:
           Type: SQS

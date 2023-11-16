@@ -158,7 +158,7 @@ export class TransactionRepository implements TransactionRepositoryInterface {
       ExpressionAttributeValues: {
         ':description': transaction.description,
         ':value': transaction.value,
-        ':categoryId': transaction.categoryId,
+        ':category': transaction.category,
       },
     })
     await this.dynamodbDocumentClient.send(params)

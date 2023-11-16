@@ -8,12 +8,9 @@ export class CreateUserCore {
   constructor(private dataRepository: DynamoDBRepositoryInterface) {}
 
   async execute(user: UsersTypes | null) {
-    console.info('create service')
-    try {
-      const userValidate = usersSchema.parse(user)
-      return this.dataRepository.createUser(userValidate)
-    } catch (error) {
-      throw new AppErrorException(400, 'Erro inesperado, tente novamente mais tarde!')
-    }
+    console.info('init create service')
+
+    const userValidate = usersSchema.parse(user)
+    return await this.dataRepository.createUser(userValidate)
   }
 }

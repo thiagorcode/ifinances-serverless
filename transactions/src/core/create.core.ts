@@ -14,13 +14,18 @@ export class CreateCore {
   async execute(transaction: CreateTransactionsType) {
     console.info('init create service')
     try {
+      const transactionParsed = transactionsSchema.parse(transaction)
+      const numberInstallments = transactionParsed.numberInstallments || 1
       const transactions: CreateTransactionsType[] = []
-      for (let i = 1; i <= transaction.numberInstallments; i++) {
+      for (let i = 1; i <= numberInstallments; i++) {
         const newTransaction: CreateTransactionsType = {
-          ...transaction,
+          ...transactionParsed,
           id: randomUUID(),
           currentInstallment: i,
-          date: addMonths(parseISO(transaction.date), i).toString(),
+          date:
+            numberInstallments > 1
+              ? addMonths(parseISO(transactionParsed.date), i - 1).toISOString()
+              : transactionParsed.date,
         }
         const transactionValidated = transactionsSchema.parse(newTransaction)
         transactions.push(transactionValidated)

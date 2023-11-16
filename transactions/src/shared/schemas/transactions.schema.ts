@@ -23,7 +23,7 @@ export const transactionsSchema = z
     isPaid: z.boolean(),
     type: z.string(),
     specification: z.string().optional().default(''),
-    card: cardValidate,
+    card: cardValidate.optional(),
     userId: z.string().uuid(),
     dtCreated: z.string().default(new Date().toISOString()),
     dtUpdated: z.string().default(new Date().toISOString()),

@@ -1,7 +1,8 @@
+import { randomUUID } from 'crypto'
 import * as z from 'zod'
 
 export const usersSchema = z.object({
-  id: z.string(),
+  id: z.string().default(randomUUID()),
   firstName: z.string(),
   lastName: z.string(),
   username: z.string(),
@@ -9,6 +10,6 @@ export const usersSchema = z.object({
   password: z.string().optional(), // Por enquanto
   isActive: z.boolean().default(true),
   isPasswordChange: z.boolean().default(false),
-  dtCreated: z.date().default(new Date()),
-  dtUpdated: z.date().default(new Date()),
+  dtCreated: z.string().default(new Date().toISOString()),
+  dtUpdated: z.string().default(new Date().toISOString()),
 })

@@ -1,16 +1,15 @@
 import {
-  CreateReportMonthlyType,
+  ReportTransactionsMonthlyType,
   FindReportMonthlyTypes,
   ReportsMonthlyTypes,
-  TransactionsTypes,
   UpdateExpenseValueMonthlyType,
   UpdateRecipeValueMonthlyType,
 } from '../../shared/types'
 
 export default interface ReportsTransactionMonthlyInterface {
-  create(transaction: CreateReportMonthlyType): Promise<void>
-  findAll(userId: string): Promise<TransactionsTypes[]>
-  findByUserId(userId: string): Promise<TransactionsTypes[]>
+  create(transaction: ReportTransactionsMonthlyType): Promise<void>
+  findAll(userId: string): Promise<ReportTransactionsMonthlyType[]>
+  findByUserId(userId: string): Promise<ReportTransactionsMonthlyType[]>
   find(query: FindReportMonthlyTypes): Promise<ReportsMonthlyTypes | null>
   updateExpenseValue(id: string, currentReport: UpdateExpenseValueMonthlyType): Promise<void>
   updateRecipeValue(id: string, currentReport: UpdateRecipeValueMonthlyType): Promise<void>

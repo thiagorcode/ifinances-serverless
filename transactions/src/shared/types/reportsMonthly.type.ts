@@ -1,11 +1,13 @@
+// TODO: Adicionar no schema
 export type ReportsMonthlyTypes = {
   id: string
   recipeValue: number
+  year: string
   expenseValue: number
   total: number
-  year: string
   yearMonth: string
+  quantityTransactions: number
   userId: string
-  dtCreated: Date
-  dtUpdated: Date
+  dtCreated: string
+  dtUpdated: string
 }

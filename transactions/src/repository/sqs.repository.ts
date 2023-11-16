@@ -16,6 +16,7 @@ export class SQSRepository implements SQSRepositoryInterface {
       QueueUrl: process.env.REPORTS_TRANSACTIONS_QUEUE_NAME ?? '',
     })
     console.log('send message command: ', command)
-    await this.clientSQS.send(command)
+    const responseSQS = await this.clientSQS.send(command)
+    console.info('response SQS: ', responseSQS)
   }
 }

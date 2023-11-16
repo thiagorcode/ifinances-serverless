@@ -29,7 +29,8 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
       })
     }
     return formatResponse(500, {
-      message: 'some error happened',
+      message: 'Erro inesperado',
+      err,
     })
   }
 }

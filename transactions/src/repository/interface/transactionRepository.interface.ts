@@ -1,4 +1,9 @@
-import { CreateTransactionsType, FindAllWithQueryType, TransactionsTypes } from '../../shared/types'
+import {
+  CreateTransactionsType,
+  FindAllWithQueryType,
+  TransactionsTypes,
+  UpdateTransactionsType,
+} from '../../shared/types'
 
 export default interface DynamoDBRepositoryInterface {
   findByUserId(userId: string): Promise<TransactionsTypes[]>
@@ -6,5 +11,5 @@ export default interface DynamoDBRepositoryInterface {
   find(id: string): Promise<TransactionsTypes>
   findAllWithQuery(query: FindAllWithQueryType): Promise<TransactionsTypes[]>
   findLast(userId: string): Promise<TransactionsTypes[]>
-  update(id: string, transaction: Partial<TransactionsTypes>): Promise<void>
+  update(id: string, transaction: UpdateTransactionsType): Promise<void>
 }

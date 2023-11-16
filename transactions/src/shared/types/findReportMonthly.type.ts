@@ -1,5 +1,5 @@
 export type FindReportMonthlyTypes = {
-  year: string;
-  yearMonth: string;
-  userId: string;
-};
+  year: string
+  yearMonth: string
+  userId: string
+}

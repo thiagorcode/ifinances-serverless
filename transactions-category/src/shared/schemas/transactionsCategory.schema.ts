@@ -5,6 +5,6 @@ export const transactionsCategorySchema = z.object({
   name: z.string(),
   icon: z.string(),
   type: z.string(),
-  dtCreated: z.date().default(new Date()),
-  dtUpdated: z.date().default(new Date()),
+  dtCreated: z.string().default(new Date().toISOString()),
+  dtUpdated: z.string().default(new Date().toISOString()),
 })

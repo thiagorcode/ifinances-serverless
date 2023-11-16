@@ -2,10 +2,9 @@ import { DynamoDB } from '@aws-sdk/client-dynamodb'
 import { PutCommand, ScanCommand, DynamoDBDocumentClient, QueryCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb'
 
 import {
-  CreateReportMonthlyType,
+  ReportTransactionsMonthlyType,
   FindReportMonthlyTypes,
   ReportsMonthlyTypes,
-  TransactionsTypes,
   UpdateExpenseValueMonthlyType,
   UpdateRecipeValueMonthlyType,
 } from '../shared/types'
@@ -20,7 +19,7 @@ export class ReportsTransactionsMonthlyRepository implements ReportsTransactionM
     this.dynamodbDocumentClient = DynamoDBDocumentClient.from(this.dynamodbClient)
   }
 
-  async create(data: CreateReportMonthlyType): Promise<void> {
+  async create(data: ReportTransactionsMonthlyType): Promise<void> {
     const params = new PutCommand({
       TableName: process.env.TABLE_NAME,
       Item: data,
@@ -29,7 +28,7 @@ export class ReportsTransactionsMonthlyRepository implements ReportsTransactionM
     await this.dynamodbDocumentClient.send(params)
   }
 
-  async findAll(): Promise<TransactionsTypes[]> {
+  async findAll(): Promise<ReportTransactionsMonthlyType[]> {
     const params = new ScanCommand({
       TableName: process.env.TABLE_NAME,
     })
@@ -37,10 +36,10 @@ export class ReportsTransactionsMonthlyRepository implements ReportsTransactionM
     const result = await this.dynamodbDocumentClient.send(params)
 
     if (!result.Items) return []
-    return result.Items as unknown as TransactionsTypes[]
+    return result.Items as unknown as ReportTransactionsMonthlyType[]
   }
 
-  async findByUserId(userId: string): Promise<TransactionsTypes[]> {
+  async findByUserId(userId: string): Promise<ReportTransactionsMonthlyType[]> {
     const params = new QueryCommand({
       TableName: process.env.TABLE_NAME,
       KeyConditionExpression: 'userId = :userId',
@@ -51,7 +50,7 @@ export class ReportsTransactionsMonthlyRepository implements ReportsTransactionM
     const result = await this.dynamodbDocumentClient.send(params)
 
     if (!result.Items) return []
-    return result.Items as TransactionsTypes[]
+    return result.Items as ReportTransactionsMonthlyType[]
   }
   async find({ year, yearMonth, userId }: FindReportMonthlyTypes): Promise<ReportsMonthlyTypes | null> {
     const params = new QueryCommand({
@@ -73,14 +72,16 @@ export class ReportsTransactionsMonthlyRepository implements ReportsTransactionM
   async updateRecipeValue(id: string, currentReport: UpdateRecipeValueMonthlyType): Promise<void> {
     const params = new UpdateCommand({
       TableName: process.env.TABLE_NAME,
-      Key: { id: { S: id } },
-      UpdateExpression: 'SET recipeValue = :recipeValue, #totalValue = :total, dtUpdated = :dtUpdated',
+      Key: { id: id, yearMonth: currentReport.yearMonth },
+      UpdateExpression:
+        'SET recipeValue = :recipeValue, #totalValue = :totalValue, quantityTransactions = :qtdTransactions, dtUpdated = :dtUpdated',
       ExpressionAttributeNames: {
         '#totalValue': 'total',
       },
       ExpressionAttributeValues: {
         ':recipeValue': currentReport.recipeValue,
-        ':total': currentReport.total,
+        ':totalValue': currentReport.total,
+        ':qtdTransactions': currentReport.quantityTransactions,
         ':dtUpdated': new Date().toISOString(),
       },
     })
@@ -90,14 +91,16 @@ export class ReportsTransactionsMonthlyRepository implements ReportsTransactionM
   async updateExpenseValue(id: string, currentReport: UpdateExpenseValueMonthlyType): Promise<void> {
     const params = new UpdateCommand({
       TableName: process.env.TABLE_NAME,
-      Key: { id: { S: id } },
-      UpdateExpression: 'SET expenseValue = :expenseValue, #totalValue = :total, dtUpdated = :dtUpdated',
+      Key: { id, yearMonth: currentReport.yearMonth },
+      UpdateExpression:
+        'SET expenseValue = :expenseValue, #totalValue = :totalValue, quantityTransactions = :qtdTransactions, dtUpdated = :dtUpdated',
       ExpressionAttributeNames: {
         '#totalValue': 'total',
       },
       ExpressionAttributeValues: {
         ':expenseValue': currentReport.expenseValue,
-        ':total': currentReport.total,
+        ':totalValue': currentReport.total,
+        ':qtdTransactions': currentReport.quantityTransactions,
         ':dtUpdated': new Date().toISOString(),
       },
     })

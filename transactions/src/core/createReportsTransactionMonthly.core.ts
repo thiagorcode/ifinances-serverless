@@ -1,10 +1,10 @@
 import {
-  CreateReportMonthlyType,
+  ReportTransactionsMonthlyType,
   CreateTransactionsType,
   UpdateExpenseValueMonthlyType,
   UpdateRecipeValueMonthlyType,
 } from '../shared/types'
-import { createReportMonthlySchema, transactionsSchema } from '../shared/schemas'
+import { reportTransactionsMonthlySchema, transactionsSchema } from '../shared/schemas'
 import { randomUUID } from 'crypto'
 import { ReportsTransactionsMonthlyRepository } from '../repository/reportsTransactionsMonthly.repository'
 import { calculateNewValueReport, calculateUpdateValueReport } from '../utils/calculateNewValues'
@@ -28,16 +28,17 @@ export class CreateReportsTransactionMonthlyCore {
         // criar outro service para create
         console.info('create report')
         const valuesReport = calculateNewValueReport(type, value)
-        const report: CreateReportMonthlyType = {
+        const report = {
+          id: randomUUID(),
           recipeValue: valuesReport.recipe,
           expenseValue: valuesReport.expense,
           total: valuesReport.total,
+          userId: transaction.userId,
           year: transaction.year,
           yearMonth: transaction.yearMonth,
-          userId: transaction.userId,
-          id: randomUUID(),
+          quantityTransactions: 1,
         }
-        const reportValidateSchema = createReportMonthlySchema.parse(report)
+        const reportValidateSchema = reportTransactionsMonthlySchema.parse(report)
         console.log('validate', reportValidateSchema)
         await this.repository.create(reportValidateSchema)
         return
@@ -50,6 +51,8 @@ export class CreateReportsTransactionMonthlyCore {
         const updateReportMonthly: UpdateRecipeValueMonthlyType = {
           recipeValue: valuesReport.recipe,
           total: valuesReport.total,
+          quantityTransactions: reportMonthly.quantityTransactions + 1,
+          yearMonth: reportMonthly.yearMonth,
         }
         //TODO: Adiciona schema validate
 
@@ -65,6 +68,8 @@ export class CreateReportsTransactionMonthlyCore {
         const updateReportMonthly: UpdateExpenseValueMonthlyType = {
           expenseValue: valuesReport.expense,
           total: valuesReport.total,
+          quantityTransactions: reportMonthly.quantityTransactions + 1,
+          yearMonth: reportMonthly.yearMonth,
         }
         //TODO: Adicionar schema validate
         await this.repository.updateExpenseValue(reportMonthly.id, updateReportMonthly)

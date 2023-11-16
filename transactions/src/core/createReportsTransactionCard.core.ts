@@ -1,28 +1,28 @@
-import {
-  CreateTransactionsType,
-  ReportTransactionsCategoryType,
-  UpdateReportTransactionsCategoryType,
-} from '../shared/types'
+import { UpdateReportTransactionsCardType } from '../shared/types/updateReportTransactionsCard.type'
+import { CreateTransactionsType, ReportTransactionsCardType } from '../shared/types'
 import { randomUUID } from 'crypto'
-import { ReportsTransactionsCategoryRepository } from '../repository/reportsTransactionsCategory.repository'
-import { reportTransactionsCategorySchema } from '../shared/schemas'
+import { reportTransactionsCardSchema } from '../shared/schemas'
+import { ReportsTransactionsCardRepository } from '../repository/reportsTransactionsCard.repository'
+import { TransactionTypesEnum } from '../enums'
 
-export class CreateReportsTransactionCategoryCore {
-  constructor(private repository: ReportsTransactionsCategoryRepository) {}
+export class CreateReportsTransactionCardCore {
+  constructor(private repository: ReportsTransactionsCardRepository) {}
 
   async execute(transaction: CreateTransactionsType) {
     console.info('init CreateReportsTransactionCategoryCore service')
+    if (!transaction.card?.name || transaction.type === TransactionTypesEnum.RECIPE) return
+
     try {
       const reportMonthly = await this.repository.find({
         yearMonth: transaction.yearMonth,
         userId: transaction.userId,
-        categoryName: transaction.category.name,
+        card: transaction.card.name,
       })
       console.info('reportCategory found', reportMonthly)
 
       if (reportMonthly?.id) {
         console.info('call updateExpenseValue')
-        const updateReportCard: UpdateReportTransactionsCategoryType = {
+        const updateReportCard: UpdateReportTransactionsCardType = {
           value: reportMonthly.value + transaction.value,
           quantityTransactions: reportMonthly.quantityTransactions + 1,
         }
@@ -32,20 +32,19 @@ export class CreateReportsTransactionCategoryCore {
       }
 
       // criar outro service para create
-      console.info('create report category')
-      const report: ReportTransactionsCategoryType = {
+      console.info('create report card')
+      const report: ReportTransactionsCardType = {
         id: randomUUID(),
-        category: transaction.category.name,
+        card: transaction.card.name,
         value: transaction.value,
         year: transaction.year,
-        type: transaction.type,
         yearMonth: transaction.yearMonth,
         userId: transaction.userId,
         quantityTransactions: 1,
         dtCreated: new Date().toISOString(),
         dtUpdated: new Date().toISOString(),
       }
-      const reportValidateSchema = reportTransactionsCategorySchema.parse(report)
+      const reportValidateSchema = reportTransactionsCardSchema.parse(report)
       console.log('validate', reportValidateSchema)
       await this.repository.create(reportValidateSchema)
       return

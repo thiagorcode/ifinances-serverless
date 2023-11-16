@@ -6,9 +6,10 @@ export const reportTransactionsCategorySchema = z.object({
   value: z.number(),
   category: z.string(),
   yearMonth: z.string(),
+  type: z.string(),
   year: z.string(),
   quantityTransactions: z.number(),
   userId: z.string(),
-  dtCreated: z.string().default(new Date().toISOString()).optional(),
-  dtUpdated: z.string().default(new Date().toISOString()).optional(),
+  dtCreated: z.string(),
+  dtUpdated: z.string(),
 })

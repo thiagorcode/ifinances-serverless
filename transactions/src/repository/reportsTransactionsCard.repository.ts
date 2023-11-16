@@ -1,14 +1,10 @@
 import { DynamoDB } from '@aws-sdk/client-dynamodb'
 import { PutCommand, ScanCommand, DynamoDBDocumentClient, QueryCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb'
 
-import {
-  FindReportCategoryTypes,
-  ReportTransactionsCategoryType,
-  UpdateReportTransactionsCategoryType,
-} from '../shared/types'
-import ReportsTransactionCategoryInterface from './interface/reportsTransactionCategory.interface'
+import { ReportTransactionsCardType, FindReportCardTypes, UpdateReportTransactionsCardType } from '../shared/types'
+import ReportsTransactionCardInterface from './interface/reportsTransactionCard.interface'
 
-export class ReportsTransactionsCategoryRepository implements ReportsTransactionCategoryInterface {
+export class ReportsTransactionsCardRepository implements ReportsTransactionCardInterface {
   private dynamodbClient: DynamoDB
   private dynamodbDocumentClient: DynamoDBDocumentClient
 
@@ -17,7 +13,7 @@ export class ReportsTransactionsCategoryRepository implements ReportsTransaction
     this.dynamodbDocumentClient = DynamoDBDocumentClient.from(this.dynamodbClient)
   }
 
-  async create(data: ReportTransactionsCategoryType): Promise<void> {
+  async create(data: ReportTransactionsCardType): Promise<void> {
     const params = new PutCommand({
       TableName: process.env.TABLE_NAME,
       Item: data,
@@ -26,7 +22,7 @@ export class ReportsTransactionsCategoryRepository implements ReportsTransaction
     await this.dynamodbDocumentClient.send(params)
   }
 
-  async findAll(): Promise<ReportTransactionsCategoryType[]> {
+  async findAll(): Promise<ReportTransactionsCardType[]> {
     const params = new ScanCommand({
       TableName: process.env.TABLE_NAME,
     })
@@ -34,10 +30,10 @@ export class ReportsTransactionsCategoryRepository implements ReportsTransaction
     const result = await this.dynamodbDocumentClient.send(params)
 
     if (!result.Items) return []
-    return result.Items as unknown as ReportTransactionsCategoryType[]
+    return result.Items as unknown as ReportTransactionsCardType[]
   }
 
-  async findByUserId(userId: string): Promise<ReportTransactionsCategoryType[]> {
+  async findByUserId(userId: string): Promise<ReportTransactionsCardType[]> {
     const params = new QueryCommand({
       TableName: process.env.TABLE_NAME,
       KeyConditionExpression: 'userId = :userId',
@@ -48,20 +44,13 @@ export class ReportsTransactionsCategoryRepository implements ReportsTransaction
     const result = await this.dynamodbDocumentClient.send(params)
 
     if (!result.Items) return []
-    return result.Items as ReportTransactionsCategoryType[]
+    return result.Items as ReportTransactionsCardType[]
   }
-  async find({
-    yearMonth,
-    userId,
-    categoryName,
-  }: FindReportCategoryTypes): Promise<ReportTransactionsCategoryType | null> {
+  async find({ yearMonth, userId, card }: FindReportCardTypes): Promise<ReportTransactionsCardType | null> {
     const params = new QueryCommand({
       TableName: process.env.TABLE_NAME,
-      KeyConditionExpression: 'userId = :userId AND #ym = :yearMonth',
-      IndexName: 'UserCategoryIndex',
-      ExpressionAttributeNames: {
-        '#ym': 'yearMonth',
-      },
+      KeyConditionExpression: 'userId = :userId AND yearMonth = :yearMonth',
+      IndexName: 'UserCardIndex',
       ExpressionAttributeValues: {
         ':yearMonth': yearMonth,
         ':userId': userId,
@@ -73,18 +62,17 @@ export class ReportsTransactionsCategoryRepository implements ReportsTransaction
       return null
     }
     const filteredItems = Items.filter((item) => {
-      return item.category === categoryName
+      return item.card === card
     })
-    return filteredItems[0] as ReportTransactionsCategoryType
+    return filteredItems[0] as ReportTransactionsCardType
   }
-  async updateReportValue(id: string, currentReport: UpdateReportTransactionsCategoryType): Promise<void> {
+  async updateReportValue(id: string, currentReport: UpdateReportTransactionsCardType): Promise<void> {
     const params = new UpdateCommand({
       TableName: process.env.TABLE_NAME,
       Key: { id: { S: id } },
-      UpdateExpression: 'SET value = :value, dtUpdated = :dtUpdated, quantityTransactions = :qtdTransactions',
+      UpdateExpression: 'SET value = :value dtUpdated = :dtUpdated',
       ExpressionAttributeValues: {
         ':value': currentReport.value,
-        ':qtdTransactions': currentReport.quantityTransactions,
         ':dtUpdated': new Date().toISOString(),
       },
     })

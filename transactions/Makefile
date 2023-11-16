@@ -1,4 +1,5 @@
-.PHONY: build-CreateTransactionFunction build-FindTransactionFunction build-FindByUserIdTransactionFunction build-FindAllTransactionFunction build-FindLastTransactionFunction build-SQSReportsTransactionFunction
+.PHONY: build-CreateTransactionFunction build-FindTransactionFunction build-FindByUserIdTransactionFunction build-FindAllTransactionFunction build-FindLastTransactionFunction
+.PHONY: build-SQSReportsTransactionCategoryFunction build-SQSReportsTransactionMonthlyFunction build-SQSReportsTransactionCardFunction
 .PHONY: build-RuntimeDependenciesLayer build-lambda-common 
 
 build-CreateTransactionFunction:
@@ -16,8 +17,14 @@ build-FindLastTransactionFunction:
 build-FindAllTransactionFunction:
 	$(MAKE) HANDLER=src/handlers/findAll.ts build-lambda-common
 
-build-SQSReportsTransactionFunction:
-	$(MAKE) HANDLER=src/handlers/sqsReportsTransactions.ts build-lambda-common
+build-SQSReportsTransactionMonthlyFunction:
+	$(MAKE) HANDLER=src/handlers/sqsReportsTransactionsMonthly.ts build-lambda-common
+
+build-SQSReportsTransactionCategoryFunction:
+	$(MAKE) HANDLER=src/handlers/sqsReportsTransactionsCategory.ts build-lambda-common
+
+build-SQSReportsTransactionCardFunction:
+	$(MAKE) HANDLER=src/handlers/sqsReportsTransactionsCard.ts build-lambda-common
 
 build-lambda-common:
 	npm install

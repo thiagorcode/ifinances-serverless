@@ -23,7 +23,7 @@ export const calculateUpdateValueReport = (
 
 export const calculateNewValueReport = (type: string, transactionValue: number) => {
   const recipeValue = type === TransactionTypesEnum.RECIPE ? transactionValue : 0
-  const expenseValue = type === TransactionTypesEnum.EXPENSE ? transactionValue : 0
+  const expenseValue = type === TransactionTypesEnum.EXPENSE ? -transactionValue : 0
   const totalValue = type === TransactionTypesEnum.RECIPE ? transactionValue : -transactionValue
 
   return {
