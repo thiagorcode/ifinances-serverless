@@ -1,0 +1,88 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: API de Users
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Parameters:
+  ServiceName:
+    Description: Service name
+    Type: String
+  StackName:
+    Description: Stack name
+    Type: String
+Globals:
+  Function:
+    Timeout: 15
+    Tracing: Active
+    Runtime: nodejs18.x
+    Layers:
+      - !Ref RuntimeDependenciesLayer
+  Api:
+    TracingEnabled: true
+
+Resources:
+  RuntimeDependenciesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Metadata:
+      BuildMethod: makefile 
+    Properties:
+      Description: Runtime dependencies for Lambdas
+      ContentUri: ./
+      CompatibleRuntimes:
+        - nodejs18.x
+      RetentionPolicy: Retain
+  
+  IFinancesTransactionsCategoryTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        BillingMode: PAY_PER_REQUEST
+        TableName: ifinances-transactions-category
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+
+  FindTransactionsCategoryFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/find.handler
+      FunctionName:
+        Fn::Join:  ["-", [Ref: "StackName",  "lambda", Ref: "ServiceName", "find"]]
+      Architectures:
+      - x86_64
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref IFinancesTransactionsCategoryTable
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref IFinancesTransactionsCategoryTable
+  ApplicationResourceGroup:
+    Type: AWS::ResourceGroups::Group
+    Properties:
+      Name:
+        Fn::Join:
+        - ''
+        - - ApplicationInsights-SAM-
+          - Ref: AWS::StackName
+      ResourceQuery:
+        Type: CLOUDFORMATION_STACK_1_0
+  ApplicationInsightsMonitoring:
+    Type: AWS::ApplicationInsights::Application
+    Properties:
+      ResourceGroupName:
+        Fn::Join:
+        - ''
+        - - ApplicationInsights-SAM-
+          - Ref: AWS::StackName
+      AutoConfigurationEnabled: 'true'
+    DependsOn: ApplicationResourceGroup
+
+
+Outputs:
+  FindTransactionsCategoryFunction:
+    Description: "FindTransactionsCategoryFunction Lambda Function ARN"
+    Value: !GetAtt FindTransactionsCategoryFunction.Arn

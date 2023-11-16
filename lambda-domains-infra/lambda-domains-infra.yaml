@@ -1,0 +1,59 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Infra das lambdas
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Parameters:
+  EnvName:
+    Description: Nome do ambiente
+    Type: String
+  FindUser:
+    Type: String
+    Description: FindUser Function ARN
+  CreateUser:
+    Type: String
+    Description: CreateUser Function ARN
+  FindByIdUser:
+    Type: String
+    Description: FindByIdUser Function ARN
+Resources:
+  IFinancesServicesHttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: dev
+      DefinitionBody:
+        "Fn::Transform":
+          Name: "AWS::Include"
+          Parameters:
+            Location: openapi.yaml
+  ApiGwExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - apigateway.amazonaws.com
+            Action:
+              - "sts:AssumeRole"
+      Policies:
+        - PolicyName: ApiGwExecutionPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              # - Action: sqs:SendMessage
+              #   Effect: Allow
+              #   Resource:
+              #     - Ref: OrderQueueArn
+              - Action: lambda:*
+                Effect: Allow
+                Resource:
+                  - Ref: CreateUser
+                  - Ref: FindUser
+                  - Ref: FindByIdUser
+Outputs:
+  ServerlessHttpApiId:
+    Value: !Ref IFinancesServicesHttpApi
+    Export:
+      Name: !Sub ${AWS::StackName}-ServerlessHttpApi
