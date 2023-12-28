@@ -1,0 +1,340 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: API de transação
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Parameters:
+  ServiceName:
+    Description: Service name
+    Type: String
+  StackName:
+    Description: Stack name
+    Type: String
+Globals:
+  Function:
+    Timeout: 15
+    Tracing: Active
+    Runtime: nodejs18.x
+    Architectures:
+      - x86_64
+    Layers:
+      - !Ref RuntimeDependenciesLayer
+  Api:
+    TracingEnabled: true
+
+Resources:
+  RuntimeDependenciesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Metadata:
+      BuildMethod: makefile 
+    Properties:
+      Description: Runtime dependencies for Lambdas
+      ContentUri: ./
+      CompatibleRuntimes:
+        - nodejs18.x
+      RetentionPolicy: Retain
+  
+  IFinancesTransactionsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        BillingMode: PAY_PER_REQUEST
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
+        TableName: ifinances-transactions
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: date
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+          - AttributeName: date
+            KeyType: RANGE
+        GlobalSecondaryIndexes: 
+          - IndexName: UserFindIndex
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+              - AttributeName: date
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+
+  IFinancesReportsTransactionsMonthlyTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        BillingMode: PAY_PER_REQUEST
+        TableName: ifinances-reports-transactions-monthly
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: yearMonth
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+          - AttributeName: yearMonth
+            KeyType: RANGE
+        GlobalSecondaryIndexes:
+          - IndexName: UserYearMonthIndex
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+              - AttributeName: yearMonth
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL 
+
+  IFinancesReportsTransactionsCategoryTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        BillingMode: PAY_PER_REQUEST
+        TableName: ifinances-reports-transactions-category
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: yearMonth
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: UserCategoryIndex
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+              - AttributeName: yearMonth
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL 
+  
+  IFinancesReportsTransactionsCardTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        BillingMode: PAY_PER_REQUEST
+        TableName: ifinances-reports-transactions-card
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: yearMonth
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: UserCardIndex
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+              - AttributeName: yearMonth
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL 
+
+  ReportsTransactionsMonthlyQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: sqs-transactions-reports-monthly
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt ReportsTransactionsDLQueue.Arn
+        maxReceiveCount: 5
+  ReportsTransactionsCategoryQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: sqs-transactions-reports-category
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt ReportsTransactionsDLQueue.Arn
+        maxReceiveCount: 5
+  ReportsTransactionsCardQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: sqs-transactions-reports-card
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt ReportsTransactionsDLQueue.Arn
+        maxReceiveCount: 5
+
+  ReportsTransactionsDLQueue:
+    Type: AWS::SQS::Queue
+
+  ReportsTransactionsQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Action:
+              - sqs:*
+            Effect: Allow
+            Principal:
+              AWS: !Ref AWS::AccountId
+            Resource: !GetAtt ReportsTransactionsMonthlyQueue.Arn
+      Queues:
+        - !Ref ReportsTransactionsMonthlyQueue
+
+  CreateTransactionFunction:
+    Type: AWS::Serverless::Function 
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/create.handler
+      FunctionName:
+        Fn::Join: ["-", [Ref: "StackName", "lambda", Ref: "ServiceName", "create"]]
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref IFinancesTransactionsTable
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref IFinancesTransactionsTable
+
+  DDBStreamReportsTransactionFunction:
+    Type: AWS::Serverless::Function 
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/ddbStreamReportsTransactions.handler
+      FunctionName:
+        Fn::Join: ["-", [Ref: "StackName", "lambda", Ref: "ServiceName", "ddb-stream-reports"]]
+      Environment:
+        Variables:
+          REPORTS_TRANSACTIONS_MONTHLY_QUEUE_NAME: !GetAtt ReportsTransactionsMonthlyQueue.QueueName
+          REPORTS_TRANSACTIONS_CATEGORY_QUEUE_NAME: !GetAtt ReportsTransactionsCategoryQueue.QueueName
+          REPORTS_TRANSACTIONS_CARD_QUEUE_NAME: !GetAtt ReportsTransactionsCardQueue.QueueName
+      Policies:
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt ReportsTransactionsMonthlyQueue.QueueName
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt ReportsTransactionsCategoryQueue.QueueName
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt ReportsTransactionsCardQueue.QueueName
+      Events:
+        DynamoDBEvent:
+          Type: DynamoDB
+          Properties:
+            Stream: !GetAtt IFinancesTransactionsTable.StreamArn
+            StartingPosition: LATEST
+    
+  SQSReportsTransactionMonthlyFunction:
+    Type: AWS::Serverless::Function 
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/sqsReportsTransactionsMonthly.handler
+      FunctionName:
+        Fn::Join: ["-", [Ref: "StackName", "lambda", Ref: "ServiceName", "sqs-reports-monthly"]]
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref IFinancesReportsTransactionsMonthlyTable
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref IFinancesReportsTransactionsMonthlyTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref IFinancesReportsTransactionsMonthlyTable
+      Events:
+        SQSEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt ReportsTransactionsMonthlyQueue.Arn
+
+  SQSReportsTransactionCategoryFunction:
+    Type: AWS::Serverless::Function 
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/sqsReportsTransactionsCategory.handler
+      FunctionName:
+        Fn::Join: ["-", [Ref: "StackName", "lambda", Ref: "ServiceName", "sqs-reports-category"]]
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref IFinancesReportsTransactionsCategoryTable
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref IFinancesReportsTransactionsCategoryTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref IFinancesReportsTransactionsCategoryTable
+      Events:
+        SQSEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt ReportsTransactionsCategoryQueue.Arn
+
+  SQSReportsTransactionCardFunction:
+    Type: AWS::Serverless::Function 
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/sqsReportsTransactionsCard.handler
+      FunctionName:
+        Fn::Join: ["-", [Ref: "StackName", "lambda", Ref: "ServiceName", "sqs-reports-card"]]
+      
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref IFinancesReportsTransactionsCardTable
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref IFinancesReportsTransactionsCardTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref IFinancesReportsTransactionsCardTable
+      Events:
+        SQSEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt ReportsTransactionsCardQueue.Arn
+  FindTransactionFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/find.handler
+      FunctionName:
+        Fn::Join: ["-", [Ref: "StackName", "lambda", Ref: "ServiceName", "find"]]
+      
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref IFinancesTransactionsTable
+
+  FindByUserIdTransactionFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/findByUserId.handler
+      FunctionName:
+        Fn::Join: ["-", [Ref: "StackName", "lambda", Ref: "ServiceName", "find-by-userId"]]
+      
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref IFinancesTransactionsTable
+  FindLastTransactionFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/findLast.handler
+      FunctionName:
+        Fn::Join: ["-", [Ref: "StackName", "lambda", Ref: "ServiceName", "find-last"]]
+      
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref IFinancesTransactionsTable
+  FindAllTransactionFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/findAll.handler
+      FunctionName:
+        Fn::Join: ["-", [Ref: "StackName", Ref: "ServiceName", "find-all"]]
+      
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref IFinancesTransactionsTable
+

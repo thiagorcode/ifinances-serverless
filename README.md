@@ -1,14 +1,25 @@
-# Welcome to your CDK TypeScript project
+# ifinances-services
 
-This is a blank project for CDK development with TypeScript.
+## Default Architecture
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+url: https://aws.amazon.com/pt/blogs/compute/developing-evolutionary-architecture-with-aws-lambda/
 
-## Useful commands
-
-- `npm run build` compile typescript to js
-- `npm run watch` watch for changes and compile
-- `npm run test` perform the jest unit tests
-- `cdk deploy` deploy this stack to your default AWS account/region
-- `cdk diff` compare deployed stack with current state
-- `cdk synth` emits the synthesized CloudFormation template
+my-app/
+│
+├── src/
+│ ├── tests/ # Testes unitários
+│ ├── core/
+│ │ ├── core.ts # Lógica de negócios (núcleo da aplicação)
+│ │
+│ ├── repository/
+│ │ ├── data-repository.ts # Porta de saída (interface)
+│ │ ├── dynamodb-adapter.ts # Adaptador de saída para DynamoDB
+│ │
+│ ├── lambdas/
+│ ├── store-data/
+│ │ │ ├── lambda-store-data.ts # Função Lambda para armazenar dados
+│ │ │
+│ ├── get-data/
+│ │ │ ├── lambda-get-data.ts # Função Lambda para obter dados
+│
+├── package.json # Arquivo de configuração do projeto

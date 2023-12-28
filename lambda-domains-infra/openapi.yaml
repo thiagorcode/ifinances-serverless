@@ -1,0 +1,57 @@
+openapi: 3.0.1
+info:
+  title: IFinancesServicesHttpApi
+  version: '1.0'
+servers:
+  - url: /dev
+paths:
+  /users:
+    get:
+      summary: find user
+      description: "find by id"
+      x-amazon-apigateway-integration:
+        credentials:
+          Fn::GetAtt:
+            - ApiGwExecutionRole
+            - Arn
+        type: aws_proxy
+        httpMethod: POST
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${FindUser}/invocations
+        passthroughBehavior: when_no_match
+    post:
+      summary: create a new user
+      description: "create new users"
+      responses:
+        "200":
+          description: create users request successfully handled
+        "400":
+          description: Bad reqeust
+        "500":
+          description: Server Error
+      x-amazon-apigateway-integration:
+        type: aws
+        credentials:
+          Fn::GetAtt:
+            - ApiGwExecutionRole
+            - Arn
+        httpMethod: POST
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CreateUser}/invocations
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+  /user/{id+}:
+    get:
+      x-amazon-apigateway-integration:
+        credentials: 
+          Fn::GetAtt:
+            - ApiGwExecutionRole
+            - Arn
+        type: "aws_proxy"
+        httpMethod: POST
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${FindByIdUser}/invocations
+        passthroughBehavior: "when_no_match"
+components: {}
