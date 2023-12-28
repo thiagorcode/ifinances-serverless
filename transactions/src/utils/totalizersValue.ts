@@ -1,4 +1,4 @@
-import { TransactionsTypes } from 'src/shared/types'
+import { TransactionsTypes } from '../shared/types'
 import { TransactionTypesEnum } from '../enums'
 
 type Totalizers = {

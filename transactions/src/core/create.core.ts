@@ -4,13 +4,11 @@ import { AppErrorException } from '../utils'
 import { transactionsSchema } from '../shared/schemas'
 import { randomUUID } from 'crypto'
 import { addMonths, parseISO } from 'date-fns'
-import { SQSRepository } from '../repository/sqs.repository'
 
 export class CreateCore {
   constructor(private repository: TransactionRepositoryInterface) {}
 
-  // TODO: CRiar um sqs para criar as transactions
-
+  // TODO: Criar um sqs para criar as transactions
   async execute(transaction: CreateTransactionsType) {
     console.info('init create service')
     try {
@@ -30,11 +28,9 @@ export class CreateCore {
         const transactionValidated = transactionsSchema.parse(newTransaction)
         transactions.push(transactionValidated)
       }
-      const sqsRepository = new SQSRepository()
 
       for (const transaction of transactions) {
         await this.repository.create(transaction)
-        await sqsRepository.send(transaction)
       }
     } catch (error) {
       console.error(error)

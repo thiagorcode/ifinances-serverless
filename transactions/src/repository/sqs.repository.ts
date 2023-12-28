@@ -9,11 +9,11 @@ export class SQSRepository implements SQSRepositoryInterface {
     this.clientSQS = new SQSClient()
   }
 
-  async send(transactionsCreated: CreateTransactionsType): Promise<void> {
+  async send(data: any, queueName?: string): Promise<void> {
     const command = new SendMessageCommand({
       DelaySeconds: 3,
-      MessageBody: JSON.stringify(transactionsCreated),
-      QueueUrl: process.env.REPORTS_TRANSACTIONS_QUEUE_NAME ?? '',
+      MessageBody: JSON.stringify(data),
+      QueueUrl: queueName ?? process.env.QUEUE_NAME ?? '',
     })
     console.log('send message command: ', command)
     const responseSQS = await this.clientSQS.send(command)
