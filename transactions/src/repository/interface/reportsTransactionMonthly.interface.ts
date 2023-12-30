@@ -4,6 +4,7 @@ import {
   ReportsMonthlyTypes,
   UpdateExpenseValueMonthlyType,
   UpdateRecipeValueMonthlyType,
+  UpdateDecreaseValueReportsMonthlyType,
 } from '../../shared/types'
 
 export default interface ReportsTransactionMonthlyInterface {
@@ -13,4 +14,5 @@ export default interface ReportsTransactionMonthlyInterface {
   find(query: FindReportMonthlyTypes): Promise<ReportsMonthlyTypes | null>
   updateExpenseValue(id: string, currentReport: UpdateExpenseValueMonthlyType): Promise<void>
   updateRecipeValue(id: string, currentReport: UpdateRecipeValueMonthlyType): Promise<void>
+  updateDecreaseReportValue(id: string, currentReport: UpdateDecreaseValueReportsMonthlyType): Promise<void>
 }

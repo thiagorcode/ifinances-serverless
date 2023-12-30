@@ -4,6 +4,7 @@ import { PutCommand, ScanCommand, DynamoDBDocumentClient, QueryCommand, UpdateCo
 import {
   FindReportCategoryTypes,
   ReportTransactionsCategoryType,
+  UpdateDecreaseValueReportsCategoryType,
   UpdateReportTransactionsCategoryType,
 } from '../shared/types'
 import ReportsTransactionCategoryInterface from './interface/reportsTransactionCategory.interface'
@@ -85,6 +86,20 @@ export class ReportsTransactionsCategoryRepository implements ReportsTransaction
       ExpressionAttributeValues: {
         ':value': currentReport.value,
         ':qtdTransactions': currentReport.quantityTransactions,
+        ':dtUpdated': new Date().toISOString(),
+      },
+    })
+    await this.dynamodbDocumentClient.send(params)
+  }
+
+  async updateDecreaseReportValue(id: string, currentReport: UpdateDecreaseValueReportsCategoryType): Promise<void> {
+    const params = new UpdateCommand({
+      TableName: process.env.TABLE_NAME,
+      Key: { id: { S: id } },
+      UpdateExpression: 'SET value = :value quantityTransactions = :quantityTransactions dtUpdated = :dtUpdated',
+      ExpressionAttributeValues: {
+        ':quantityTransactions': currentReport.quantityTransactions,
+        ':value': currentReport.value,
         ':dtUpdated': new Date().toISOString(),
       },
     })

@@ -1,7 +1,12 @@
 import { DynamoDB } from '@aws-sdk/client-dynamodb'
 import { PutCommand, ScanCommand, DynamoDBDocumentClient, QueryCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb'
 
-import { ReportTransactionsCardType, FindReportCardTypes, UpdateReportTransactionsCardType } from '../shared/types'
+import {
+  ReportTransactionsCardType,
+  FindReportCardTypes,
+  UpdateReportTransactionsCardType,
+  UpdateDecreaseValueReportsCardType,
+} from '../shared/types'
 import ReportsTransactionCardInterface from './interface/reportsTransactionCard.interface'
 
 export class ReportsTransactionsCardRepository implements ReportsTransactionCardInterface {
@@ -72,6 +77,20 @@ export class ReportsTransactionsCardRepository implements ReportsTransactionCard
       Key: { id: { S: id } },
       UpdateExpression: 'SET value = :value dtUpdated = :dtUpdated',
       ExpressionAttributeValues: {
+        ':value': currentReport.value,
+        ':dtUpdated': new Date().toISOString(),
+      },
+    })
+    await this.dynamodbDocumentClient.send(params)
+  }
+
+  async updateDecreaseReportValue(id: string, currentReport: UpdateDecreaseValueReportsCardType): Promise<void> {
+    const params = new UpdateCommand({
+      TableName: process.env.TABLE_NAME,
+      Key: { id: { S: id } },
+      UpdateExpression: 'SET value = :value quantityTransactions = :quantityTransactions dtUpdated = :dtUpdated',
+      ExpressionAttributeValues: {
+        ':quantityTransactions': currentReport.quantityTransactions,
         ':value': currentReport.value,
         ':dtUpdated': new Date().toISOString(),
       },
