@@ -1,5 +1,6 @@
 .PHONY: build-CreateTransactionFunction build-FindTransactionFunction build-FindByUserIdTransactionFunction build-FindAllTransactionFunction build-FindLastTransactionFunction
 .PHONY: build-SQSReportsTransactionCategoryFunction build-DDBStreamReportsTransactionFunction build-SQSReportsTransactionCardFunction build-SQSReportsTransactionMonthlyFunction
+.PHONY: build-UpdateTransactionFunction build-UpdateTransactionFunction
 .PHONY: build-RuntimeDependenciesLayer build-lambda-common 
 
 build-CreateTransactionFunction:
@@ -16,6 +17,12 @@ build-FindLastTransactionFunction:
 
 build-FindAllTransactionFunction:
 	$(MAKE) HANDLER=src/handlers/findAll.ts build-lambda-common
+
+build-DeleteTransactionFunction:
+	$(MAKE) HANDLER=src/handlers/delete.ts build-lambda-common
+
+build-UpdateTransactionFunction:
+	$(MAKE) HANDLER=src/handlers/update.ts build-lambda-common
 
 build-DDBStreamReportsTransactionFunction:
 	$(MAKE) HANDLER=src/handlers/ddbStreamReportsTransactions.ts build-lambda-common

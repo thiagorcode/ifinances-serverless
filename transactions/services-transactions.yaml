@@ -274,7 +274,6 @@ Resources:
       Handler: dist/handlers/sqsReportsTransactionsCard.handler
       FunctionName:
         Fn::Join: ["-", [Ref: "StackName", "lambda", Ref: "ServiceName", "sqs-reports-card"]]
-      
       Environment:
         Variables:
           TABLE_NAME: !Ref IFinancesReportsTransactionsCardTable
@@ -296,7 +295,6 @@ Resources:
       Handler: dist/handlers/find.handler
       FunctionName:
         Fn::Join: ["-", [Ref: "StackName", "lambda", Ref: "ServiceName", "find"]]
-      
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref IFinancesTransactionsTable
@@ -309,7 +307,6 @@ Resources:
       Handler: dist/handlers/findByUserId.handler
       FunctionName:
         Fn::Join: ["-", [Ref: "StackName", "lambda", Ref: "ServiceName", "find-by-userId"]]
-      
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref IFinancesTransactionsTable
@@ -321,7 +318,6 @@ Resources:
       Handler: dist/handlers/findLast.handler
       FunctionName:
         Fn::Join: ["-", [Ref: "StackName", "lambda", Ref: "ServiceName", "find-last"]]
-      
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref IFinancesTransactionsTable
@@ -333,8 +329,31 @@ Resources:
       Handler: dist/handlers/findAll.handler
       FunctionName:
         Fn::Join: ["-", [Ref: "StackName", Ref: "ServiceName", "find-all"]]
-      
       Policies:
         - DynamoDBReadPolicy:
+            TableName: !Ref IFinancesTransactionsTable
+
+  DeleteTransactionFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/delete.handler
+      FunctionName:
+        Fn::Join: ["-", [Ref: "StackName", Ref: "ServiceName", "delete"]]
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref IFinancesTransactionsTable
+
+  UpdateTransactionFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/update.handler
+      FunctionName:
+        Fn::Join: ["-", [Ref: "StackName", Ref: "ServiceName", "update"]]
+      Policies:
+        - DynamoDBWritePolicy:
             TableName: !Ref IFinancesTransactionsTable
 

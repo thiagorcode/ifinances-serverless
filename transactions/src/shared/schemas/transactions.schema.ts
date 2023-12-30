@@ -21,6 +21,7 @@ export const transactionsSchema = z
     currentInstallment: z.number().optional().default(1),
     numberInstallments: z.number().max(30).default(1),
     isPaid: z.boolean(),
+    isDeleted: z.boolean().default(false),
     type: z.string(),
     specification: z.string().optional().default(''),
     card: cardValidate.optional(),

@@ -6,6 +6,7 @@ import {
   GetCommand,
   QueryCommand,
   UpdateCommand,
+  DeleteCommand,
 } from '@aws-sdk/lib-dynamodb'
 
 import TransactionRepositoryInterface from './interface/transactionRepository.interface'
@@ -154,12 +155,34 @@ export class TransactionRepository implements TransactionRepositoryInterface {
     const params = new UpdateCommand({
       TableName: process.env.TABLE_NAME,
       Key: { id },
-      UpdateExpression: 'SET description = :description, value = :value, categoryId = :categoryId',
+      UpdateExpression:
+        'SET description = :description, value = :value, year = :year, yearMonth = :yearMonth, categoryId = :categoryId, dtUpdated = :dtUpdated',
       ExpressionAttributeValues: {
         ':description': transaction.description,
         ':value': transaction.value,
         ':category': transaction.category,
+        ':yearMonth': transaction.yearMonth,
+        ':year': transaction.year,
+        ':dtUpdated': new Date().toISOString(),
       },
+    })
+    await this.dynamodbDocumentClient.send(params)
+  }
+
+  async delete(id: string): Promise<void> {
+    // TODO:
+    // const params = new UpdateCommand({
+    //   TableName: process.env.TABLE_NAME,
+    //   Key: { id },
+    //   UpdateExpression: 'SET isDeleted = :isDeleted, dtUpdated = :dtUpdated',
+    //   ExpressionAttributeValues: {
+    //     ':isDeleted': true,
+    //     ':dtUpdated': new Date().toISOString(),
+    //   },
+    // })
+    const params = new DeleteCommand({
+      TableName: process.env.TABLE_NAME,
+      Key: { id },
     })
     await this.dynamodbDocumentClient.send(params)
   }
