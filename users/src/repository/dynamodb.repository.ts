@@ -1,5 +1,5 @@
 import { DynamoDB, ScanCommand } from '@aws-sdk/client-dynamodb'
-import { PutCommand, DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb'
+import { PutCommand, DynamoDBDocumentClient, GetCommand, QueryCommand } from '@aws-sdk/lib-dynamodb'
 
 import DynamoDBRepositoryInterface from './interface/dynamodbRepository.interface'
 import { UsersTypes } from '../shared/types'
@@ -30,14 +30,29 @@ export class DynamoDBRepository implements DynamoDBRepositoryInterface {
     await this.dynamodbDocumentClient.send(params)
   }
 
-  async findById(id: string): Promise<UsersTypes> {
+  async findById(id: string): Promise<UsersTypes | undefined> {
     const params = new GetCommand({
       TableName: process.env.TABLE_NAME,
       Key: { id },
     })
 
     const result = await this.dynamodbDocumentClient.send(params)
-    return result.Item as UsersTypes
+    return result.Item as UsersTypes | undefined
+  }
+
+  async findByUsername(username: string): Promise<UsersTypes | null> {
+    const params = new QueryCommand({
+      TableName: process.env.TABLE_NAME,
+      KeyConditionExpression: 'username = :username',
+      ExpressionAttributeValues: {
+        ':username': username,
+      },
+    })
+    const result = await this.dynamodbDocumentClient.send(params)
+    if (!result.Items) {
+      return null
+    }
+    return result.Items[0] as UsersTypes
   }
 
   async findAll(): Promise<UsersTypes[]> {

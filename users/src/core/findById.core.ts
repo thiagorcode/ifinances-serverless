@@ -1,7 +1,6 @@
 import DynamoDBRepositoryInterface from '../repository/interface/dynamodbRepository.interface'
 import { AppErrorException } from '../utils'
 
-// TODO: Aplicar injenção de depedências
 export class FindByIdCore {
   constructor(private dataRepository: DynamoDBRepositoryInterface) {}
 

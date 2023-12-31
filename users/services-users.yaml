@@ -80,6 +80,25 @@ Resources:
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref IFinancesUsersTable
+  AuthLoginFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/authLogin.handler
+      FunctionName:
+        Fn::Join:
+        - '-'
+        - - Ref: StackName
+          - lambda-auth-login
+      Architectures:
+      - x86_64
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref IFinancesUsersTable
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref IFinancesUsersTable
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
     Properties:
