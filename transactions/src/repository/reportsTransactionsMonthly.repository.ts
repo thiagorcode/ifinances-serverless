@@ -111,9 +111,9 @@ export class ReportsTransactionsMonthlyRepository implements ReportsTransactionM
   async updateDecreaseReportValue(id: string, currentReport: UpdateDecreaseValueReportsMonthlyType): Promise<void> {
     const params = new UpdateCommand({
       TableName: process.env.TABLE_NAME,
-      Key: { id: { S: id } },
+      Key: { id: id },
       UpdateExpression:
-        'SET value = :value recipeValue = :recipeValue expenseValue = :expenseValue total = :total quantityTransactions = :quantityTransactions dtUpdated = :dtUpdated',
+        'SET recipeValue = :recipeValue expenseValue = :expenseValue total = :total quantityTransactions = :quantityTransactions dtUpdated = :dtUpdated',
       ExpressionAttributeValues: {
         ':quantityTransactions': currentReport.quantityTransactions,
         ':recipeValue': currentReport.recipeValue,

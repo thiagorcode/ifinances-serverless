@@ -81,10 +81,14 @@ export class ReportsTransactionsCategoryRepository implements ReportsTransaction
   async updateReportValue(id: string, currentReport: UpdateReportTransactionsCategoryType): Promise<void> {
     const params = new UpdateCommand({
       TableName: process.env.TABLE_NAME,
-      Key: { id: { S: id } },
-      UpdateExpression: 'SET value = :value, dtUpdated = :dtUpdated, quantityTransactions = :qtdTransactions',
+      Key: { id: id },
+      UpdateExpression:
+        'SET #curr_value = :current_value, quantityTransactions = :qtdTransactions, dtUpdated = :dtUpdated',
+      ExpressionAttributeNames: {
+        '#curr_value': 'value',
+      },
       ExpressionAttributeValues: {
-        ':value': currentReport.value,
+        ':current_value': currentReport.value,
         ':qtdTransactions': currentReport.quantityTransactions,
         ':dtUpdated': new Date().toISOString(),
       },
@@ -95,7 +99,7 @@ export class ReportsTransactionsCategoryRepository implements ReportsTransaction
   async updateDecreaseReportValue(id: string, currentReport: UpdateDecreaseValueReportsCategoryType): Promise<void> {
     const params = new UpdateCommand({
       TableName: process.env.TABLE_NAME,
-      Key: { id: { S: id } },
+      Key: { id: id },
       UpdateExpression: 'SET value = :value quantityTransactions = :quantityTransactions dtUpdated = :dtUpdated',
       ExpressionAttributeValues: {
         ':quantityTransactions': currentReport.quantityTransactions,

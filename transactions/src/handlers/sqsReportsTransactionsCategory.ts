@@ -12,7 +12,7 @@ export const handler = async (event: SQSEvent): Promise<PromiseSettledResult<voi
     console.log(`MessageId: ${record.messageId} `)
     // usar outra coisa sem ser JSON.parse
     const body: SendTransactionsReportsSQSType = JSON.parse(record.body)
-    console.log(`Body: ${body} `)
+    console.log(`Body: ${JSON.stringify(body)} `)
     if (body.eventType === 'REMOVE') {
       await decreaseValueReportsCategoryCore.execute(body.oldItem)
       return

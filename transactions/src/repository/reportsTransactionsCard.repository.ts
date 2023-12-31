@@ -74,10 +74,15 @@ export class ReportsTransactionsCardRepository implements ReportsTransactionCard
   async updateReportValue(id: string, currentReport: UpdateReportTransactionsCardType): Promise<void> {
     const params = new UpdateCommand({
       TableName: process.env.TABLE_NAME,
-      Key: { id: { S: id } },
-      UpdateExpression: 'SET value = :value dtUpdated = :dtUpdated',
+      Key: { id },
+      UpdateExpression:
+        'SET #curr_value = :currentValue, quantityTransactions = :qtdTransactions, dtUpdated = :dtUpdated',
+      ExpressionAttributeNames: {
+        '#curr_value': 'value',
+      },
       ExpressionAttributeValues: {
-        ':value': currentReport.value,
+        ':currentValue': currentReport.value,
+        ':quantityTransactions': currentReport.quantityTransactions,
         ':dtUpdated': new Date().toISOString(),
       },
     })
@@ -87,7 +92,7 @@ export class ReportsTransactionsCardRepository implements ReportsTransactionCard
   async updateDecreaseReportValue(id: string, currentReport: UpdateDecreaseValueReportsCardType): Promise<void> {
     const params = new UpdateCommand({
       TableName: process.env.TABLE_NAME,
-      Key: { id: { S: id } },
+      Key: { id: id },
       UpdateExpression: 'SET value = :value quantityTransactions = :quantityTransactions dtUpdated = :dtUpdated',
       ExpressionAttributeValues: {
         ':quantityTransactions': currentReport.quantityTransactions,
