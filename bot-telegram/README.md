@@ -1,4 +1,4 @@
-# lambda-services-users
+# lambda-services-bot-telegram
 
 ## Description
 
