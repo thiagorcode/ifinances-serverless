@@ -3,18 +3,13 @@ Transform: AWS::Serverless-2016-10-31
 Description: API de Users
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
-Parameters:
-  ServiceName:
-    Description: Service name
-    Type: String
-  StackName:
-    Description: Stack name
-    Type: String
 Globals:
   Function:
     Timeout: 15
     Tracing: Active
     Runtime: nodejs18.x
+    Architectures:
+      - x86_64
     Layers:
       - !Ref RuntimeDependenciesLayer
   Api:
@@ -53,10 +48,8 @@ Resources:
       FunctionName:
         Fn::Join:
         - '-'
-        - - Ref: StackName
-          - lambda-user-create
-      Architectures:
-      - x86_64
+        - - Ref: AWS::StackName
+          - create
       Environment:
         Variables:
           TABLE_NAME: !Ref IFinancesUsersTable
@@ -73,10 +66,8 @@ Resources:
       FunctionName:
         Fn::Join:
         - '-'
-        - - Ref: StackName
-          - lambda-user-find-by-id
-      Architectures:
-      - x86_64
+        - - Ref: AWS::StackName
+          - find-by-id
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref IFinancesUsersTable
@@ -89,10 +80,8 @@ Resources:
       FunctionName:
         Fn::Join:
         - '-'
-        - - Ref: StackName
-          - lambda-auth-login
-      Architectures:
-      - x86_64
+        - - Ref: AWS::StackName
+          - auth-login
       Environment:
         Variables:
           TABLE_NAME: !Ref IFinancesUsersTable
