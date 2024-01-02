@@ -1,7 +1,7 @@
 {
-  "name": "ifinances-service-users",
+  "name": "ifinances-service-bot-telegram",
   "version": "0.0.1",
-  "description": "Users Crud",
+  "description": "bot telegram actions",
   "main": "app.js",
   "repository": "https://github.com/awslabs/aws-sam-cli/tree/develop/samcli/local/init/templates/cookiecutter-aws-sam-hello-nodejs",
   "author": "SAM CLI",
@@ -9,7 +9,7 @@
   "scripts": {
     "clear:dist": "rm -rf dist",
     "clear:dist:tests": "rm -rf dist/__tests__",
-    "deploy:dev": "sam build && sam deploy",
+    "deploy:dev": "sam build -t services-bot-telegram.yaml && sam deploy --on-failure DELETE --region sa-east-1 --config-env dev -t services-bot-telegram.yaml",
     "build": "npm run clear:dist && node_modules/typescript/bin/tsc && npm run clear:dist:tests",
     "unit": "jest",
     "lint": "eslint '*.ts' --quiet --fix",
@@ -20,7 +20,7 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.438.0",
     "@aws-sdk/lib-dynamodb": "^3.438.0",
-    "aws-sdk": "^2.1483.0",
+    "axios": "^1.6.3",
     "destr": "^2.0.2",
     "esbuild": "^0.14.14",
     "zod": "^3.22.4"

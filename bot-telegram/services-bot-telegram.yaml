@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: API do Bot ifinancesBot
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 10
+    Tracing: Active
+    Runtime: nodejs18.x
+    Layers:
+      - !Ref RuntimeDependenciesLayer
+  Api:
+    TracingEnabled: true
+
+Resources:
+  RuntimeDependenciesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Metadata:
+      BuildMethod: makefile 
+    Properties:
+      Description: Runtime dependencies for Lambdas
+      ContentUri: ./
+      CompatibleRuntimes:
+        - nodejs18.x
+      RetentionPolicy: Retain
+  
+  BotTelegramFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/index.handler
+      FunctionName:
+        Fn::Join:
+        - '-'
+        - - Ref: AWS::StackName
+          - command
+      Architectures:
+      - x86_64

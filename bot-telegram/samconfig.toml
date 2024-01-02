@@ -1,10 +1,22 @@
 version = 0.1
-[default]
-[default.deploy]
-[default.deploy.parameters]
-stack_name = "ifinances-users"
+[dev]
+[dev.deploy]
+[dev.deploy.parameters]
+stack_name = "cfstack-ifinances-dev-bot-telegram"
+s3_prefix = "cfstack-ifinances-dev-bot-telegram"
 s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-1v5lyb89zw0sl"
-s3_prefix = "ifinances-users"
+region = "sa-east-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+disable_rollback = true
+image_repositories = []
+
+[prod]
+[prod.deploy]
+[prod.deploy.parameters]
+stack_name = "cfstack-ifinances-prod-bot-telegram"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-1v5lyb89zw0sl"
+s3_prefix = "cfstack-ifinances-prod-bot-telegram"
 region = "sa-east-1"
 confirm_changeset = true
 capabilities = "CAPABILITY_IAM"
