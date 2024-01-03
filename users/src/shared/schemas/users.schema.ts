@@ -1,6 +1,12 @@
 import * as crypto from 'crypto'
 import * as z from 'zod'
 
+const botPreferences = z.object({
+  id: z.string().default(crypto.randomUUID()),
+  username: z.string(),
+  firstAccess: z.boolean().default(true),
+})
+
 export const usersSchema = z
   .object({
     id: z.string().default(crypto.randomUUID()),
@@ -9,6 +15,7 @@ export const usersSchema = z
     username: z.string(),
     email: z.string(),
     password: z.string(),
+    botPreferences: z.array(botPreferences).optional(),
     isActive: z.boolean().default(true),
     isPasswordChange: z.boolean().default(false),
     dtCreated: z.string().default(new Date().toISOString()),

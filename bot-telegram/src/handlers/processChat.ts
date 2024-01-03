@@ -1,20 +1,35 @@
 import { destr } from 'destr'
 import { APIGatewayProxyEvent, Callback, Context } from 'aws-lambda'
-import { ProcessMessageCore } from '../core/proccessMessage.core'
 import { EventTelegramType } from '../shared/types'
+import { UserRepository } from '../repository/user.repository'
+import { extractTextFromEvent } from '../utils'
+import { FindUserByBotUsernameCore, ProcessMessageCore, SendMessageTelegramCore } from '../core'
+import { errorMessages } from '../shared/messages/error'
 
 export const handler = async (event: APIGatewayProxyEvent, context: Context, callback: Callback) => {
-  // adicionar uma tabela de evento
+  console.info('Event:', event)
+  const body = destr<EventTelegramType>(event.body)
+  console.info('Body:', body)
+  const { chatId, message } = extractTextFromEvent(body)
+  // Repository
+  const userRepository = new UserRepository()
+
+  // Core
+  const sendMessageTelegramCore = new SendMessageTelegramCore(chatId)
+  const findUserByBotUsernameCore = new FindUserByBotUsernameCore(userRepository)
+  const processMessageCore = new ProcessMessageCore()
+
   try {
-    console.debug('Event:', event)
-    const body = destr<EventTelegramType>(event.body)
-
-    console.debug('Body:', body)
-    const processMessageCore = new ProcessMessageCore()
-
-    await processMessageCore.execute(body)
+    const user = await findUserByBotUsernameCore.execute(body.message.chat.username)
+    console.info('user', user)
+    await processMessageCore.execute({
+      message,
+      sendMessageTelegramCore,
+      user,
+    })
     callback(null)
   } catch (error) {
+    await sendMessageTelegramCore.execute(errorMessages['1'])
     callback('invalid')
   }
 }

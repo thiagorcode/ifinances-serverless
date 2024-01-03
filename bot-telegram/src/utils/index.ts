@@ -1,3 +1,3 @@
 export * from './parseCommand'
-export * from './sendMessageTelegram'
+export * from './sendMessageToTelegram'
 export * from './extractTextFromEvent'

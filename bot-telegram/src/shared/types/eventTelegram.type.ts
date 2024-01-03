@@ -5,10 +5,11 @@ export type EventTelegramType = {
       id: string
     }
   }
-  message?: {
+  message: {
     text?: string
-    chat?: {
+    chat: {
       id: string
+      username: string
     }
   }
 }
