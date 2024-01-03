@@ -19,3 +19,8 @@ build-RuntimeDependenciesLayer:
 	rm -rf "$(ARTIFACTS_DIR)/nodejs/node_modules/aws-sdk"
 
 
+build-deploy-common:
+	sam build -t services-bot-telegram.yml
+	cp -r ./samconfig.toml .aws-sam/build
+	$(eval PARAMS := $(shell cat "params.$(env).json" | jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]'))
+	cd .aws-sam/build && sam deploy --on-failure DELETE --region sa-east-1 --parameter-overrides $(PARAMS) --config-env dev
