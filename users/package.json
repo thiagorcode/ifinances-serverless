@@ -9,8 +9,7 @@
   "scripts": {
     "clear:dist": "rm -rf dist",
     "clear:dist:tests": "rm -rf dist/__tests__",
-    "build:deploy": "sam build -t services-users.yaml",
-    "deploy:dev": "npm run build:deploy && cd .aws-sam/build && sam deploy --on-failure DELETE --region sa-east-1 --config-file ../../samconfig.toml --config-env dev",
+    "deploy:dev": "make build-deploy-common",
     "build": "npm run clear:dist && node_modules/typescript/bin/tsc && npm run clear:dist:tests",
     "unit": "jest",
     "lint": "eslint '*.ts' --quiet --fix",

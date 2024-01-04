@@ -24,4 +24,8 @@ build-RuntimeDependenciesLayer:
 	rm "$(ARTIFACTS_DIR)/nodejs/package.json" # to avoid rebuilding when changes aren't related to dependencies
 	rm -rf "$(ARTIFACTS_DIR)/nodejs/node_modules/aws-sdk"
 
+build-deploy-common:
+	sam build -t services-users.yml
+	cp -r ./samconfig.toml .aws-sam/build
+	cd .aws-sam/build && sam deploy --on-failure DELETE --region sa-east-1 --config-env dev
 

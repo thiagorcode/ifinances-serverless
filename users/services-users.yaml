@@ -31,7 +31,11 @@ Resources:
       Type: AWS::DynamoDB::Table
       Properties:
         BillingMode: "PAY_PER_REQUEST"
-        TableName: ifinances-users
+        TableName: 
+          Fn::Join:
+            - '-'
+            - - Ref: AWS::StackName
+              - users
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S

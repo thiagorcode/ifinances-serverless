@@ -16,5 +16,5 @@ export const parseCommand = (message: string) => {
   }
   console.debug('return command', command)
 
-  return command
+  return { command, cmd, tokens }
 }

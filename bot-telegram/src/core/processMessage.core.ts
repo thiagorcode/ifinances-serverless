@@ -9,12 +9,33 @@ export class ProcessMessageCore {
     try {
       if (!user) {
         await sendMessageTelegramCore.execute(errorMessages.user_not_found)
+        return
       }
-      if (!message) throw new Error('Invalid Command')
       const messageCommands = parseCommand(message)
+      if (!messageCommands?.cmd) {
+        console.error('Invalid Command')
+        await sendMessageTelegramCore.execute(errorMessages.command_not_found)
+        return
+      }
+
+      const attributes = messageCommands.tokens.filter((token) => token !== '-')
+
+      if (attributes.length < 4) {
+        await sendMessageTelegramCore.execute(errorMessages.command_invalid)
+        return
+      }
+      return {
+        date: attributes[0],
+        category: attributes[1],
+        card: attributes[2],
+        value: attributes[3],
+        description: attributes[4] ?? '',
+        userId: user.id,
+        type: messageCommands?.cmd.toLowerCase() === '/adicionarreceita' ? '+' : '-',
+      }
     } catch (error: any) {
       console.error('err', error)
-      throw new Error(error?.message ?? 'Comando inválidos')
+      throw new Error(error?.message ?? errorMessages.command_invalid)
     }
   }
 }
