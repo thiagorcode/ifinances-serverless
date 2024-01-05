@@ -8,13 +8,13 @@ import { addMonths, parseISO } from 'date-fns'
 export class CreateCore {
   constructor(private repository: TransactionRepositoryInterface) {}
 
-  // TODO: Criar um sqs para criar as transactions
   async execute(transaction: CreateTransactionsType) {
     console.info('init create service')
     try {
       const transactionParsed = transactionsSchema.parse(transaction)
       const numberInstallments = transactionParsed.numberInstallments || 1
       const transactions: CreateTransactionsType[] = []
+      // TODO: Encaminhar para o SQS
       for (let i = 1; i <= numberInstallments; i++) {
         const newTransaction: CreateTransactionsType = {
           ...transactionParsed,

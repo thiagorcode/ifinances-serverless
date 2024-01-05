@@ -3,4 +3,6 @@ export const errorMessages = {
   user_not_found: 'Usuário não autorizado!',
   command_not_found: 'Comando não encontrado!',
   command_invalid: 'Comandos inválidos!',
+  transaction_invalid:
+    'Erro ao adicionar transação. Tente novamente com o padrão [data] - [categoria] - [cartão] - [value] - [descrição]',
 }

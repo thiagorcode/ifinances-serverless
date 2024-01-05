@@ -9,18 +9,20 @@ import { UserRepositoryInterface } from './interface/userRepository.interface'
 export class UserRepository implements UserRepositoryInterface {
   private dynamodbClient: DynamoDB
   private dynamodbDocumentClient: DynamoDBDocumentClient
+  private tableName: string
 
   constructor() {
     this.dynamodbClient = new DynamoDB()
     this.dynamodbDocumentClient = DynamoDBDocumentClient.from(this.dynamodbClient)
+    this.tableName = process.env.TABLE_USER_BOT_PREFERENCES_NAME ?? ''
   }
 
   async findUserByBotUsername(userTelegram: string): Promise<UsersTypes | null> {
     const params = new ScanCommand({
-      TableName: process.env.TABLE_USER_NAME,
-      FilterExpression: 'contains(botPreferences, :botUsername)',
+      TableName: this.tableName,
+      FilterExpression: 'username = :username',
       ExpressionAttributeValues: {
-        ':botUsername': { username: { S: userTelegram } },
+        ':username': userTelegram,
       },
     })
     const result = await this.dynamodbDocumentClient.send(params)

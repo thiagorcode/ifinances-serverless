@@ -26,12 +26,6 @@ export class TransactionRepository implements TransactionRepositoryInterface {
   constructor() {
     this.dynamodbClient = new DynamoDB()
     this.dynamodbDocumentClient = DynamoDBDocumentClient.from(this.dynamodbClient)
-    //  {
-    //   endpoint: 'http://localhost:4569',
-    //   region: 'sa-east-1',
-    //   accessKeyId: 'local',
-    //   secretAccessKey: 'local',
-    // }
   }
 
   async create(data: CreateTransactionsType): Promise<void> {
