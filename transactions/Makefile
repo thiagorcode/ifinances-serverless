@@ -36,6 +36,9 @@ build-SQSReportsTransactionCategoryFunction:
 build-SQSReportsTransactionCardFunction:
 	$(MAKE) HANDLER=src/handlers/sqsReportsTransactionsCard.ts build-lambda-common
 
+build-SQSCreateTransactionFunction:
+	$(MAKE) HANDLER=src/handlers/sqsCreateTransaction.ts build-lambda-common
+
 build-lambda-common:
 	npm install
 	rm -rf dist
