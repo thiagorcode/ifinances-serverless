@@ -28,21 +28,40 @@ Resources:
       RetentionPolicy: Retain
   
   IFinancesUsersTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        BillingMode: "PAY_PER_REQUEST"
-        TableName: 
-          Fn::Join:
-            - '-'
-            - - Ref: AWS::StackName
-              - users
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: "PAY_PER_REQUEST"
+      TableName: 
+        Fn::Join:
+          - '-'
+          - - Ref: AWS::StackName
+            - table
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: userId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+        - AttributeName: userId
+          KeyType: RANGE
 
+  IFinancesUsersBotPreferencesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: "PAY_PER_REQUEST"
+      TableName: 
+        Fn::Join:
+          - '-'
+          - - Ref: AWS::StackName
+            - bot-preferences-table
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
   CreateUserFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Metadata:
