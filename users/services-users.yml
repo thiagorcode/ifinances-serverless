@@ -39,13 +39,11 @@ Resources:
       AttributeDefinitions:
         - AttributeName: id
           AttributeType: S
-        - AttributeName: userId
-          AttributeType: S
+        
       KeySchema:
         - AttributeName: id
           KeyType: HASH
-        - AttributeName: userId
-          KeyType: RANGE
+        
 
   IFinancesUsersBotPreferencesTable:
     Type: AWS::DynamoDB::Table
@@ -59,9 +57,13 @@ Resources:
       AttributeDefinitions:
         - AttributeName: id
           AttributeType: S
+        - AttributeName: userId
+          AttributeType: S
       KeySchema:
         - AttributeName: id
           KeyType: HASH
+        - AttributeName: userId
+          KeyType: RANGE
   CreateUserFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Metadata:
@@ -131,13 +133,3 @@ Resources:
           - Ref: AWS::StackName
       AutoConfigurationEnabled: 'true'
     DependsOn: ApplicationResourceGroup
-
-
-Outputs:
-  FindByIdUser:
-    Description: "FindById Lambda Function ARN"
-    Value: !GetAtt FindByIdUserFunction.Arn
-
-  CreateUser:
-    Description: "CreateUser Lambda Function ARN"
-    Value: !GetAtt CreateUserFunction.Arn
