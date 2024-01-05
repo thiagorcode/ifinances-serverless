@@ -4,7 +4,7 @@ Description: API do Bot ifinancesBot
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Parameters:
-  TableUserName:
+  TableUserBotPreferencesName:
     Type: String
 
 Globals:
@@ -43,7 +43,7 @@ Resources:
         - - Ref: AWS::StackName
       Environment:
         Variables:
-          TABLE_USER_NAME: !Ref TableUserName
+          TABLE_USER_BOT_PREFERENCES_NAME: !Ref TableUserBotPreferencesName
       Policies:
         - DynamoDBReadPolicy:
-            TableName: !Ref TableUserName
+            TableName: !Ref TableUserBotPreferencesName
