@@ -6,7 +6,8 @@ Description: API do Bot ifinancesBot
 Parameters:
   TableUserBotPreferencesName:
     Type: String
-
+  CreateTransactionsQueueName:
+    Type: String
 Globals:
   Function:
     Timeout: 10
@@ -44,6 +45,9 @@ Resources:
       Environment:
         Variables:
           TABLE_USER_BOT_PREFERENCES_NAME: !Ref TableUserBotPreferencesName
+          CREATE_TRANSACTION_QUEUE_NAME: !Ref CreateTransactionsQueueName
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref TableUserBotPreferencesName
+        - SQSSendMessagePolicy:
+            QueueName: !Ref CreateTransactionsQueueName

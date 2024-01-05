@@ -1,3 +1,4 @@
 {
-  "TableUserName": ""
+  "TableUserName": "",
+  "CreateTransactionsQueueName": ""
 }

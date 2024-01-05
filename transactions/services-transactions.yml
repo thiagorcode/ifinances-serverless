@@ -34,7 +34,6 @@ Resources:
         StreamSpecification:
           StreamViewType: NEW_AND_OLD_IMAGES
         TableName: 
-          TableName: 
           Fn::Join:
             - '-'
             - - Ref: AWS::StackName
@@ -155,41 +154,48 @@ Resources:
     Properties:
       QueueName: 
         Fn::Join:
-        - '-'
-        - - Ref: AWS::StackName
-          - sqs-reports-monthly
+          - '-'
+          - - Ref: AWS::StackName
+            - sqs-reports-monthly
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt ReportsTransactionsDLQueue.Arn
+        maxReceiveCount: 6
+
   ReportsTransactionsCategoryQueue:
     Type: AWS::SQS::Queue
     Properties:
       QueueName:
         Fn::Join:
-        - '-'
-        - - Ref: AWS::StackName
-          - sqs-reports-category
+          - '-'
+          - - Ref: AWS::StackName
+            - sqs-reports-category
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt ReportsTransactionsDLQueue.Arn
+        maxReceiveCount: 6
+
   ReportsTransactionsCardQueue:
     Type: AWS::SQS::Queue
     Properties:
       QueueName: 
         Fn::Join:
-        - '-'
-        - - Ref: AWS::StackName
-          - sqs-reports-card
+          - '-'
+          - - Ref: AWS::StackName
+            - sqs-reports-card
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt ReportsTransactionsDLQueue.Arn
+        maxReceiveCount: 6
   CreateTransactionsQueue:
     Type: AWS::SQS::Queue
     Properties:
       QueueName: 
         Fn::Join:
-        - '-'
-        - - Ref: AWS::StackName
-          - sqs-create
+          - '-'
+          - - Ref: AWS::StackName
+            - sqs-create
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt ReportsTransactionsDLQueue.Arn
+        maxReceiveCount: 6
+
   ReportsTransactionsDLQueue:
     Type: AWS::SQS::Queue
 
@@ -216,9 +222,9 @@ Resources:
       Handler: dist/handlers/create.handler
       FunctionName:
         Fn::Join:
-        - '-'
-        - - Ref: AWS::StackName
-          - create
+          - '-'
+          - - Ref: AWS::StackName
+            - create
       Environment:
         Variables:
           TABLE_NAME: !Ref IFinancesTransactionsTable
@@ -234,9 +240,9 @@ Resources:
       Handler: dist/handlers/ddbStreamReportsTransactions.handler
       FunctionName:
         Fn::Join:
-        - '-'
-        - - Ref: AWS::StackName
-          - ddb-stream-reports
+          - '-'
+          - - Ref: AWS::StackName
+            - ddb-stream-reports
       Environment:
         Variables:
           REPORTS_TRANSACTIONS_MONTHLY_QUEUE_NAME: !GetAtt ReportsTransactionsMonthlyQueue.QueueName
@@ -264,9 +270,9 @@ Resources:
       Handler: dist/handlers/sqsReportsTransactionsMonthly.handler
       FunctionName:
         Fn::Join:
-        - '-'
-        - - Ref: AWS::StackName
-          - sqs-reports-monthly
+          - '-'
+          - - Ref: AWS::StackName
+            - sqs-reports-monthly
       Environment:
         Variables:
           TABLE_NAME: !Ref IFinancesReportsTransactionsMonthlyTable
@@ -289,9 +295,9 @@ Resources:
       Handler: dist/handlers/sqsReportsTransactionsCategory.handler
       FunctionName:
         Fn::Join:
-        - '-'
-        - - Ref: AWS::StackName
-          - sqs-reports-category
+          - '-'
+          - - Ref: AWS::StackName
+            - sqs-reports-category
       Environment:
         Variables:
           TABLE_NAME: !Ref IFinancesReportsTransactionsCategoryTable
@@ -314,9 +320,9 @@ Resources:
       Handler: dist/handlers/sqsReportsTransactionsCard.handler
       FunctionName:
         Fn::Join:
-        - '-'
-        - - Ref: AWS::StackName
-          - sqs-reports-card
+          - '-'
+          - - Ref: AWS::StackName
+            - sqs-reports-card
       Environment:
         Variables:
           TABLE_NAME: !Ref IFinancesReportsTransactionsCardTable
@@ -338,9 +344,9 @@ Resources:
       Handler: dist/handlers/create.handler
       FunctionName:
         Fn::Join:
-        - '-'
-        - - Ref: AWS::StackName
-          - sqs-create
+          - '-'
+          - - Ref: AWS::StackName
+            - sqs-create
       Environment:
         Variables:
           TABLE_NAME: !Ref IFinancesTransactionsTable
@@ -360,9 +366,9 @@ Resources:
       Handler: dist/handlers/find.handler
       FunctionName:
         Fn::Join:
-        - '-'
-        - - Ref: AWS::StackName
-          - find
+          - '-'
+          - - Ref: AWS::StackName
+            - find
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref IFinancesTransactionsTable
@@ -375,9 +381,9 @@ Resources:
       Handler: dist/handlers/findByUserId.handler
       FunctionName:
         Fn::Join:
-        - '-'
-        - - Ref: AWS::StackName
-          - find-userId
+          - '-'
+          - - Ref: AWS::StackName
+            - find-userId
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref IFinancesTransactionsTable
@@ -389,9 +395,9 @@ Resources:
       Handler: dist/handlers/findLast.handler
       FunctionName:
         Fn::Join:
-        - '-'
-        - - Ref: AWS::StackName
-          - find-last
+          - '-'
+          - - Ref: AWS::StackName
+            - find-last
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref IFinancesTransactionsTable
@@ -403,9 +409,9 @@ Resources:
       Handler: dist/handlers/findAll.handler
       FunctionName:
         Fn::Join:
-        - '-'
-        - - Ref: AWS::StackName
-          - find-all
+          - '-'
+          - - Ref: AWS::StackName
+            - find-all
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref IFinancesTransactionsTable
@@ -418,9 +424,9 @@ Resources:
       Handler: dist/handlers/delete.handler
       FunctionName:
         Fn::Join:
-        - '-'
-        - - Ref: AWS::StackName
-          - delete
+          - '-'
+          - - Ref: AWS::StackName
+            - delete
       Policies:
         - DynamoDBWritePolicy:
             TableName: !Ref IFinancesTransactionsTable
@@ -433,9 +439,9 @@ Resources:
       Handler: dist/handlers/update.handler
       FunctionName:
           Fn::Join:
-          - '-'
-          - - Ref: AWS::StackName
-            - update
+            - '-'
+            - - Ref: AWS::StackName
+              - update
       Policies:
         - DynamoDBWritePolicy:
             TableName: !Ref IFinancesTransactionsTable
