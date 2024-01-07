@@ -54,10 +54,10 @@ Resources:
           TABLE_TRANSACTIONS_CARD_NAME: !Ref TableTransactionsCardName
       Policies:
         - DynamoDBReadPolicy:
-          TableName: !Ref TableUserBotPreferencesName
+            TableName: !Ref TableUserBotPreferencesName
         - DynamoDBReadPolicy:
-          TableName: !Ref TableTransactionsCardName
+            TableName: !Ref TableTransactionsCardName
         - DynamoDBReadPolicy:
-          TableName: !Ref TableTransactionsCategoryName
+            TableName: !Ref TableTransactionsCategoryName
         - SQSSendMessagePolicy:
-          QueueName: !Ref CreateTransactionsQueueName
+            QueueName: !Ref CreateTransactionsQueueName
