@@ -1,4 +1,6 @@
 {
   "TableUserName": "",
-  "CreateTransactionsQueueName": ""
+  "CreateTransactionsQueueName": "",
+  "TableTransactionsCardName": "",
+  "TableTransactionsCategoryName": ""
 }

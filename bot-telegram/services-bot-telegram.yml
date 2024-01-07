@@ -8,6 +8,10 @@ Parameters:
     Type: String
   CreateTransactionsQueueName:
     Type: String
+  TableTransactionsCardName:
+    Type: String
+  TableTransactionsCategoryName:
+    Type: String
 Globals:
   Function:
     Timeout: 10
@@ -44,10 +48,16 @@ Resources:
         - - Ref: AWS::StackName
       Environment:
         Variables:
+          TABLE_TRANSACTIONS_CATEGORY_NAME: !Ref TableTransactionsCategoryName
           TABLE_USER_BOT_PREFERENCES_NAME: !Ref TableUserBotPreferencesName
           CREATE_TRANSACTION_QUEUE_NAME: !Ref CreateTransactionsQueueName
+          TABLE_TRANSACTIONS_CARD_NAME: !Ref TableTransactionsCardName
       Policies:
         - DynamoDBReadPolicy:
-            TableName: !Ref TableUserBotPreferencesName
+          TableName: !Ref TableUserBotPreferencesName
+        - DynamoDBReadPolicy:
+          TableName: !Ref TableTransactionsCardName
+        - DynamoDBReadPolicy:
+          TableName: !Ref TableTransactionsCategoryName
         - SQSSendMessagePolicy:
-            QueueName: !Ref CreateTransactionsQueueName
+          QueueName: !Ref CreateTransactionsQueueName

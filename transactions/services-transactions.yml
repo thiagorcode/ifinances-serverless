@@ -149,6 +149,37 @@ Resources:
             Projection:
               ProjectionType: ALL 
 
+  IFinancesTransactionCategoryTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        BillingMode: "PAY_PER_REQUEST"
+        TableName: 
+          Fn::Join:
+            - '-'
+            - - Ref: AWS::StackName
+              - category-table
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+
+  IFinancesTransactionCardTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        BillingMode: "PAY_PER_REQUEST"
+        TableName: 
+          Fn::Join:
+            - '-'
+            - - Ref: AWS::StackName
+              - card-table
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
   ReportsTransactionsMonthlyQueue:
     Type: AWS::SQS::Queue
     Properties:
@@ -341,7 +372,7 @@ Resources:
     Metadata:
       BuildMethod: makefile
     Properties:
-      Handler: dist/handlers/create.handler
+      Handler: dist/handlers/sqsCreateTransaction.handler
       FunctionName:
         Fn::Join:
           - '-'
