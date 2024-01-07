@@ -9,8 +9,10 @@ import {
   ProcessMessageCore,
   SendMessageTelegramCore,
 } from '../core'
-import { errorMessages } from '../shared/constants/errorMessages'
+import { messages } from '../shared/constants/messages'
 import { SQSRepository } from '../repository/sqs.repository'
+import { TransactionCategoryRepository } from '../repository/transactionCategory.repository'
+import { TransactionCardRepository } from '../repository/transactionCard.repository'
 
 export const handler = async (event: APIGatewayProxyEvent, context: Context, callback: Callback) => {
   console.info('Event:', event)
@@ -20,11 +22,17 @@ export const handler = async (event: APIGatewayProxyEvent, context: Context, cal
   // Repository
   const userRepository = new UserRepository()
   const sqsRepository = new SQSRepository()
+  const transactionCategoryRepository = new TransactionCategoryRepository()
+  const transactionCardRepository = new TransactionCardRepository()
   // Core
   const sendMessageTelegramCore = new SendMessageTelegramCore(chatId)
   const findUserByBotUsernameCore = new FindUserByBotUsernameCore(userRepository)
   const processMessageCore = new ProcessMessageCore()
-  const createTransactionQueueCore = new CreateTransactionQueueCore(sqsRepository)
+  const createTransactionQueueCore = new CreateTransactionQueueCore(
+    sqsRepository,
+    transactionCategoryRepository,
+    transactionCardRepository,
+  )
 
   try {
     const user = await findUserByBotUsernameCore.execute(body.message.chat.username)
@@ -34,6 +42,8 @@ export const handler = async (event: APIGatewayProxyEvent, context: Context, cal
       user,
     })
     await createTransactionQueueCore.execute(messageAttribute.transaction)
+    await sendMessageTelegramCore.execute(messages.transaction_success)
+
     return callback(null)
   } catch (error) {
     if (error instanceof AppErrorException) {
@@ -41,7 +51,7 @@ export const handler = async (event: APIGatewayProxyEvent, context: Context, cal
 
       return callback('invalid')
     }
-    await sendMessageTelegramCore.execute(errorMessages['1'])
+    await sendMessageTelegramCore.execute(messages['1'])
     return callback('invalid')
   }
 }

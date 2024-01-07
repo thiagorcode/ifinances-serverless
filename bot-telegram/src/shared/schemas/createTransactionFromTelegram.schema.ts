@@ -11,7 +11,7 @@ const categoryValidate = z.object({
 })
 
 export const createTransactionFromTelegramSchema = z.object({
-  card: cardValidate,
+  card: cardValidate.optional(),
   category: categoryValidate,
   date: z.string(),
   value: z.union([z.string(), z.number().positive()]).transform((val) => {
