@@ -12,6 +12,10 @@ Parameters:
     Type: String
   TableTransactionsCategoryName:
     Type: String
+  Env:
+    Type: String
+  SecretTelegram:
+    Type: String
 Globals:
   Function:
     Timeout: 10
@@ -48,6 +52,8 @@ Resources:
         - - Ref: AWS::StackName
       Environment:
         Variables:
+          ENV: !Ref Env
+          SECRET_TELEGRAM: !Ref SecretTelegram
           TABLE_TRANSACTIONS_CATEGORY_NAME: !Ref TableTransactionsCategoryName
           TABLE_USER_BOT_PREFERENCES_NAME: !Ref TableUserBotPreferencesName
           CREATE_TRANSACTION_QUEUE_NAME: !Ref CreateTransactionsQueueName

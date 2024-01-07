@@ -2,5 +2,7 @@
   "TableUserName": "",
   "CreateTransactionsQueueName": "",
   "TableTransactionsCardName": "",
-  "TableTransactionsCategoryName": ""
+  "TableTransactionsCategoryName": "",
+  "Env": "dev"
+  "SecretTelegram": ""
 }
