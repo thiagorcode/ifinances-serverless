@@ -1,4 +1,10 @@
 export const messages = {
+  common: {},
+  reportsMonthly: {
+    invalid_command: 'Formato está inválido! Tente novamente com o padrão [Mês] - [Ano]',
+    invalid_month: 'Mês inválido! Digite valores de 01-12',
+    not_found: 'Não foi encontrado relatórios para o mês e ano informado',
+  },
   user: {
     not_found: 'Usuário não autorizado!',
   },

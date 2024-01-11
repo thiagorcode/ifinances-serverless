@@ -6,10 +6,11 @@ import { SendMessageTelegramCore } from '../core'
 import { messages } from '../shared/constants/messages'
 
 export const handler = async (event: EventStartType, callback: Callback) => {
-  // Core
+  console.info('StartHandler')
   const sendMessageTelegramCore = new SendMessageTelegramCore(event.chatId)
 
   try {
+    // criar um middleware que recebe todos esses envio de mensagens
     await sendMessageTelegramCore.execute(messages.firstAccess.init)
 
     return callback(null)

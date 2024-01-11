@@ -12,7 +12,7 @@ export class CreateTransactionQueueCore {
     private transactionCategoryRepository: TransactionCategoryRepositoryInterface,
     private transactionCardRepository: TransactionCardRepository,
   ) {}
-
+  // TODO: Refactor
   private async filterCategory(transactionType: string, categoryName: string) {
     const listCategory = await this.transactionCategoryRepository.findAll()
 

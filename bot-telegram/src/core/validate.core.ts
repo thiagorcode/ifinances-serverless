@@ -8,15 +8,15 @@ export class ValidateCore {
   private headers: any
   private user: UsersTypes | null
   private sendMessage: SendMessageTelegramCore
-  constructor(headers: any, user: UsersTypes | null, chatId: string) {
+  constructor(headers: any, user: UsersTypes | null, sendMessage: SendMessageTelegramCore) {
     this.headers = headers
     this.user = user
-    this.sendMessage = new SendMessageTelegramCore(chatId)
+    this.sendMessage = sendMessage
   }
   async setParameters() {
     const client = new SSMClient()
     const command = new GetParameterCommand({
-      Name: `/${process.env.ENV}/${process.env.SECRET_TELEGRAM}`,
+      Name: `/${process.env.ENV}/${process.env.SECRET_TELEGRAM}/webhook`,
     })
     const data = await client.send(command)
     return {

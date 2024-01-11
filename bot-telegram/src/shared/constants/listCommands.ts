@@ -1,8 +1,9 @@
-import { CommandsChatEnum } from '../../enums/commandsChat.enum'
+import { commandsChat } from './commandsChat'
 
 export const listCommands = [
-  CommandsChatEnum.ADD_TRANSACTION_RECIPE,
-  CommandsChatEnum.ADD_TRANSACTION_EXPENSE,
-  CommandsChatEnum.SHOW_REPORT_MONTHLY,
-  CommandsChatEnum.HELP,
+  commandsChat.ADD_TRANSACTION_RECIPE,
+  commandsChat.ADD_TRANSACTION_EXPENSE,
+  commandsChat.SHOW_REPORT_MONTHLY,
+  commandsChat.HELP,
+  commandsChat.START,
 ]
