@@ -22,8 +22,10 @@ export class CreateReportsTransactionCardCore {
 
       if (reportCard?.id) {
         console.info('call update report card')
+        const totalValue = reportCard.value + transaction.value
+
         const updateReportCard: UpdateReportTransactionsCardType = {
-          value: reportCard.value + transaction.value,
+          value: +totalValue.toFixed(2),
           quantityTransactions: reportCard.quantityTransactions + 1,
         }
 

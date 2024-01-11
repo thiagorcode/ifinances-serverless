@@ -13,7 +13,7 @@ const categoryValidate = z.object({
 export const createTransactionFromTelegramSchema = z.object({
   card: cardValidate.optional(),
   category: categoryValidate,
-  date: z.string(),
+  date: z.date(),
   value: z.union([z.string(), z.number().positive()]).transform((val) => {
     if (typeof val === 'string') {
       // Tenta converter a string para um número

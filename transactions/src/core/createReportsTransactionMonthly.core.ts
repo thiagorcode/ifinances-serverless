@@ -70,7 +70,7 @@ export class CreateReportsTransactionMonthlyCore {
         await this.repository.updateExpenseValue(reportMonthly.id, updateReportMonthly)
         return
       }
-      console.info('sem retorno - ERROR')
+      console.info('sem retorno de ERRO')
       return
     } catch (error) {
       console.error(error)

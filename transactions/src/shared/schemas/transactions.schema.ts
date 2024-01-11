@@ -20,7 +20,7 @@ export const transactionsSchema = z
     businessName: z.string().optional().default(''),
     currentInstallment: z.number().optional().default(1),
     numberInstallments: z.number().max(30).default(1),
-    isPaid: z.boolean(),
+    isPaid: z.boolean().default(true),
     isDeleted: z.boolean().default(false),
     type: z.string(),
     specification: z.string().optional().default(''),

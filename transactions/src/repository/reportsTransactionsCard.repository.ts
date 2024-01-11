@@ -82,7 +82,7 @@ export class ReportsTransactionsCardRepository implements ReportsTransactionCard
       },
       ExpressionAttributeValues: {
         ':currentValue': currentReport.value,
-        ':quantityTransactions': currentReport.quantityTransactions,
+        ':qtdTransactions': currentReport.quantityTransactions,
         ':dtUpdated': new Date().toISOString(),
       },
     })

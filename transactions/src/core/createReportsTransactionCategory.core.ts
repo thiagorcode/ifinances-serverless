@@ -22,8 +22,9 @@ export class CreateReportsTransactionCategoryCore {
 
       if (reportMonthly?.id) {
         console.info('reportcategory - update')
+        const totalValue = reportMonthly.value + transaction.value
         const updateReportCard: UpdateReportTransactionsCategoryType = {
-          value: reportMonthly.value + transaction.value,
+          value: +totalValue.toFixed(2),
           quantityTransactions: reportMonthly.quantityTransactions + 1,
         }
 

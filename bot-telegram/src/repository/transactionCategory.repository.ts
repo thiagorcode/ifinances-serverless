@@ -12,7 +12,7 @@ export class TransactionCategoryRepository implements TransactionCategoryReposit
   constructor() {
     this.dynamodbClient = new DynamoDB()
     this.dynamodbDocumentClient = DynamoDBDocumentClient.from(this.dynamodbClient)
-    this.tableName = process.env.TABLE_TRANSACTIONS_CARD_NAME ?? ''
+    this.tableName = process.env.TABLE_TRANSACTIONS_CATEGORY_NAME ?? ''
   }
 
   async findAll(): Promise<TransactionCategoryType[]> {

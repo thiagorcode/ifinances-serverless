@@ -37,7 +37,7 @@ Resources:
       Description: Runtime dependencies for Lambdas
       ContentUri: ./
       CompatibleRuntimes:
-        - nodejs18.x
+        - nodejs20.x
       RetentionPolicy: Retain
   
   BotTelegramFunction:
@@ -67,3 +67,5 @@ Resources:
             TableName: !Ref TableTransactionsCategoryName
         - SQSSendMessagePolicy:
             QueueName: !Ref CreateTransactionsQueueName
+        - SSMParameterReadPolicy: 
+            ParameterName: '*'

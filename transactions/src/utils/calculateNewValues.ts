@@ -23,9 +23,9 @@ export const calculateUpdateValueReport = (
       : currentReportTotalValue - transactionValue
 
   return {
-    expense: expenseValue,
-    recipe: recipeValue,
-    total: totalValue,
+    expense: +expenseValue.toFixed(2),
+    recipe: +recipeValue.toFixed(2),
+    total: +totalValue.toFixed(2),
   }
 }
 
@@ -35,9 +35,9 @@ export const calculateNewValueReport = (type: string, transactionValue: number) 
   const totalValue = type === TransactionTypesEnum.RECIPE ? transactionValue : -transactionValue
 
   return {
-    expense: expenseValue,
-    recipe: recipeValue,
-    total: totalValue,
+    expense: +expenseValue.toFixed(2),
+    recipe: +recipeValue.toFixed(2),
+    total: +totalValue.toFixed(2),
   }
 }
 
@@ -56,8 +56,8 @@ export const calculateDecreaseValueReport = ({
     type === TransactionTypesEnum.RECIPE ? currentReportTotal - transactionValue : currentReportTotal + transactionValue
 
   return {
-    expense: decreaseValueExpense,
-    recipe: decreaseValueRecipe,
-    total: decreaseValueTotal,
+    expense: +decreaseValueExpense.toFixed(2),
+    recipe: +decreaseValueRecipe.toFixed(2),
+    total: +decreaseValueTotal.toFixed(2),
   }
 }

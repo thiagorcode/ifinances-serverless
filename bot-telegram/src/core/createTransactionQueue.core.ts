@@ -17,11 +17,13 @@ export class CreateTransactionQueueCore {
     const listCategory = await this.transactionCategoryRepository.findAll()
 
     const listCategoryByType = listCategory.filter((category) => category.type === transactionType)
-    const categorySelected = listCategoryByType.find((category) => category.name === categoryName)
+    const categorySelected = listCategoryByType.find(
+      (category) => category.name.toLowerCase() === categoryName.toLowerCase(),
+    )
 
     if (!categorySelected) {
       const listCategoryMessage = listCategoryByType.map((category) => category.name)
-      let errorMessageWithListCategory = messages.category_invalid
+      let errorMessageWithListCategory = messages.transactions.category_invalid
       listCategoryMessage.forEach((category) => {
         errorMessageWithListCategory += `${category} \n`
       })
@@ -32,13 +34,14 @@ export class CreateTransactionQueueCore {
   }
 
   private async filterCard(cardName: string) {
+    if (!cardName) return undefined
     const listCard = await this.transactionCardRepository.findAll()
 
-    const cardSelected = listCard.find((card) => card.name === cardName)
+    const cardSelected = listCard.find((card) => card.name.toLowerCase() === cardName.toLowerCase())
 
     if (!cardSelected) {
       const listCardMessage = listCard.map((card) => card.name)
-      let errorMessageListCard = messages.card_invalid
+      let errorMessageListCard = messages.transactions.card_invalid
       listCardMessage.forEach((card) => {
         errorMessageListCard += `${card} \n`
       })
@@ -49,6 +52,15 @@ export class CreateTransactionQueueCore {
     return cardSelected
   }
 
+  private validDate(dateString: string) {
+    try {
+      const partDate = dateString.split('/')
+      return new Date(`${partDate[2]}-${partDate[1]}-${partDate[0]}`)
+    } catch (error) {
+      throw new AppErrorException(400, messages.transactions.date_invalid)
+    }
+  }
+
   async execute(transaction: CreateTransactionTelegramType) {
     const categorySelected = await this.filterCategory(transaction.type, transaction.categoryName)
     const cardSelected = await this.filterCard(transaction.cardName)
@@ -56,15 +68,18 @@ export class CreateTransactionQueueCore {
       console.info('call CreateTransactionQueueCore')
       const newTransaction = {
         ...transaction,
+        date: this.validDate(transaction.date),
         card: cardSelected,
         category: categorySelected,
       }
+
       const transactionParsed = createTransactionFromTelegramSchema.parse(newTransaction)
       console.log('transaction', transactionParsed)
-      return await this.sqsRepository.send(transactionParsed, process.env.CREATE_TRANSACTION_QUEUE_NAME)
+      await this.sqsRepository.send(transactionParsed, process.env.CREATE_TRANSACTION_QUEUE_NAME)
+      return
     } catch (error: any) {
       console.error(error)
-      throw new AppErrorException(400, error.message ?? messages.transaction_invalid)
+      throw new AppErrorException(400, messages.transactions.invalid)
     }
   }
 }

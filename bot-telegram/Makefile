@@ -18,7 +18,6 @@ build-RuntimeDependenciesLayer:
 	rm "$(ARTIFACTS_DIR)/nodejs/package.json" # to avoid rebuilding when changes aren't related to dependencies
 	rm -rf "$(ARTIFACTS_DIR)/nodejs/node_modules/aws-sdk"
 
-
 build-deploy-common:
 	sam build -t services-bot-telegram.yml
 	cp -r ./samconfig.toml .aws-sam/build
