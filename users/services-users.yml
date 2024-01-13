@@ -3,6 +3,9 @@ Transform: AWS::Serverless-2016-10-31
 Description: API de Users
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Parameters:
+  TableUserName:
+    Type: String
 Globals:
   Function:
     Timeout: 15
@@ -26,43 +29,6 @@ Resources:
       CompatibleRuntimes:
         - nodejs18.x
       RetentionPolicy: Retain
-  
-  IFinancesUsersTable:
-    Type: AWS::DynamoDB::Table
-    Properties:
-      BillingMode: "PAY_PER_REQUEST"
-      TableName: 
-        Fn::Join:
-          - '-'
-          - - Ref: AWS::StackName
-            - table
-      AttributeDefinitions:
-        - AttributeName: id
-          AttributeType: S
-      KeySchema:
-        - AttributeName: id
-          KeyType: HASH
-        
-
-  IFinancesUsersBotPreferencesTable:
-    Type: AWS::DynamoDB::Table
-    Properties:
-      BillingMode: "PAY_PER_REQUEST"
-      TableName: 
-        Fn::Join:
-          - '-'
-          - - Ref: AWS::StackName
-            - bot-preferences-table
-      AttributeDefinitions:
-        - AttributeName: id
-          AttributeType: S
-        - AttributeName: userId
-          AttributeType: S
-      KeySchema:
-        - AttributeName: id
-          KeyType: HASH
-        - AttributeName: userId
-          KeyType: RANGE
   CreateUserFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Metadata:
@@ -76,10 +42,10 @@ Resources:
           - create
       Environment:
         Variables:
-          TABLE_NAME: !Ref IFinancesUsersTable
+          TABLE_NAME: !Ref TableUserName
       Policies:
         - DynamoDBWritePolicy:
-            TableName: !Ref IFinancesUsersTable
+            TableName: !Ref TableUserName
 
   FindByIdUserFunction:
     Type: AWS::Serverless::Function
@@ -94,7 +60,7 @@ Resources:
           - find-by-id
       Policies:
         - DynamoDBReadPolicy:
-            TableName: !Ref IFinancesUsersTable
+            TableName: !Ref TableUserName
   AuthLoginFunction:
     Type: AWS::Serverless::Function
     Metadata:
@@ -108,10 +74,10 @@ Resources:
           - auth-login
       Environment:
         Variables:
-          TABLE_NAME: !Ref IFinancesUsersTable
+          TABLE_NAME: !Ref TableUserName
       Policies:
         - DynamoDBReadPolicy:
-            TableName: !Ref IFinancesUsersTable
+            TableName: !Ref TableUserName
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
     Properties:

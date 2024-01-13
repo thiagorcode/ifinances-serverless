@@ -3,6 +3,13 @@ Transform: AWS::Serverless-2016-10-31
 Description: API de transação
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Parameters:
+  TableReportTransactionsMonthlyName:
+    Type: String
+  TableTransactionsCategoryName:
+    Type: String
+  TableTransactionsCardName:
+    Type: String
 Globals:
   Function:
     Timeout: 15
@@ -60,126 +67,7 @@ Resources:
             Projection:
               ProjectionType: ALL
 
-  IFinancesReportsTransactionsMonthlyTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        BillingMode: PAY_PER_REQUEST
-        TableName: 
-          Fn::Join:
-            - '-'
-            - - Ref: AWS::StackName
-              - reports-monthly-table
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-          - AttributeName: userId
-            AttributeType: S
-          - AttributeName: yearMonth
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-          - AttributeName: yearMonth
-            KeyType: RANGE
-        GlobalSecondaryIndexes:
-          - IndexName: UserYearMonthIndex
-            KeySchema:
-              - AttributeName: userId
-                KeyType: HASH
-              - AttributeName: yearMonth
-                KeyType: RANGE
-            Projection:
-              ProjectionType: ALL 
 
-  IFinancesReportsTransactionsCategoryTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        BillingMode: PAY_PER_REQUEST
-        TableName: 
-          Fn::Join:
-            - '-'
-            - - Ref: AWS::StackName
-              - reports-category-table
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-          - AttributeName: userId
-            AttributeType: S
-          - AttributeName: yearMonth
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-        GlobalSecondaryIndexes:
-          - IndexName: UserCategoryIndex
-            KeySchema:
-              - AttributeName: userId
-                KeyType: HASH
-              - AttributeName: yearMonth
-                KeyType: RANGE
-            Projection:
-              ProjectionType: ALL 
-  
-  IFinancesReportsTransactionsCardTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        BillingMode: PAY_PER_REQUEST
-        TableName: 
-          Fn::Join:
-            - '-'
-            - - Ref: AWS::StackName
-              - reports-card-table
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-          - AttributeName: userId
-            AttributeType: S
-          - AttributeName: yearMonth
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-        GlobalSecondaryIndexes:
-          - IndexName: UserCardIndex
-            KeySchema:
-              - AttributeName: userId
-                KeyType: HASH
-              - AttributeName: yearMonth
-                KeyType: RANGE
-            Projection:
-              ProjectionType: ALL 
-
-  IFinancesTransactionCategoryTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        BillingMode: "PAY_PER_REQUEST"
-        TableName: 
-          Fn::Join:
-            - '-'
-            - - Ref: AWS::StackName
-              - category-table
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-
-  IFinancesTransactionCardTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        BillingMode: "PAY_PER_REQUEST"
-        TableName: 
-          Fn::Join:
-            - '-'
-            - - Ref: AWS::StackName
-              - card-table
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
   ReportsTransactionsMonthlyQueue:
     Type: AWS::SQS::Queue
     Properties:
@@ -306,12 +194,12 @@ Resources:
             - sqs-reports-monthly
       Environment:
         Variables:
-          TABLE_NAME: !Ref IFinancesReportsTransactionsMonthlyTable
+          TABLE_NAME: !Ref TableReportTransactionsMonthlyName
       Policies:
         - DynamoDBWritePolicy:
-            TableName: !Ref IFinancesReportsTransactionsMonthlyTable
+            TableName: !Ref TableReportTransactionsMonthlyName
         - DynamoDBReadPolicy:
-            TableName: !Ref IFinancesReportsTransactionsMonthlyTable
+            TableName: !Ref TableReportTransactionsMonthlyName
       Events:
         SQSEvent:
           Type: SQS
@@ -331,12 +219,12 @@ Resources:
             - sqs-reports-category
       Environment:
         Variables:
-          TABLE_NAME: !Ref IFinancesReportsTransactionsCategoryTable
+          TABLE_NAME: !Ref TableTransactionsCategoryName
       Policies:
         - DynamoDBWritePolicy:
-            TableName: !Ref IFinancesReportsTransactionsCategoryTable
+            TableName: !Ref TableTransactionsCategoryName
         - DynamoDBReadPolicy:
-            TableName: !Ref IFinancesReportsTransactionsCategoryTable
+            TableName: !Ref TableTransactionsCategoryName
       Events:
         SQSEvent:
           Type: SQS
@@ -356,12 +244,12 @@ Resources:
             - sqs-reports-card
       Environment:
         Variables:
-          TABLE_NAME: !Ref IFinancesReportsTransactionsCardTable
+          TABLE_NAME: !Ref TableTransactionsCardName
       Policies:
         - DynamoDBWritePolicy:
-            TableName: !Ref IFinancesReportsTransactionsCardTable
+            TableName: !Ref TableTransactionsCardName
         - DynamoDBReadPolicy:
-            TableName: !Ref IFinancesReportsTransactionsCardTable
+            TableName: !Ref TableTransactionsCardName
       Events:
         SQSEvent:
           Type: SQS
@@ -477,7 +365,3 @@ Resources:
         - DynamoDBWritePolicy:
             TableName: !Ref IFinancesTransactionsTable
 
-Outputs:
-  CreateTransactionQueue:
-    Description: "CreateTransactionSQS SQS ARN"
-    Value: !GetAtt SQSCreateTransactionFunction.Arn
