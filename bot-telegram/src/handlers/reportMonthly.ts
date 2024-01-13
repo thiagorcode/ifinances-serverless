@@ -8,6 +8,8 @@ import { ReportTransactionMonthlyRepository } from '../repository/reportTransact
 
 export const handler = async (event: EventReportMonthlyType, context: Context, callback: Callback) => {
   console.info('Event:', event)
+  console.info('ReportMonthlyHandler')
+
   const { chatId, attributes, user } = event
   // Repository
   const reportTransactionMonthlyRepository = new ReportTransactionMonthlyRepository()

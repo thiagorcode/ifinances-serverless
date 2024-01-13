@@ -12,6 +12,10 @@ Parameters:
     Type: String
   TableTransactionsCategoryName:
     Type: String
+  TableReportTransactionsMonthlyName:
+    Type: String
+  TableReportTransactionsCardName:
+    Type: String
   Env:
     Type: String
   SecretTelegram:
@@ -58,6 +62,8 @@ Resources:
           TABLE_USER_BOT_PREFERENCES_NAME: !Ref TableUserBotPreferencesName
           CREATE_TRANSACTION_QUEUE_NAME: !Ref CreateTransactionsQueueName
           TABLE_TRANSACTIONS_CARD_NAME: !Ref TableTransactionsCardName
+          TABLE_REPORT_TRANSACTIONS_MONTHLY_NAME: !Ref TableReportTransactionsMonthlyName
+          TABLE_REPORT_TRANSACTIONS_CARD_NAME: !Ref TableReportTransactionsCardName
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref TableUserBotPreferencesName
@@ -65,6 +71,10 @@ Resources:
             TableName: !Ref TableTransactionsCardName
         - DynamoDBReadPolicy:
             TableName: !Ref TableTransactionsCategoryName
+        - DynamoDBReadPolicy:
+            TableName: !Ref TableReportTransactionsMonthlyName
+        - DynamoDBReadPolicy:
+            TableName: !Ref TableReportTransactionsCardName
         - SQSSendMessagePolicy:
             QueueName: !Ref CreateTransactionsQueueName
         - SSMParameterReadPolicy: 

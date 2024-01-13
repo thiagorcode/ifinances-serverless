@@ -17,7 +17,6 @@ export class SendMessageTelegramCore {
   async execute(message: string) {
     console.info('call SendMessageTelegramCore')
     const secretTokenBotTelegram = await this.loadTokenBot()
-    console.log(secretTokenBotTelegram)
     return await sendMessageToTelegram(secretTokenBotTelegram ?? '', this.chatId, message)
   }
 }

@@ -6,3 +6,5 @@ export * from './validate.core'
 export * from './validateTransaction.core'
 export * from './startChat.core'
 export * from './reportTransactionMonthly.core'
+
+export * from './reportTransactionCard.core'

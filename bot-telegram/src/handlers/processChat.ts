@@ -4,6 +4,7 @@ import { APIGatewayProxyEvent, Callback, Context } from 'aws-lambda'
 import { handler as CreateTransactionByChatHandler } from './createTransactionByChat'
 import { handler as StartHandler } from './start'
 import { handler as ReportMonthlyHandler } from './reportMonthly'
+import { handler as ReportCardHandler } from './reportCard'
 import { EventTelegramType } from '../shared/types'
 import { extractTextFromEvent } from '../utils'
 import { FindUserByBotUsernameCore, ProcessMessageCore, SendMessageTelegramCore, ValidateCore } from '../core'
@@ -47,6 +48,8 @@ export const handler = async (event: APIGatewayProxyEvent, context: Context, cal
       )
     case commandsChat.SHOW_REPORT_MONTHLY:
       return await ReportMonthlyHandler({ attributes, chatId, user: userValidated }, context, callback)
+    case commandsChat.SHOW_REPORT_CARD:
+      return await ReportCardHandler({ attributes, chatId, user: userValidated }, context, callback)
     default:
       await sendMessageTelegramCore.execute(messages.commands.not_found)
       return callback(null)

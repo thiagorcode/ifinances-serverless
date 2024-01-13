@@ -1,10 +1,10 @@
 import { DynamoDB } from '@aws-sdk/client-dynamodb'
 import { DynamoDBDocumentClient, QueryCommand } from '@aws-sdk/lib-dynamodb'
 
-import { ReportTransactionMonthlyType } from '../shared/types'
-import { ReportTransactionMonthlyRepositoryInterface } from './interface/reportTransactionMonthly.interface'
+import { ReportTransactionCardType } from '../shared/types'
+import { ReportTransactionCardRepositoryInterface } from './interface/reportTransactionCard.interface'
 
-export class ReportTransactionMonthlyRepository implements ReportTransactionMonthlyRepositoryInterface {
+export class ReportTransactionCardRepository implements ReportTransactionCardRepositoryInterface {
   private dynamodbClient: DynamoDB
   private dynamodbDocumentClient: DynamoDBDocumentClient
   private tableName: string
@@ -12,14 +12,14 @@ export class ReportTransactionMonthlyRepository implements ReportTransactionMont
   constructor() {
     this.dynamodbClient = new DynamoDB()
     this.dynamodbDocumentClient = DynamoDBDocumentClient.from(this.dynamodbClient)
-    this.tableName = process.env.TABLE_REPORT_TRANSACTIONS_MONTHLY_NAME ?? ''
+    this.tableName = process.env.TABLE_REPORT_TRANSACTIONS_CARD_NAME ?? ''
   }
 
-  async find(yearMonth: string, userId: string): Promise<ReportTransactionMonthlyType | null> {
+  async find(yearMonth: string, userId: string): Promise<ReportTransactionCardType[] | null> {
     const params = new QueryCommand({
       TableName: this.tableName,
       KeyConditionExpression: 'userId = :userId AND yearMonth = :yearMonth',
-      IndexName: 'UserYearMonthIndex',
+      IndexName: 'UserCardIndex',
       ExpressionAttributeValues: {
         ':yearMonth': yearMonth,
         ':userId': userId,
@@ -30,6 +30,6 @@ export class ReportTransactionMonthlyRepository implements ReportTransactionMont
     if (!Items) {
       return null
     }
-    return Items[0] as ReportTransactionMonthlyType
+    return Items as ReportTransactionCardType[]
   }
 }
