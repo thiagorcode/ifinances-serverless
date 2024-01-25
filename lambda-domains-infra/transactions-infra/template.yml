@@ -11,7 +11,7 @@ Resources:
         Fn::Join:
           - '-'
           - - Ref: AWS::StackName
-            - reports-monthly-table
+            - reports-monthly
       AttributeDefinitions:
         - AttributeName: id
           AttributeType: S
@@ -42,7 +42,7 @@ Resources:
           Fn::Join:
             - '-'
             - - Ref: AWS::StackName
-              - reports-category-table
+              - reports-category
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
@@ -71,7 +71,7 @@ Resources:
           Fn::Join:
             - '-'
             - - Ref: AWS::StackName
-              - reports-card-table
+              - reports-card
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
@@ -100,7 +100,7 @@ Resources:
           Fn::Join:
             - '-'
             - - Ref: AWS::StackName
-              - category-table
+              - category
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
@@ -116,7 +116,7 @@ Resources:
           Fn::Join:
             - '-'
             - - Ref: AWS::StackName
-              - card-table
+              - card
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S

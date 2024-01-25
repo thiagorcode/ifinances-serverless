@@ -7,11 +7,7 @@ Resources:
     Type: AWS::DynamoDB::Table
     Properties:
       BillingMode: "PAY_PER_REQUEST"
-      TableName: 
-        Fn::Join:
-          - '-'
-          - - Ref: AWS::StackName
-            - table
+      TableName: !Ref AWS::StackName
       AttributeDefinitions:
         - AttributeName: id
           AttributeType: S
@@ -28,7 +24,7 @@ Resources:
         Fn::Join:
           - '-'
           - - Ref: AWS::StackName
-            - bot-preferences-table
+            - bot-preferences
       AttributeDefinitions:
         - AttributeName: id
           AttributeType: S
