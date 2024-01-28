@@ -2,7 +2,7 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { TransactionRepository } from '../repository/transactions.repository'
 import { AppErrorException, formatResponse } from '../utils'
 import { FindAllCore } from '../core/findAll.core'
-import { FindAllWithQueryOriginType } from 'src/shared/types'
+import { FindAllWithQueryOriginType } from '../shared/types'
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {

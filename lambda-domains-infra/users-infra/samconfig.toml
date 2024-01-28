@@ -1,0 +1,25 @@
+version = 0.1
+[dev]
+[dev.deploy]
+[dev.deploy.parameters]
+stack_name = "ifinances-dev-infra-users"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-1v5lyb89zw0sl"
+s3_prefix = "ifinances-dev-infra-users"
+region = "sa-east-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+disable_rollback = true
+image_repositories = []
+
+
+[prod]
+[prod.deploy]
+[prod.deploy.parameters]
+stack_name = "ifinances-prod-infra-users"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-1v5lyb89zw0sl"
+s3_prefix = "ifinances-prod-infra-users"
+region = "sa-east-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+disable_rollback = true
+image_repositories = []

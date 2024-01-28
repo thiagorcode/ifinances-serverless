@@ -1,7 +1,7 @@
 {
   "name": "ifinances-service-transactions-category",
   "version": "0.0.1",
-  "description": "Users Crud",
+  "description": "Transactions Category Crud",
   "main": "app.js",
   "repository": "https://github.com/awslabs/aws-sam-cli/tree/develop/samcli/local/init/templates/cookiecutter-aws-sam-hello-nodejs",
   "author": "SAM CLI",
@@ -20,7 +20,6 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.438.0",
     "@aws-sdk/lib-dynamodb": "^3.438.0",
-    "aws-sdk": "^2.1483.0",
     "esbuild": "^0.14.14",
     "zod": "^3.22.4"
   },

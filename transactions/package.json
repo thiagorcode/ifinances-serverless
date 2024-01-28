@@ -9,7 +9,8 @@
   "scripts": {
     "clear:dist": "rm -rf dist",
     "clear:dist:tests": "rm -rf dist/__tests__",
-    "deploy:dev": "sam build && sam deploy",
+    "deploy:dev": "make build-deploy-common env=dev",
+    "deploy:prod": "make build-deploy-common env=prod",
     "build": "npm run clear:dist && node_modules/typescript/bin/tsc && npm run clear:dist:tests",
     "unit": "jest",
     "lint": "eslint '*.ts' --quiet --fix",
@@ -21,8 +22,8 @@
     "@aws-sdk/client-dynamodb": "^3.438.0",
     "@aws-sdk/client-sqs": "^3.450.0",
     "@aws-sdk/lib-dynamodb": "^3.438.0",
-    "aws-sdk": "^2.1483.0",
     "date-fns": "^2.30.0",
+    "destr": "^2.0.2",
     "esbuild": "^0.14.14",
     "zod": "^3.22.4"
   },

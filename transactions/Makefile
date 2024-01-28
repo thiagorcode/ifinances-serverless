@@ -1,5 +1,6 @@
 .PHONY: build-CreateTransactionFunction build-FindTransactionFunction build-FindByUserIdTransactionFunction build-FindAllTransactionFunction build-FindLastTransactionFunction
 .PHONY: build-SQSReportsTransactionCategoryFunction build-DDBStreamReportsTransactionFunction build-SQSReportsTransactionCardFunction build-SQSReportsTransactionMonthlyFunction
+.PHONY: build-UpdateTransactionFunction build-UpdateTransactionFunction
 .PHONY: build-RuntimeDependenciesLayer build-lambda-common 
 
 build-CreateTransactionFunction:
@@ -17,6 +18,12 @@ build-FindLastTransactionFunction:
 build-FindAllTransactionFunction:
 	$(MAKE) HANDLER=src/handlers/findAll.ts build-lambda-common
 
+build-DeleteTransactionFunction:
+	$(MAKE) HANDLER=src/handlers/delete.ts build-lambda-common
+
+build-UpdateTransactionFunction:
+	$(MAKE) HANDLER=src/handlers/update.ts build-lambda-common
+
 build-DDBStreamReportsTransactionFunction:
 	$(MAKE) HANDLER=src/handlers/ddbStreamReportsTransactions.ts build-lambda-common
 
@@ -28,6 +35,9 @@ build-SQSReportsTransactionCategoryFunction:
 
 build-SQSReportsTransactionCardFunction:
 	$(MAKE) HANDLER=src/handlers/sqsReportsTransactionsCard.ts build-lambda-common
+
+build-SQSCreateTransactionFunction:
+	$(MAKE) HANDLER=src/handlers/sqsCreateTransaction.ts build-lambda-common
 
 build-lambda-common:
 	npm install
@@ -43,4 +53,8 @@ build-RuntimeDependenciesLayer:
 	rm "$(ARTIFACTS_DIR)/nodejs/package.json" # to avoid rebuilding when changes aren't related to dependencies
 	rm -rf "$(ARTIFACTS_DIR)/nodejs/node_modules/aws-sdk"
 
-
+build-deploy-common:
+	sam build -t services-transactions.yml
+	cp -r ./samconfig.toml .aws-sam/build
+	$(eval PARAMS := $(shell cat "params.$(env).json" | jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]'))
+	cd .aws-sam/build && sam deploy --on-failure DELETE --region sa-east-1 --parameter-overrides $(PARAMS) --config-env dev

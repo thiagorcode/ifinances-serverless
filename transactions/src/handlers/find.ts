@@ -2,7 +2,7 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { TransactionRepository } from '../repository/transactions.repository'
 import { AppErrorException, formatResponse } from '../utils'
 import { FindByUserIdCore } from '../core/findByUserId.core'
-import { FindCore } from 'src/core/find.core'
+import { FindCore } from '../core/find.core'
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {

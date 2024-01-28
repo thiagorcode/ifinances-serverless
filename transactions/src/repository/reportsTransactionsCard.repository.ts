@@ -1,7 +1,12 @@
 import { DynamoDB } from '@aws-sdk/client-dynamodb'
 import { PutCommand, ScanCommand, DynamoDBDocumentClient, QueryCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb'
 
-import { ReportTransactionsCardType, FindReportCardTypes, UpdateReportTransactionsCardType } from '../shared/types'
+import {
+  ReportTransactionsCardType,
+  FindReportCardTypes,
+  UpdateReportTransactionsCardType,
+  UpdateDecreaseValueReportsCardType,
+} from '../shared/types'
 import ReportsTransactionCardInterface from './interface/reportsTransactionCard.interface'
 
 export class ReportsTransactionsCardRepository implements ReportsTransactionCardInterface {
@@ -69,9 +74,28 @@ export class ReportsTransactionsCardRepository implements ReportsTransactionCard
   async updateReportValue(id: string, currentReport: UpdateReportTransactionsCardType): Promise<void> {
     const params = new UpdateCommand({
       TableName: process.env.TABLE_NAME,
-      Key: { id: { S: id } },
-      UpdateExpression: 'SET value = :value dtUpdated = :dtUpdated',
+      Key: { id },
+      UpdateExpression:
+        'SET #curr_value = :currentValue, quantityTransactions = :qtdTransactions, dtUpdated = :dtUpdated',
+      ExpressionAttributeNames: {
+        '#curr_value': 'value',
+      },
       ExpressionAttributeValues: {
+        ':currentValue': currentReport.value,
+        ':qtdTransactions': currentReport.quantityTransactions,
+        ':dtUpdated': new Date().toISOString(),
+      },
+    })
+    await this.dynamodbDocumentClient.send(params)
+  }
+
+  async updateDecreaseReportValue(id: string, currentReport: UpdateDecreaseValueReportsCardType): Promise<void> {
+    const params = new UpdateCommand({
+      TableName: process.env.TABLE_NAME,
+      Key: { id: id },
+      UpdateExpression: 'SET value = :value quantityTransactions = :quantityTransactions dtUpdated = :dtUpdated',
+      ExpressionAttributeValues: {
+        ':quantityTransactions': currentReport.quantityTransactions,
         ':value': currentReport.value,
         ':dtUpdated': new Date().toISOString(),
       },

@@ -1,11 +1,6 @@
-import {
-  ReportTransactionsMonthlyType,
-  CreateTransactionsType,
-  UpdateExpenseValueMonthlyType,
-  UpdateRecipeValueMonthlyType,
-} from '../shared/types'
-import { reportTransactionsMonthlySchema, transactionsSchema } from '../shared/schemas'
 import { randomUUID } from 'crypto'
+import { CreateTransactionsType, UpdateExpenseValueMonthlyType, UpdateRecipeValueMonthlyType } from '../shared/types'
+import { reportTransactionsMonthlySchema } from '../shared/schemas'
 import { ReportsTransactionsMonthlyRepository } from '../repository/reportsTransactionsMonthly.repository'
 import { calculateNewValueReport, calculateUpdateValueReport } from '../utils/calculateNewValues'
 import { TransactionTypesEnum } from '../enums'
@@ -75,7 +70,7 @@ export class CreateReportsTransactionMonthlyCore {
         await this.repository.updateExpenseValue(reportMonthly.id, updateReportMonthly)
         return
       }
-      console.info('sem retorno - ERROR')
+      console.info('sem retorno de ERRO')
       return
     } catch (error) {
       console.error(error)

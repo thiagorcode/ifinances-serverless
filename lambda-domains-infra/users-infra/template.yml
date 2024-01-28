@@ -1,0 +1,37 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Infra Users
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Resources:
+  IFinancesUsersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: "PAY_PER_REQUEST"
+      TableName: !Ref AWS::StackName
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+        
+
+  IFinancesUsersBotPreferencesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: "PAY_PER_REQUEST"
+      TableName: 
+        Fn::Join:
+          - '-'
+          - - Ref: AWS::StackName
+            - bot-preferences
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: userId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+        - AttributeName: userId
+          KeyType: RANGE

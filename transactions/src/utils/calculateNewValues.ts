@@ -1,5 +1,13 @@
 import { TransactionTypesEnum } from '../enums'
 
+type CalculateDecreaseValueReportType = {
+  type: TransactionTypesEnum
+  transactionValue: number
+  currentReportRecipeValue: number
+  currentReportExpenseValue: number
+  currentReportTotal: number
+}
+
 export const calculateUpdateValueReport = (
   type: string,
   transactionValue: number,
@@ -15,9 +23,9 @@ export const calculateUpdateValueReport = (
       : currentReportTotalValue - transactionValue
 
   return {
-    expense: expenseValue,
-    recipe: recipeValue,
-    total: totalValue,
+    expense: +expenseValue.toFixed(2),
+    recipe: +recipeValue.toFixed(2),
+    total: +totalValue.toFixed(2),
   }
 }
 
@@ -27,8 +35,29 @@ export const calculateNewValueReport = (type: string, transactionValue: number) 
   const totalValue = type === TransactionTypesEnum.RECIPE ? transactionValue : -transactionValue
 
   return {
-    expense: expenseValue,
-    recipe: recipeValue,
-    total: totalValue,
+    expense: +expenseValue.toFixed(2),
+    recipe: +recipeValue.toFixed(2),
+    total: +totalValue.toFixed(2),
+  }
+}
+
+export const calculateDecreaseValueReport = ({
+  type,
+  transactionValue,
+  currentReportRecipeValue,
+  currentReportExpenseValue,
+  currentReportTotal,
+}: CalculateDecreaseValueReportType) => {
+  const decreaseValueRecipe =
+    type === TransactionTypesEnum.RECIPE ? currentReportRecipeValue - transactionValue : currentReportRecipeValue
+  const decreaseValueExpense =
+    type === TransactionTypesEnum.EXPENSE ? currentReportExpenseValue - transactionValue : currentReportExpenseValue
+  const decreaseValueTotal =
+    type === TransactionTypesEnum.RECIPE ? currentReportTotal - transactionValue : currentReportTotal + transactionValue
+
+  return {
+    expense: +decreaseValueExpense.toFixed(2),
+    recipe: +decreaseValueRecipe.toFixed(2),
+    total: +decreaseValueTotal.toFixed(2),
   }
 }

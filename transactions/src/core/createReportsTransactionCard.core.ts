@@ -13,25 +13,26 @@ export class CreateReportsTransactionCardCore {
     if (!transaction.card?.name || transaction.type === TransactionTypesEnum.RECIPE) return
 
     try {
-      const reportMonthly = await this.repository.find({
+      const reportCard = await this.repository.find({
         yearMonth: transaction.yearMonth,
         userId: transaction.userId,
         card: transaction.card.name,
       })
-      console.info('reportCategory found', reportMonthly)
+      console.info('reportCard found', reportCard)
 
-      if (reportMonthly?.id) {
-        console.info('call updateExpenseValue')
+      if (reportCard?.id) {
+        console.info('call update report card')
+        const totalValue = reportCard.value + transaction.value
+
         const updateReportCard: UpdateReportTransactionsCardType = {
-          value: reportMonthly.value + transaction.value,
-          quantityTransactions: reportMonthly.quantityTransactions + 1,
+          value: +totalValue.toFixed(2),
+          quantityTransactions: reportCard.quantityTransactions + 1,
         }
 
-        await this.repository.updateReportValue(reportMonthly.id, updateReportCard)
+        await this.repository.updateReportValue(reportCard.id, updateReportCard)
         return
       }
 
-      // criar outro service para create
       console.info('create report card')
       const report: ReportTransactionsCardType = {
         id: randomUUID(),

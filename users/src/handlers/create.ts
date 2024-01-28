@@ -1,22 +1,22 @@
-import { UsersTypes } from './../shared/types/users.types'
+import { destr } from 'destr'
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
+import { UsersTypes } from './../shared/types/users.types'
 import { DynamoDBRepository } from '../repository/dynamodb.repository'
-import { CreateUserCore } from '../core/createUser.core'
+import { CreateCore } from '../core/create.core'
 import { AppErrorException, formatResponse } from '../utils'
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {
     console.debug('Event:', event)
-    const body = event.body
-    console.debug('Body:', body)
-    if (!body) {
+    if (!event.body) {
       throw new AppErrorException(400, 'Body not found!')
     }
-    const bodyParse: UsersTypes = JSON.parse(body)
+    const body = destr<UsersTypes>(event.body)
+    console.debug('Body:', body)
     const repository = new DynamoDBRepository()
-    const createUserCore = new CreateUserCore(repository)
+    const createUserCore = new CreateCore(repository)
 
-    await createUserCore.execute(bodyParse)
+    await createUserCore.execute(body)
     return formatResponse(200, {
       message: 'Usuário criado com sucesso!',
     })

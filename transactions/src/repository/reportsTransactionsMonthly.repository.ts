@@ -7,6 +7,7 @@ import {
   ReportsMonthlyTypes,
   UpdateExpenseValueMonthlyType,
   UpdateRecipeValueMonthlyType,
+  UpdateDecreaseValueReportsMonthlyType,
 } from '../shared/types'
 import ReportsTransactionMonthlyInterface from './interface/reportsTransactionMonthly.interface'
 
@@ -101,6 +102,23 @@ export class ReportsTransactionsMonthlyRepository implements ReportsTransactionM
         ':expenseValue': currentReport.expenseValue,
         ':totalValue': currentReport.total,
         ':qtdTransactions': currentReport.quantityTransactions,
+        ':dtUpdated': new Date().toISOString(),
+      },
+    })
+    await this.dynamodbDocumentClient.send(params)
+  }
+
+  async updateDecreaseReportValue(id: string, currentReport: UpdateDecreaseValueReportsMonthlyType): Promise<void> {
+    const params = new UpdateCommand({
+      TableName: process.env.TABLE_NAME,
+      Key: { id: id },
+      UpdateExpression:
+        'SET recipeValue = :recipeValue expenseValue = :expenseValue total = :total quantityTransactions = :quantityTransactions dtUpdated = :dtUpdated',
+      ExpressionAttributeValues: {
+        ':quantityTransactions': currentReport.quantityTransactions,
+        ':recipeValue': currentReport.recipeValue,
+        ':expenseValue': currentReport.expenseValue,
+        ':total': currentReport.total,
         ':dtUpdated': new Date().toISOString(),
       },
     })

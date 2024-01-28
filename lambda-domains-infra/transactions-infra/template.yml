@@ -1,0 +1,126 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Infra Transaction
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Resources:
+  IFinancesReportsTransactionsMonthlyTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      TableName: 
+        Fn::Join:
+          - '-'
+          - - Ref: AWS::StackName
+            - reports-monthly
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: userId
+          AttributeType: S
+        - AttributeName: yearMonth
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+        - AttributeName: yearMonth
+          KeyType: RANGE
+      GlobalSecondaryIndexes:
+        - IndexName: UserYearMonthIndex
+          KeySchema:
+            - AttributeName: userId
+              KeyType: HASH
+            - AttributeName: yearMonth
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL 
+
+  IFinancesReportsTransactionsCategoryTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        BillingMode: PAY_PER_REQUEST
+        TableName: 
+          Fn::Join:
+            - '-'
+            - - Ref: AWS::StackName
+              - reports-category
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: yearMonth
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: UserCategoryIndex
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+              - AttributeName: yearMonth
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL 
+  
+  IFinancesReportsTransactionsCardTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        BillingMode: PAY_PER_REQUEST
+        TableName: 
+          Fn::Join:
+            - '-'
+            - - Ref: AWS::StackName
+              - reports-card
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: yearMonth
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: UserCardIndex
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+              - AttributeName: yearMonth
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL 
+
+  IFinancesTransactionCategoryTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        BillingMode: "PAY_PER_REQUEST"
+        TableName: 
+          Fn::Join:
+            - '-'
+            - - Ref: AWS::StackName
+              - category
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+
+  IFinancesTransactionCardTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        BillingMode: "PAY_PER_REQUEST"
+        TableName: 
+          Fn::Join:
+            - '-'
+            - - Ref: AWS::StackName
+              - card
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+

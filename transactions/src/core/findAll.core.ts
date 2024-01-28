@@ -1,4 +1,4 @@
-import { FindAllWithQueryType } from 'src/shared/types'
+import { FindAllWithQueryType } from '../shared/types'
 import TransactionRepositoryInterface from '../repository/interface/transactionRepository.interface'
 import { AppErrorException } from '../utils'
 import { findAllWithQuerySchema } from '../shared/schemas'

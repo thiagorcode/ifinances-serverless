@@ -4,17 +4,15 @@ Description: API de Users
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Parameters:
-  ServiceName:
-    Description: Service name
-    Type: String
-  StackName:
-    Description: Stack name
+  TableUserName:
     Type: String
 Globals:
   Function:
     Timeout: 15
     Tracing: Active
     Runtime: nodejs18.x
+    Architectures:
+      - x86_64
     Layers:
       - !Ref RuntimeDependenciesLayer
   Api:
@@ -31,19 +29,6 @@ Resources:
       CompatibleRuntimes:
         - nodejs18.x
       RetentionPolicy: Retain
-  
-  IFinancesUsersTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        BillingMode: "PAY_PER_REQUEST"
-        TableName: ifinances-users
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-
   CreateUserFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Metadata:
@@ -53,16 +38,19 @@ Resources:
       FunctionName:
         Fn::Join:
         - '-'
-        - - Ref: StackName
-          - lambda-user-create
-      Architectures:
-      - x86_64
+        - - Ref: AWS::StackName
+          - create
       Environment:
         Variables:
-          TABLE_NAME: !Ref IFinancesUsersTable
+          TABLE_NAME: !Ref TableUserName
       Policies:
         - DynamoDBWritePolicy:
-            TableName: !Ref IFinancesUsersTable
+            TableName: !Ref TableUserName
+  CreateUserLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${CreateUserFunction}
+      RetentionInDays: 14
 
   FindByIdUserFunction:
     Type: AWS::Serverless::Function
@@ -73,13 +61,40 @@ Resources:
       FunctionName:
         Fn::Join:
         - '-'
-        - - Ref: StackName
-          - lambda-user-find-by-id
-      Architectures:
-      - x86_64
+        - - Ref: AWS::StackName
+          - find-by-id
       Policies:
         - DynamoDBReadPolicy:
-            TableName: !Ref IFinancesUsersTable
+            TableName: !Ref TableUserName
+  FindByIdUserLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${FindByIdUserFunction}
+      RetentionInDays: 14
+
+  AuthLoginFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/authLogin.handler
+      FunctionName:
+        Fn::Join:
+        - '-'
+        - - Ref: AWS::StackName
+          - auth-login
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TableUserName
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref TableUserName
+  AuthLoginLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${AuthLoginFunction}
+      RetentionInDays: 14
+
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
     Properties:
@@ -100,13 +115,3 @@ Resources:
           - Ref: AWS::StackName
       AutoConfigurationEnabled: 'true'
     DependsOn: ApplicationResourceGroup
-
-
-Outputs:
-  FindByIdUser:
-    Description: "FindById Lambda Function ARN"
-    Value: !GetAtt FindByIdUserFunction.Arn
-
-  CreateUser:
-    Description: "CreateUser Lambda Function ARN"
-    Value: !GetAtt CreateUserFunction.Arn
