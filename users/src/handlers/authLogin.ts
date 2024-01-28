@@ -15,11 +15,11 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     }
     const body = destr<{ username: string; password: string }>(event.body)
     console.debug('Body:', body)
-    const statusAccess = await validateAuth.execute(body.username, body.password)
+    const userAccess = await validateAuth.execute(body.username, body.password)
 
     return formatResponse(200, {
-      message: 'Login',
-      statusAccess,
+      message: 'Acesso realizado com sucesso',
+      userAccess,
     })
   } catch (err) {
     console.error(err)
@@ -30,7 +30,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
       })
     }
     return formatResponse(500, {
-      message: 'some error happened',
+      message: 'Erro inesperado',
     })
   }
 }

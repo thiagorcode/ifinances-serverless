@@ -1,8 +1,9 @@
 import { DynamoDB, ScanCommand } from '@aws-sdk/client-dynamodb'
-import { PutCommand, DynamoDBDocumentClient, GetCommand, QueryCommand } from '@aws-sdk/lib-dynamodb'
+import { PutCommand, DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb'
 
 import DynamoDBRepositoryInterface from './interface/dynamodbRepository.interface'
 import { UsersTypes } from '../shared/types'
+import { parseEventDynamoDB } from '../utils/parseEventDynamoDB'
 
 // TODO: Preciso pensar uma maneira para refatorar e separar cada metódo em um arquivo execute
 
@@ -13,12 +14,6 @@ export class DynamoDBRepository implements DynamoDBRepositoryInterface {
   constructor() {
     this.dynamodbClient = new DynamoDB()
     this.dynamodbDocumentClient = DynamoDBDocumentClient.from(this.dynamodbClient)
-    //  {
-    //   endpoint: 'http://localhost:4569',
-    //   region: 'sa-east-1',
-    //   accessKeyId: 'local',
-    //   secretAccessKey: 'local',
-    // }
   }
 
   async createUser(data: UsersTypes): Promise<void> {
@@ -41,18 +36,19 @@ export class DynamoDBRepository implements DynamoDBRepositoryInterface {
   }
 
   async findByUsername(username: string): Promise<UsersTypes | null> {
-    const params = new QueryCommand({
+    const params = new ScanCommand({
       TableName: process.env.TABLE_NAME,
-      KeyConditionExpression: 'username = :username',
+      FilterExpression: 'username = :username',
       ExpressionAttributeValues: {
-        ':username': username,
+        ':username': { S: username },
       },
     })
     const result = await this.dynamodbDocumentClient.send(params)
+    console.log(result)
     if (!result.Items) {
       return null
     }
-    return result.Items[0] as UsersTypes
+    return parseEventDynamoDB<UsersTypes>(result.Items[0])
   }
 
   async findAll(): Promise<UsersTypes[]> {

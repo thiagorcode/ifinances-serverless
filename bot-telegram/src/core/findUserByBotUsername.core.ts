@@ -6,8 +6,13 @@ export class FindUserByBotUsernameCore {
 
   async execute(userTelegram: string): Promise<UsersTypes | null> {
     console.info('call FindUserByBotUsernameCore')
-    const user = await this.userRepository.findUserByBotUsername(userTelegram)
+    try {
+      const user = await this.userRepository.findUserByBotUsername(userTelegram)
 
-    return user
+      return user
+    } catch (error) {
+      console.error(error)
+      return null
+    }
   }
 }

@@ -1,4 +1,5 @@
 import * as crypto from 'crypto'
+import jwt from 'jsonwebtoken'
 import DynamoDBRepositoryInterface from '../repository/interface/dynamodbRepository.interface'
 import { AppErrorException } from '../utils'
 
@@ -24,8 +25,20 @@ export class ValidateAuthCore {
       throw new AppErrorException(400, 'Usuário ou senha incorretos!')
     }
 
+    const jwtSecret = 'teste123'
+    const jwtToken = jwt.sign(
+      {
+        userId: user.id,
+        email: user.email,
+      },
+      jwtSecret,
+      { expiresIn: '2h' },
+    )
     return {
-      token: '11111',
+      token: jwtToken,
+      id: user.id,
+      email: user.email,
+      username: user.username,
     }
   }
 }
