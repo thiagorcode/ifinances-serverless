@@ -95,23 +95,26 @@ Resources:
       LogGroupName: !Sub /aws/lambda/${AuthLoginFunction}
       RetentionInDays: 14
 
-  ApplicationResourceGroup:
-    Type: AWS::ResourceGroups::Group
+  AuthorizerFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
     Properties:
-      Name:
+      Handler: dist/handlers/authorizer.handler
+      FunctionName:
         Fn::Join:
-        - ''
-        - - ApplicationInsights-SAM-
-          - Ref: AWS::StackName
-      ResourceQuery:
-        Type: CLOUDFORMATION_STACK_1_0
-  ApplicationInsightsMonitoring:
-    Type: AWS::ApplicationInsights::Application
+        - '-'
+        - - Ref: AWS::StackName
+          - authorizer
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TableUserName
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref TableUserName
+
+  AuthorizerLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
     Properties:
-      ResourceGroupName:
-        Fn::Join:
-        - ''
-        - - ApplicationInsights-SAM-
-          - Ref: AWS::StackName
-      AutoConfigurationEnabled: 'true'
-    DependsOn: ApplicationResourceGroup
+      LogGroupName: !Sub /aws/lambda/${AuthorizerFunction}
+      RetentionInDays: 14
