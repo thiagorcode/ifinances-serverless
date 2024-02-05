@@ -1,4 +1,4 @@
-.PHONY: build-CreateUserFunction  build-FindByIdUserFunction build-AuthLoginFunction
+.PHONY: build-CreateUserFunction build-FindByIdUserFunction build-AuthLoginFunction build-AuthorizerFunction
 .PHONY: build-RuntimeDependenciesLayer build-lambda-common 
 
 build-CreateUserFunction:
@@ -9,6 +9,9 @@ build-FindByIdUserFunction:
 
 build-AuthLoginFunction:
 	$(MAKE) HANDLER=src/handlers/authLogin.ts build-lambda-common
+
+build-AuthorizerFunction:
+	$(MAKE) HANDLER=src/handlers/authorizer.ts build-lambda-common
 
 build-lambda-common:
 	npm install
