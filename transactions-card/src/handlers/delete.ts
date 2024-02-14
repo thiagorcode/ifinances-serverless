@@ -1,5 +1,5 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import { TransactionRepository } from '../repository/transactions.repository'
+import { TransactionCardRepository } from '../repository/transactionsCard.repository'
 import { AppErrorException, formatResponse } from '../utils'
 import { DeleteCore } from '../core/delete.core'
 
@@ -10,7 +10,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     if (!transactionId) {
       throw new AppErrorException(400, 'transactionId not found!')
     }
-    const repository = new TransactionRepository()
+    const repository = new TransactionCardRepository()
     const deleteTransactionCore = new DeleteCore(repository)
 
     await deleteTransactionCore.execute(transactionId)

@@ -1,37 +1,17 @@
-import { CreateTransactionsType } from '../shared/types'
-import TransactionRepositoryInterface from '../repository/interface/transactionRepository.interface'
+import { CreateCardTransactionsType } from '../shared/types'
+import { TransactionCardRepositoryInterface } from '../repository/interface/transactionCardRepository.interface'
 import { AppErrorException } from '../utils'
-import { transactionsSchema } from '../shared/schemas'
-import { randomUUID } from 'crypto'
-import { addMonths, parseISO } from 'date-fns'
+import { transactionsCardSchema } from '../shared/schemas'
 
 export class CreateCore {
-  constructor(private repository: TransactionRepositoryInterface) {}
+  constructor(private repository: TransactionCardRepositoryInterface) {}
 
-  async execute(transaction: CreateTransactionsType) {
+  async execute(card: CreateCardTransactionsType) {
     console.info('init create service')
     try {
-      const transactionParsed = transactionsSchema.parse(transaction)
-      const numberInstallments = transactionParsed.numberInstallments || 1
-      const transactions: CreateTransactionsType[] = []
-      // TODO: Encaminhar para o SQS
-      for (let i = 1; i <= numberInstallments; i++) {
-        const newTransaction: CreateTransactionsType = {
-          ...transactionParsed,
-          id: randomUUID(),
-          currentInstallment: i,
-          date:
-            numberInstallments > 1
-              ? addMonths(parseISO(transactionParsed.date), i - 1).toISOString()
-              : transactionParsed.date,
-        }
-        const transactionValidated = transactionsSchema.parse(newTransaction)
-        transactions.push(transactionValidated)
-      }
+      const cardParsed = transactionsCardSchema.parse(card)
 
-      for (const transaction of transactions) {
-        await this.repository.create(transaction)
-      }
+      await this.repository.create(cardParsed)
     } catch (error) {
       console.error(error)
       throw new AppErrorException(400, 'Erro inesperado, tente novamente mais tarde!')

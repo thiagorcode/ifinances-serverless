@@ -1,5 +1,5 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import { TransactionRepository } from '../repository/transactions.repository'
+import { TransactionCardRepository } from '../repository/transactionsCard.repository'
 import { AppErrorException, formatResponse } from '../utils'
 import { FindAllCore } from '../core/findAll.core'
 import { FindAllWithQueryOriginType } from '../shared/types'
@@ -12,7 +12,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
       throw new AppErrorException(400, 'Não foi enviado o parâmetro userId!')
     }
     const query = event.queryStringParameters as FindAllWithQueryOriginType
-    const repository = new TransactionRepository()
+    const repository = new TransactionCardRepository()
     const findAllCore = new FindAllCore(repository)
     const transactions = await findAllCore.execute({
       userId,

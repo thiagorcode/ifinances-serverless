@@ -1,5 +1,5 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import { TransactionRepository } from '../repository/transactions.repository'
+import { TransactionCardRepository } from '../repository/transactionsCard.repository'
 import { AppErrorException, formatResponse } from '../utils'
 import { FindCore } from '../core/find.core'
 
@@ -10,7 +10,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     if (!transactionId) {
       throw new AppErrorException(400, 'Não foi enviado o parâmetro transactionId!')
     }
-    const repository = new TransactionRepository()
+    const repository = new TransactionCardRepository()
     const findCore = new FindCore(repository)
 
     const transactions = await findCore.execute(transactionId)

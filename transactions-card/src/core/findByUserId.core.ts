@@ -1,9 +1,8 @@
-import TransactionRepositoryInterface from '../repository/interface/transactionRepository.interface'
+import { TransactionCardRepositoryInterface } from '../repository/interface/transactionCardRepository.interface'
 import { AppErrorException } from '../utils'
 
-// TODO: Aplicar injenção de depedências
 export class FindByUserIdCore {
-  constructor(private repository: TransactionRepositoryInterface) {}
+  constructor(private repository: TransactionCardRepositoryInterface) {}
 
   async execute(userId: string) {
     console.info('init findByUserId service')

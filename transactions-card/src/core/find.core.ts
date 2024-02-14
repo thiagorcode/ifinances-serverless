@@ -1,4 +1,4 @@
-import TransactionRepositoryInterface from '../repository/interface/transactionRepository.interface'
+import TransactionRepositoryInterface from '../repository/interface/transactionCardRepository.interface'
 import { AppErrorException } from '../utils'
 
 // TODO: Aplicar injenção de depedências

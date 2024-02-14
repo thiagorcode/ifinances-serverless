@@ -30,6 +30,9 @@ Resources:
       CompatibleRuntimes:
         - nodejs20.x
       RetentionPolicy: Retain
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TableTransactionsCardName
   
   CreateCardTransactionFunction:
     Type: AWS::Serverless::Function 
@@ -42,9 +45,6 @@ Resources:
           - '-'
           - - Ref: AWS::StackName
             - create
-      Environment:
-        Variables:
-          TABLE_NAME: !Ref TableTransactionsCardName
       Policies:
         - DynamoDBWritePolicy:
             TableName: !Ref TableTransactionsCardName
