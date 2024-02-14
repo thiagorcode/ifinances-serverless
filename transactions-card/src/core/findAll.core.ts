@@ -1,27 +1,17 @@
-import { FindAllWithQueryType } from '../shared/types'
-import TransactionRepositoryInterface from '../repository/interface/transactionCardRepository.interface'
+import { TransactionCardRepositoryInterface } from '../repository/interface/transactionCardRepository.interface'
 import { AppErrorException } from '../utils'
-import { findAllWithQuerySchema } from '../shared/schemas'
-import { totalizersValue } from '../utils/totalizersValue'
 
 export class FindAllCore {
-  constructor(private repository: TransactionRepositoryInterface) {}
+  constructor(private repository: TransactionCardRepositoryInterface) {}
 
-  async execute({ categoryId, date, isPaid, type, userId }: FindAllWithQueryType) {
+  async execute({ categoryId, date, isPaid, type, userId }: any) {
     console.info('init findAll service')
     const query = { userId, categoryId, date, isPaid, type }
-
+    console.log(this.repository)
     try {
       console.log('FindAll paths', query)
-      const validatedQuery = findAllWithQuerySchema.parse(query)
-      // TODO: Precisamos adicionar um redis
-      const transactions = await this.repository.findAllWithQuery(validatedQuery)
-      const totalizers = totalizersValue(transactions)
 
-      return {
-        totalizers,
-        ...transactions,
-      }
+      return {}
     } catch (error) {
       console.error(error)
       throw new AppErrorException(400, 'Erro inesperado, tente novamente mais tarde!')

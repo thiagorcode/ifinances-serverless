@@ -1,8 +1,8 @@
-import TransactionRepositoryInterface from '../repository/interface/transactionCardRepository.interface'
+import { TransactionCardRepositoryInterface } from '../repository/interface/transactionCardRepository.interface'
 import { AppErrorException } from '../utils'
 
 export class DeleteCore {
-  constructor(private repository: TransactionRepositoryInterface) {}
+  constructor(private repository: TransactionCardRepositoryInterface) {}
 
   async execute(transactionId: string) {
     console.info('init delete service')

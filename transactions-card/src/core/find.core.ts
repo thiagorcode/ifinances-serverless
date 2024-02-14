@@ -1,9 +1,9 @@
-import TransactionRepositoryInterface from '../repository/interface/transactionCardRepository.interface'
+import { TransactionCardRepositoryInterface } from '../repository/interface/transactionCardRepository.interface'
 import { AppErrorException } from '../utils'
 
 // TODO: Aplicar injenção de depedências
 export class FindCore {
-  constructor(private repository: TransactionRepositoryInterface) {}
+  constructor(private repository: TransactionCardRepositoryInterface) {}
 
   async execute(id: string) {
     console.info('init find service')

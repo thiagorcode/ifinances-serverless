@@ -1,7 +1,7 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { TransactionCardRepository } from '../repository/transactionsCard.repository'
 import { AppErrorException, formatResponse } from '../utils'
-import { CreateTransactionsType } from '../shared/types'
+import { CreateCardTransactionsType } from '../shared/types'
 import { UpdateCore } from '../core/update.core'
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
@@ -11,7 +11,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     if (!body) {
       throw new AppErrorException(400, 'Body not found!')
     }
-    const bodyParse: CreateTransactionsType = JSON.parse(body)
+    const bodyParse: CreateCardTransactionsType = JSON.parse(body)
     const repository = new TransactionCardRepository()
     const updateTransactionCore = new UpdateCore(repository)
 

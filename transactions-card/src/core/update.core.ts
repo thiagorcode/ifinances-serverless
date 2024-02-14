@@ -1,10 +1,10 @@
 import { UpdateTransactionsCardType } from '../shared/types'
-import TransactionRepositoryInterface from '../repository/interface/transactionCardRepository.interface'
+import { TransactionCardRepositoryInterface } from '../repository/interface/transactionCardRepository.interface'
 import { AppErrorException } from '../utils'
 import { transactionsCardSchema } from '../shared/schemas'
 
 export class UpdateCore {
-  constructor(private repository: TransactionRepositoryInterface) {}
+  constructor(private repository: TransactionCardRepositoryInterface) {}
 
   async execute(transaction: UpdateTransactionsCardType) {
     console.info('init update service')

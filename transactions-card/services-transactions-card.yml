@@ -4,18 +4,20 @@ Description: API de Cartões para Transação
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Parameters:
- 
   TableTransactionsCardName:
     Type: String
 Globals:
   Function:
     Timeout: 15
     Tracing: Active
-    Runtime: nodejs20.x
+    Runtime: nodejs18.x
     Architectures:
       - x86_64
     Layers:
       - !Ref RuntimeDependenciesLayer
+    Environment:
+        Variables:
+          TABLE_NAME: !Ref TableTransactionsCardName
   Api:
     TracingEnabled: true
 
@@ -30,9 +32,7 @@ Resources:
       CompatibleRuntimes:
         - nodejs20.x
       RetentionPolicy: Retain
-      Environment:
-        Variables:
-          TABLE_NAME: !Ref TableTransactionsCardName
+      
   
   CreateCardTransactionFunction:
     Type: AWS::Serverless::Function 
@@ -67,7 +67,7 @@ Resources:
             - find
       Policies:
         - DynamoDBReadPolicy:
-            TableName: !Ref IFinancesTransactionsTable
+            TableName: !Ref TableTransactionsCardName
   FindCardTransactionLambdaLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
@@ -86,7 +86,7 @@ Resources:
             - find-userId
       Policies:
         - DynamoDBReadPolicy:
-            TableName: !Ref IFinancesTransactionsTable
+            TableName: !Ref TableTransactionsCardName
   FindByUserIdTransactionLambdaLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
@@ -107,7 +107,7 @@ Resources:
             - find-all
       Policies:
         - DynamoDBReadPolicy:
-            TableName: !Ref IFinancesTransactionsTable
+            TableName: !Ref TableTransactionsCardName
   FindAllCardTransactionLambdaLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
@@ -126,7 +126,7 @@ Resources:
             - delete
       Policies:
         - DynamoDBWritePolicy:
-            TableName: !Ref IFinancesTransactionsTable
+            TableName: !Ref TableTransactionsCardName
   DeleteCardTransactionLambdaLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
@@ -145,7 +145,7 @@ Resources:
               - update
       Policies:
         - DynamoDBWritePolicy:
-            TableName: !Ref IFinancesTransactionsTable
+            TableName: !Ref TableTransactionsCardName
   UpdateTransactionLambdaLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
