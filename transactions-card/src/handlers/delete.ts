@@ -1,22 +1,21 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { TransactionRepository } from '../repository/transactions.repository'
 import { AppErrorException, formatResponse } from '../utils'
-import { FindCore } from '../core/find.core'
+import { DeleteCore } from '../core/delete.core'
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {
-    console.debug('Event:', event)
     const transactionId = event.pathParameters?.id
+
     if (!transactionId) {
-      throw new AppErrorException(400, 'Não foi enviado o parâmetro transactionId!')
+      throw new AppErrorException(400, 'transactionId not found!')
     }
     const repository = new TransactionRepository()
-    const findCore = new FindCore(repository)
+    const deleteTransactionCore = new DeleteCore(repository)
 
-    const transactions = await findCore.execute(transactionId)
+    await deleteTransactionCore.execute(transactionId)
     return formatResponse(200, {
-      message: 'Buscas realizada com sucesso!',
-      transactions,
+      message: 'Transação removida com sucesso!',
     })
   } catch (err) {
     console.error(err)

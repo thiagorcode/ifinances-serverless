@@ -1,10 +1,10 @@
 import { ReportsTransactionsMonthlyRepository } from '../repository/reportsTransactionsMonthly.repository'
-import { SQSEvent, Context } from 'aws-lambda'
+import { SQSEvent } from 'aws-lambda'
 import { CreateReportsTransactionMonthlyCore } from '../core/createReportsTransactionMonthly.core'
 import { SendTransactionsReportsSQSType } from '../shared/types'
 import { DecreaseValueReportsTransactionMonthlyCore } from '../core/decreaseValueReportsTransactionMonthly.core'
 
-export const handler = async (event: SQSEvent, context: Context): Promise<PromiseSettledResult<void>[]> => {
+export const handler = async (event: SQSEvent): Promise<PromiseSettledResult<void>[]> => {
   const repository = new ReportsTransactionsMonthlyRepository()
   const createReportsTransactionMonthlyCore = new CreateReportsTransactionMonthlyCore(repository)
   const decreaseValueReportsMonthlyCore = new DecreaseValueReportsTransactionMonthlyCore(repository)

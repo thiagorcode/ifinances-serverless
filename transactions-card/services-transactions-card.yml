@@ -1,16 +1,17 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: API de transação
+Description: API de Cartões para Transação
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Parameters:
+ 
   TableTransactionsCardName:
     Type: String
 Globals:
   Function:
     Timeout: 15
     Tracing: Active
-    Runtime: nodejs18.x
+    Runtime: nodejs20.x
     Architectures:
       - x86_64
     Layers:
@@ -30,8 +31,7 @@ Resources:
         - nodejs20.x
       RetentionPolicy: Retain
   
-
-  CreateTransactionCardFunction:
+  CreateCardTransactionFunction:
     Type: AWS::Serverless::Function 
     Metadata:
       BuildMethod: makefile
@@ -44,18 +44,17 @@ Resources:
             - create
       Environment:
         Variables:
-          TABLE_NAME: !Ref IFinancesTransactionsTable
+          TABLE_NAME: !Ref TableTransactionsCardName
       Policies:
         - DynamoDBWritePolicy:
-            TableName: !Ref IFinancesTransactionsTable
-  CreateTransactionCardLambdaLogGroup:
+            TableName: !Ref TableTransactionsCardName
+  CreateCardTransactionLambdaLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub /aws/lambda/${CreateTransactionFunction}
+      LogGroupName: !Sub /aws/lambda/${CreateCardTransactionFunction}
       RetentionInDays: 14
   
-  
-  FindTransactionFunction:
+  FindCardTransactionFunction:
     Type: AWS::Serverless::Function
     Metadata:
       BuildMethod: makefile
@@ -69,12 +68,12 @@ Resources:
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref IFinancesTransactionsTable
-  FindTransactionLambdaLogGroup:
+  FindCardTransactionLambdaLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub /aws/lambda/${FindTransactionFunction}
+      LogGroupName: !Sub /aws/lambda/${FindCardTransactionFunction}
       RetentionInDays: 14
-  FindByUserIdTransactionFunction:
+  FindByUserIdCardTransactionFunction:
     Type: AWS::Serverless::Function
     Metadata:
       BuildMethod: makefile
@@ -91,29 +90,11 @@ Resources:
   FindByUserIdTransactionLambdaLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub /aws/lambda/${FindByUserIdTransactionFunction}
+      LogGroupName: !Sub /aws/lambda/${FindByUserIdCardTransactionFunction}
       RetentionInDays: 14
 
-  FindLastTransactionFunction:
-    Type: AWS::Serverless::Function
-    Metadata:
-      BuildMethod: makefile
-    Properties:
-      Handler: dist/handlers/findLast.handler
-      FunctionName:
-        Fn::Join:
-          - '-'
-          - - Ref: AWS::StackName
-            - find-last
-      Policies:
-        - DynamoDBReadPolicy:
-            TableName: !Ref IFinancesTransactionsTable
-  FindLastTransactionLambdaLogGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: !Sub /aws/lambda/${FindLastTransactionFunction}
-      RetentionInDays: 14
-  FindAllTransactionFunction:
+  
+  FindAllCardTransactionFunction:
     Type: AWS::Serverless::Function
     Metadata:
       BuildMethod: makefile
@@ -127,12 +108,12 @@ Resources:
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref IFinancesTransactionsTable
-  FindAllTransactionLambdaLogGroup:
+  FindAllCardTransactionLambdaLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub /aws/lambda/${FindAllTransactionFunction}
+      LogGroupName: !Sub /aws/lambda/${FindAllCardTransactionFunction}
       RetentionInDays: 14
-  DeleteTransactionFunction:
+  DeleteCardTransactionFunction:
     Type: AWS::Serverless::Function
     Metadata:
       BuildMethod: makefile
@@ -146,12 +127,12 @@ Resources:
       Policies:
         - DynamoDBWritePolicy:
             TableName: !Ref IFinancesTransactionsTable
-  DeleteTransactionLambdaLogGroup:
+  DeleteCardTransactionLambdaLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub /aws/lambda/${DeleteTransactionFunction}
+      LogGroupName: !Sub /aws/lambda/${DeleteCardTransactionFunction}
       RetentionInDays: 14
-  UpdateTransactionFunction:
+  UpdateCardTransactionFunction:
     Type: AWS::Serverless::Function
     Metadata:
       BuildMethod: makefile
@@ -168,5 +149,5 @@ Resources:
   UpdateTransactionLambdaLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub /aws/lambda/${UpdateTransactionFunction}
+      LogGroupName: !Sub /aws/lambda/${UpdateCardTransactionFunction}
       RetentionInDays: 14

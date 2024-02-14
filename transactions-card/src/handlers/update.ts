@@ -1,22 +1,23 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { TransactionRepository } from '../repository/transactions.repository'
 import { AppErrorException, formatResponse } from '../utils'
-import { FindCore } from '../core/find.core'
+import { CreateTransactionsType } from '../shared/types'
+import { UpdateCore } from '../core/update.core'
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {
-    console.debug('Event:', event)
-    const transactionId = event.pathParameters?.id
-    if (!transactionId) {
-      throw new AppErrorException(400, 'Não foi enviado o parâmetro transactionId!')
+    const body = event.body
+    console.debug('Body:', body)
+    if (!body) {
+      throw new AppErrorException(400, 'Body not found!')
     }
+    const bodyParse: CreateTransactionsType = JSON.parse(body)
     const repository = new TransactionRepository()
-    const findCore = new FindCore(repository)
+    const updateTransactionCore = new UpdateCore(repository)
 
-    const transactions = await findCore.execute(transactionId)
+    await updateTransactionCore.execute(bodyParse)
     return formatResponse(200, {
-      message: 'Buscas realizada com sucesso!',
-      transactions,
+      message: 'Transação atualizada com sucesso!',
     })
   } catch (err) {
     console.error(err)
