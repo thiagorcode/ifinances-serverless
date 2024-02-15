@@ -6,6 +6,7 @@ export const reportTransactionsCardSchema = z.object({
   value: z.number(),
   card: z.string(),
   yearMonth: z.string(),
+  goal: z.number().default(0),
   quantityTransactions: z.number(),
   year: z.string(),
   userId: z.string(),

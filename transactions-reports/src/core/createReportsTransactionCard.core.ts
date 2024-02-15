@@ -38,6 +38,7 @@ export class CreateReportsTransactionCardCore {
         card: transaction.card.name,
         value: transaction.value,
         year: transaction.year,
+        goal: 0,
         yearMonth: transaction.yearMonth,
         userId: transaction.userId,
         quantityTransactions: 1,

@@ -1,31 +1,7 @@
-.PHONY: build-CreateTransactionFunction build-FindTransactionFunction build-FindByUserIdTransactionFunction build-FindAllTransactionFunction build-FindLastTransactionFunction
-.PHONY: build-SQSReportsTransactionCategoryFunction build-DDBStreamReportsTransactionFunction build-SQSReportsTransactionCardFunction build-SQSReportsTransactionMonthlyFunction
+.PHONY: build-SQSReportsTransactionCategoryFunction build-SQSReportsTransactionCardFunction build-SQSReportsTransactionMonthlyFunction
 .PHONY: build-UpdateTransactionFunction build-UpdateTransactionFunction build-FindReportMonthlyTransactionFunction
 .PHONY: build-RuntimeDependenciesLayer build-lambda-common 
 
-build-CreateTransactionFunction:
-	$(MAKE) HANDLER=src/handlers/create.ts build-lambda-common
-
-build-FindTransactionFunction:
-	$(MAKE) HANDLER=src/handlers/find.ts build-lambda-common
-
-build-FindByUserIdTransactionFunction:
-	$(MAKE) HANDLER=src/handlers/findByUserId.ts build-lambda-common
-
-build-FindLastTransactionFunction:
-	$(MAKE) HANDLER=src/handlers/findLast.ts build-lambda-common
-
-build-FindAllTransactionFunction:
-	$(MAKE) HANDLER=src/handlers/findAll.ts build-lambda-common
-
-build-DeleteTransactionFunction:
-	$(MAKE) HANDLER=src/handlers/delete.ts build-lambda-common
-
-build-UpdateTransactionFunction:
-	$(MAKE) HANDLER=src/handlers/update.ts build-lambda-common
-
-build-DDBStreamReportsTransactionFunction:
-	$(MAKE) HANDLER=src/handlers/ddbStreamReportsTransactions.ts build-lambda-common
 
 build-SQSReportsTransactionMonthlyFunction:
 	$(MAKE) HANDLER=src/handlers/sqsReportsTransactionsMonthly.ts build-lambda-common
@@ -57,7 +33,7 @@ build-RuntimeDependenciesLayer:
 	rm -rf "$(ARTIFACTS_DIR)/nodejs/node_modules/aws-sdk"
 
 build-deploy-common:
-	sam build -t services-transactions.yml
+	sam build -t services-transactions-reports.yml
 	cp -r ./samconfig.toml .aws-sam/build
 	$(eval PARAMS := $(shell cat "params.$(env).json" | jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]'))
 	cd .aws-sam/build && sam deploy --on-failure DELETE --region sa-east-1 --parameter-overrides $(PARAMS) --config-env dev

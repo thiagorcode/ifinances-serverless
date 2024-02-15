@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: API de transação
+Description: Stack of reports transactions
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Parameters:
@@ -41,7 +41,7 @@ Resources:
         Fn::Join:
           - '-'
           - - Ref: AWS::StackName
-            - sqs-reports-monthly
+            - sqs-monthly
 
   ReportsTransactionsCategoryQueue:
     Type: AWS::SQS::Queue
@@ -50,7 +50,7 @@ Resources:
         Fn::Join:
           - '-'
           - - Ref: AWS::StackName
-            - sqs-reports-category
+            - sqs-category
 
   ReportsTransactionsCardQueue:
     Type: AWS::SQS::Queue
@@ -59,7 +59,7 @@ Resources:
         Fn::Join:
           - '-'
           - - Ref: AWS::StackName
-            - sqs-reports-card
+            - sqs-card
   
   ReportsTransactionsQueuePolicy:
     Type: AWS::SQS::QueuePolicy
@@ -100,7 +100,7 @@ Resources:
         Fn::Join:
           - '-'
           - - Ref: AWS::StackName
-            - sqs-reports-monthly
+            - monthly
       Environment:
         Variables:
           TABLE_NAME: !Ref TableReportTransactionsMonthlyName
@@ -125,7 +125,7 @@ Resources:
         Fn::Join:
           - '-'
           - - Ref: AWS::StackName
-            - sqs-reports-category
+            - category
       Environment:
         Variables:
           TABLE_NAME: !Ref TableReportTransactionsCategoryName
@@ -150,7 +150,7 @@ Resources:
         Fn::Join:
           - '-'
           - - Ref: AWS::StackName
-            - sqs-reports-card
+            - card
       Environment:
         Variables:
           TABLE_NAME: !Ref TableReportTransactionsCardName
@@ -174,7 +174,7 @@ Resources:
         Fn::Join:
           - '-'
           - - Ref: AWS::StackName
-            - find-report-monthly
+            - find-monthly
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref TableReportTransactionsMonthlyName
