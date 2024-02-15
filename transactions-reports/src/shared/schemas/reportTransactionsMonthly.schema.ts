@@ -7,6 +7,7 @@ export const reportTransactionsMonthlySchema = z.object({
   expenseValue: z.number(),
   total: z.number(),
   year: z.string(),
+  goal: z.number().default(0),
   quantityTransactions: z.number(),
   yearMonth: z.string(),
   userId: z.string(),

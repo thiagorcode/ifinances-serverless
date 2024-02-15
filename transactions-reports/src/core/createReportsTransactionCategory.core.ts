@@ -40,6 +40,7 @@ export class CreateReportsTransactionCategoryCore {
         value: transaction.value,
         year: transaction.year,
         type: transaction.type,
+        goal: 0,
         yearMonth: transaction.yearMonth,
         userId: transaction.userId,
         quantityTransactions: 1,

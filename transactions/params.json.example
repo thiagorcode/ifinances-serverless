@@ -1,5 +1,8 @@
 {
   "TableReportTransactionsMonthlyName": "",
   "TableReportTransactionsCategoryName": "",
-  "TableReportTransactionsCardName": ""
+  "TableReportTransactionsCardName": "",
+  "QueueReportTransactionsMonthlyName": "",
+  "QueueReportTransactionsCategoryName": "",
+  "QueueReportTransactionsCardName": ""
 }

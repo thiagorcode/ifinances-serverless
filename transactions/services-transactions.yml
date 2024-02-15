@@ -10,6 +10,12 @@ Parameters:
     Type: String
   TableReportTransactionsCardName:
     Type: String
+  QueueReportTransactionsMonthlyName:
+    Type: String
+  QueueReportTransactionsCategoryName:
+    Type: String
+  QueueReportTransactionsCardName:
+    Type: String
 Globals:
   Function:
     Timeout: 15
@@ -66,34 +72,6 @@ Resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL
-
-
-  ReportsTransactionsMonthlyQueue:
-    Type: AWS::SQS::Queue
-    Properties:
-      QueueName: 
-        Fn::Join:
-          - '-'
-          - - Ref: AWS::StackName
-            - sqs-reports-monthly
-
-  ReportsTransactionsCategoryQueue:
-    Type: AWS::SQS::Queue
-    Properties:
-      QueueName:
-        Fn::Join:
-          - '-'
-          - - Ref: AWS::StackName
-            - sqs-reports-category
-
-  ReportsTransactionsCardQueue:
-    Type: AWS::SQS::Queue
-    Properties:
-      QueueName: 
-        Fn::Join:
-          - '-'
-          - - Ref: AWS::StackName
-            - sqs-reports-card
   CreateTransactionsQueue:
     Type: AWS::SQS::Queue
     Properties:
@@ -103,22 +81,6 @@ Resources:
           - - Ref: AWS::StackName
             - sqs-create
   
-
-  ReportsTransactionsQueuePolicy:
-    Type: AWS::SQS::QueuePolicy
-    Properties:
-      PolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Action:
-              - sqs:*
-            Effect: Allow
-            Principal:
-              AWS: !Ref AWS::AccountId
-            Resource: !GetAtt ReportsTransactionsMonthlyQueue.Arn
-      Queues:
-        - !Ref ReportsTransactionsMonthlyQueue
-
   CreateTransactionFunction:
     Type: AWS::Serverless::Function 
     Metadata:
@@ -150,16 +112,16 @@ Resources:
             - ddb-stream-reports
       Environment:
         Variables:
-          REPORTS_TRANSACTIONS_MONTHLY_QUEUE_NAME: !GetAtt ReportsTransactionsMonthlyQueue.QueueName
-          REPORTS_TRANSACTIONS_CATEGORY_QUEUE_NAME: !GetAtt ReportsTransactionsCategoryQueue.QueueName
-          REPORTS_TRANSACTIONS_CARD_QUEUE_NAME: !GetAtt ReportsTransactionsCardQueue.QueueName
+          REPORTS_TRANSACTIONS_MONTHLY_QUEUE_NAME: !Ref QueueReportTransactionsMonthlyName
+          REPORTS_TRANSACTIONS_CATEGORY_QUEUE_NAME: !Ref QueueReportTransactionsCategoryName
+          REPORTS_TRANSACTIONS_CARD_QUEUE_NAME: !Ref QueueReportTransactionsCardName
       Policies:
         - SQSSendMessagePolicy:
-            QueueName: !GetAtt ReportsTransactionsMonthlyQueue.QueueName
+            QueueName: !Ref QueueReportTransactionsMonthlyName
         - SQSSendMessagePolicy:
-            QueueName: !GetAtt ReportsTransactionsCategoryQueue.QueueName
+            QueueName: !Ref QueueReportTransactionsCategoryName
         - SQSSendMessagePolicy:
-            QueueName: !GetAtt ReportsTransactionsCardQueue.QueueName
+            QueueName: !Ref QueueReportTransactionsCardName
       Events:
         DynamoDBEvent:
           Type: DynamoDB
@@ -167,80 +129,6 @@ Resources:
             Stream: !GetAtt IFinancesTransactionsTable.StreamArn
             StartingPosition: LATEST
     
-  SQSReportsTransactionMonthlyFunction:
-    Type: AWS::Serverless::Function 
-    Metadata:
-      BuildMethod: makefile
-    Properties:
-      Handler: dist/handlers/sqsReportsTransactionsMonthly.handler
-      FunctionName:
-        Fn::Join:
-          - '-'
-          - - Ref: AWS::StackName
-            - sqs-reports-monthly
-      Environment:
-        Variables:
-          TABLE_NAME: !Ref TableReportTransactionsMonthlyName
-      Policies:
-        - DynamoDBWritePolicy:
-            TableName: !Ref TableReportTransactionsMonthlyName
-        - DynamoDBReadPolicy:
-            TableName: !Ref TableReportTransactionsMonthlyName
-      Events:
-        SQSEvent:
-          Type: SQS
-          Properties:
-            Queue: !GetAtt ReportsTransactionsMonthlyQueue.Arn
-
-  SQSReportsTransactionCategoryFunction:
-    Type: AWS::Serverless::Function 
-    Metadata:
-      BuildMethod: makefile
-    Properties:
-      Handler: dist/handlers/sqsReportsTransactionsCategory.handler
-      FunctionName:
-        Fn::Join:
-          - '-'
-          - - Ref: AWS::StackName
-            - sqs-reports-category
-      Environment:
-        Variables:
-          TABLE_NAME: !Ref TableReportTransactionsCategoryName
-      Policies:
-        - DynamoDBWritePolicy:
-            TableName: !Ref TableReportTransactionsCategoryName
-        - DynamoDBReadPolicy:
-            TableName: !Ref TableReportTransactionsCategoryName
-      Events:
-        SQSEvent:
-          Type: SQS
-          Properties:
-            Queue: !GetAtt ReportsTransactionsCategoryQueue.Arn
-  
-  SQSReportsTransactionCardFunction:
-    Type: AWS::Serverless::Function 
-    Metadata:
-      BuildMethod: makefile
-    Properties:
-      Handler: dist/handlers/sqsReportsTransactionsCard.handler
-      FunctionName:
-        Fn::Join:
-          - '-'
-          - - Ref: AWS::StackName
-            - sqs-reports-card
-      Environment:
-        Variables:
-          TABLE_NAME: !Ref TableReportTransactionsCardName
-      Policies:
-        - DynamoDBWritePolicy:
-            TableName: !Ref TableReportTransactionsCardName
-        - DynamoDBReadPolicy:
-            TableName: !Ref TableReportTransactionsCardName
-      Events:
-        SQSEvent:
-          Type: SQS
-          Properties:
-            Queue: !GetAtt ReportsTransactionsCardQueue.Arn
   
   SQSCreateTransactionFunction:
     Type: AWS::Serverless::Function 
@@ -279,21 +167,6 @@ Resources:
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref IFinancesTransactionsTable
-
-  FindReportMonthlyTransactionFunction:
-    Type: AWS::Serverless::Function
-    Metadata:
-      BuildMethod: makefile
-    Properties:
-      Handler: dist/handlers/findReportMonthly.handler
-      FunctionName:
-        Fn::Join:
-          - '-'
-          - - Ref: AWS::StackName
-            - find-report-monthly
-      Policies:
-        - DynamoDBReadPolicy:
-            TableName: !Ref TableReportTransactionsMonthlyName
 
   FindByUserIdTransactionFunction:
     Type: AWS::Serverless::Function
@@ -413,24 +286,3 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${UpdateTransactionFunction}
       RetentionInDays: 14
-  SQSReportsCategoryTransactionLambdaLogGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: !Sub /aws/lambda/${SQSReportsTransactionCategoryFunction}
-      RetentionInDays: 14
-  SQSReportsCardTransactionLambdaLogGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: !Sub /aws/lambda/${SQSReportsTransactionCardFunction}
-      RetentionInDays: 14
-  SQSReportsMonthlyTransactionLambdaLogGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: !Sub /aws/lambda/${SQSReportsTransactionMonthlyFunction}
-      RetentionInDays: 14
-  FindReportMonthlyTransactionLambdaLogGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: !Sub /aws/lambda/${FindReportMonthlyTransactionFunction}
-      RetentionInDays: 14
-         
