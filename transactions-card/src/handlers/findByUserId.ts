@@ -1,22 +1,23 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import { TransactionRepository } from '../repository/transactions.repository'
+import { TransactionCardRepository } from '../repository/transactionsCard.repository'
 import { AppErrorException, formatResponse } from '../utils'
-import { FindCore } from '../core/find.core'
+import { FindByUserIdCore } from '../core/findByUserId.core'
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {
     console.debug('Event:', event)
-    const transactionId = event.pathParameters?.id
-    if (!transactionId) {
+    const userId = event.pathParameters?.userId
+
+    if (!userId) {
       throw new AppErrorException(400, 'Não foi enviado o parâmetro transactionId!')
     }
-    const repository = new TransactionRepository()
-    const findCore = new FindCore(repository)
+    const repository = new TransactionCardRepository()
+    const cardFindByUserIdCore = new FindByUserIdCore(repository)
+    const cards = await cardFindByUserIdCore.execute(userId)
 
-    const transactions = await findCore.execute(transactionId)
     return formatResponse(200, {
       message: 'Buscas realizada com sucesso!',
-      transactions,
+      cards,
     })
   } catch (err) {
     console.error(err)

@@ -1,5 +1,4 @@
 import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs'
-import { CreateTransactionsType } from '../shared/types'
 import SQSRepositoryInterface from './interface/sqsRepository.interface'
 
 export class SQSRepository implements SQSRepositoryInterface {

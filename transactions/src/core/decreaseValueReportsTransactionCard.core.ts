@@ -1,7 +1,4 @@
-import { UpdateReportTransactionsCardType } from '../shared/types/updateReportTransactionsCard.type'
-import { ReportTransactionsCardType, TransactionsTypes, UpdateDecreaseValueReportsCardType } from '../shared/types'
-import { randomUUID } from 'crypto'
-import { reportTransactionsCardSchema } from '../shared/schemas'
+import { TransactionsTypes, UpdateDecreaseValueReportsCardType } from '../shared/types'
 import { ReportsTransactionsCardRepository } from '../repository/reportsTransactionsCard.repository'
 import { TransactionTypesEnum } from '../enums'
 

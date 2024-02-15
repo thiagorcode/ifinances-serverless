@@ -1,13 +1,5 @@
-import {
-  CreateTransactionsType,
-  ReportTransactionsCategoryType,
-  TransactionsTypes,
-  UpdateDecreaseValueReportsCategoryType,
-  UpdateReportTransactionsCategoryType,
-} from '../shared/types'
-import { randomUUID } from 'crypto'
+import { TransactionsTypes, UpdateDecreaseValueReportsCategoryType } from '../shared/types'
 import { ReportsTransactionsCategoryRepository } from '../repository/reportsTransactionsCategory.repository'
-import { reportTransactionsCategorySchema } from '../shared/schemas'
 
 export class DecreaseValueReportsTransactionCategoryCore {
   constructor(private repository: ReportsTransactionsCategoryRepository) {}
