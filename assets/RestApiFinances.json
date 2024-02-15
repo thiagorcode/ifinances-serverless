@@ -1,0 +1,1225 @@
+{
+  "Resources": {
+   "IFinancesApiLogsE213C1B4": {
+    "Type": "AWS::Logs::LogGroup",
+    "Properties": {
+     "RetentionInDays": 731
+    },
+    "UpdateReplacePolicy": "Retain",
+    "DeletionPolicy": "Retain",
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/IFinancesApiLogs/Resource"
+    }
+   },
+   "RestApiFinancesD9B47E78": {
+    "Type": "AWS::ApiGateway::RestApi",
+    "Properties": {
+     "Name": "API Finances"
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Resource"
+    }
+   },
+   "RestApiFinancesDeployment88A543982ed6c62b62ce65036e89ac8fdba3f6bb": {
+    "Type": "AWS::ApiGateway::Deployment",
+    "Properties": {
+     "RestApiId": {
+      "Ref": "RestApiFinancesD9B47E78"
+     },
+     "Description": "Automatically created by the RestApi construct"
+    },
+    "DependsOn": [
+     "RestApiFinancestransactionidGETF34384DA",
+     "RestApiFinancestransactionidAC2D5931",
+     "RestApiFinancestransactionPOST4B9E8C5D",
+     "RestApiFinancestransactionreport543261AA",
+     "RestApiFinancestransactionreporttestPOST78ABE021",
+     "RestApiFinancestransactionreporttestDD7765BF",
+     "RestApiFinancestransaction582438CA",
+     "RestApiFinancestransactionuseruserIdGET0680FC7C",
+     "RestApiFinancestransactionuseruserIdlastGETFD514D72",
+     "RestApiFinancestransactionuseruserIdlastB031B0F5",
+     "RestApiFinancestransactionuseruserId4F90E546",
+     "RestApiFinancestransactionuseruserIdtotalizerGETC6E53F1C",
+     "RestApiFinancestransactionuseruserIdtotalizer17FD3E1B",
+     "RestApiFinancestransactionuserCF1E6302",
+     "RestApiFinancestransactionscategoryfindidGETB3F17B1C",
+     "RestApiFinancestransactionscategoryfindid84B3C4B1",
+     "RestApiFinancestransactionscategoryfind17A62EF0",
+     "RestApiFinancestransactionscategoryGET804747D1",
+     "RestApiFinancestransactionscategory31497881",
+     "RestApiFinancesusersidGET51BEDB9F",
+     "RestApiFinancesusersid44237359",
+     "RestApiFinancesusersPOST7832AC49",
+     "RestApiFinancesusersD87B7FAC"
+    ],
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Deployment/Resource"
+    }
+   },
+   "RestApiFinancesDeploymentStagedev90A0F394": {
+    "Type": "AWS::ApiGateway::Stage",
+    "Properties": {
+     "RestApiId": {
+      "Ref": "RestApiFinancesD9B47E78"
+     },
+     "AccessLogSetting": {
+      "DestinationArn": {
+       "Fn::GetAtt": [
+        "IFinancesApiLogsE213C1B4",
+        "Arn"
+       ]
+      },
+      "Format": "{\"requestId\":\"$context.requestId\",\"ip\":\"$context.identity.sourceIp\",\"user\":\"$context.identity.user\",\"caller\":\"$context.identity.caller\",\"requestTime\":\"$context.requestTime\",\"httpMethod\":\"$context.httpMethod\",\"resourcePath\":\"$context.resourcePath\",\"status\":\"$context.status\",\"protocol\":\"$context.protocol\",\"responseLength\":\"$context.responseLength\"}"
+     },
+     "DeploymentId": {
+      "Ref": "RestApiFinancesDeployment88A543982ed6c62b62ce65036e89ac8fdba3f6bb"
+     },
+     "StageName": "dev"
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/DeploymentStage.dev/Resource"
+    }
+   },
+   "RestApiFinancesusersD87B7FAC": {
+    "Type": "AWS::ApiGateway::Resource",
+    "Properties": {
+     "ParentId": {
+      "Fn::GetAtt": [
+       "RestApiFinancesD9B47E78",
+       "RootResourceId"
+      ]
+     },
+     "PathPart": "users",
+     "RestApiId": {
+      "Ref": "RestApiFinancesD9B47E78"
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/users/Resource"
+    }
+   },
+   "RestApiFinancesusersPOSTApiPermissionCombinedStackRestApiFinancesE8ADE4F7POSTusers63928DAC": {
+    "Type": "AWS::Lambda::Permission",
+    "Properties": {
+     "Action": "lambda:InvokeFunction",
+     "FunctionName": {
+      "Fn::ImportValue": "CombinedStack:ExportsOutputFnGetAttUsersStackNestedStackUsersStackNestedStackResource2C361974OutputsCombinedStackUsersStackcreateUserFunctionHandlerE163D791ArnC96C9A67"
+     },
+     "Principal": "apigateway.amazonaws.com",
+     "SourceArn": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:execute-api:sa-east-1:735084759467:",
+        {
+         "Ref": "RestApiFinancesD9B47E78"
+        },
+        "/",
+        {
+         "Ref": "RestApiFinancesDeploymentStagedev90A0F394"
+        },
+        "/POST/users"
+       ]
+      ]
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/users/POST/ApiPermission.CombinedStackRestApiFinancesE8ADE4F7.POST..users"
+    }
+   },
+   "RestApiFinancesusersPOSTApiPermissionTestCombinedStackRestApiFinancesE8ADE4F7POSTusers7B78E6F1": {
+    "Type": "AWS::Lambda::Permission",
+    "Properties": {
+     "Action": "lambda:InvokeFunction",
+     "FunctionName": {
+      "Fn::ImportValue": "CombinedStack:ExportsOutputFnGetAttUsersStackNestedStackUsersStackNestedStackResource2C361974OutputsCombinedStackUsersStackcreateUserFunctionHandlerE163D791ArnC96C9A67"
+     },
+     "Principal": "apigateway.amazonaws.com",
+     "SourceArn": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:execute-api:sa-east-1:735084759467:",
+        {
+         "Ref": "RestApiFinancesD9B47E78"
+        },
+        "/test-invoke-stage/POST/users"
+       ]
+      ]
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/users/POST/ApiPermission.Test.CombinedStackRestApiFinancesE8ADE4F7.POST..users"
+    }
+   },
+   "RestApiFinancesusersPOST7832AC49": {
+    "Type": "AWS::ApiGateway::Method",
+    "Properties": {
+     "HttpMethod": "POST",
+     "ResourceId": {
+      "Ref": "RestApiFinancesusersD87B7FAC"
+     },
+     "RestApiId": {
+      "Ref": "RestApiFinancesD9B47E78"
+     },
+     "AuthorizationType": "NONE",
+     "Integration": {
+      "IntegrationHttpMethod": "POST",
+      "Type": "AWS_PROXY",
+      "Uri": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:aws:apigateway:sa-east-1:lambda:path/2015-03-31/functions/",
+         {
+          "Fn::ImportValue": "CombinedStack:ExportsOutputFnGetAttUsersStackNestedStackUsersStackNestedStackResource2C361974OutputsCombinedStackUsersStackcreateUserFunctionHandlerE163D791ArnC96C9A67"
+         },
+         "/invocations"
+        ]
+       ]
+      }
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/users/POST/Resource"
+    }
+   },
+   "RestApiFinancesusersid44237359": {
+    "Type": "AWS::ApiGateway::Resource",
+    "Properties": {
+     "ParentId": {
+      "Ref": "RestApiFinancesusersD87B7FAC"
+     },
+     "PathPart": "{id}",
+     "RestApiId": {
+      "Ref": "RestApiFinancesD9B47E78"
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/users/{id}/Resource"
+    }
+   },
+   "RestApiFinancesusersidGETApiPermissionCombinedStackRestApiFinancesE8ADE4F7GETusersid1FA204BC": {
+    "Type": "AWS::Lambda::Permission",
+    "Properties": {
+     "Action": "lambda:InvokeFunction",
+     "FunctionName": {
+      "Fn::ImportValue": "CombinedStack:ExportsOutputFnGetAttUsersStackNestedStackUsersStackNestedStackResource2C361974OutputsCombinedStackUsersStackgetByUserIdFunctionHandler1DCB54ECArn22962F2C"
+     },
+     "Principal": "apigateway.amazonaws.com",
+     "SourceArn": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:execute-api:sa-east-1:735084759467:",
+        {
+         "Ref": "RestApiFinancesD9B47E78"
+        },
+        "/",
+        {
+         "Ref": "RestApiFinancesDeploymentStagedev90A0F394"
+        },
+        "/GET/users/*"
+       ]
+      ]
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/users/{id}/GET/ApiPermission.CombinedStackRestApiFinancesE8ADE4F7.GET..users.{id}"
+    }
+   },
+   "RestApiFinancesusersidGETApiPermissionTestCombinedStackRestApiFinancesE8ADE4F7GETusersidD66D4FB7": {
+    "Type": "AWS::Lambda::Permission",
+    "Properties": {
+     "Action": "lambda:InvokeFunction",
+     "FunctionName": {
+      "Fn::ImportValue": "CombinedStack:ExportsOutputFnGetAttUsersStackNestedStackUsersStackNestedStackResource2C361974OutputsCombinedStackUsersStackgetByUserIdFunctionHandler1DCB54ECArn22962F2C"
+     },
+     "Principal": "apigateway.amazonaws.com",
+     "SourceArn": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:execute-api:sa-east-1:735084759467:",
+        {
+         "Ref": "RestApiFinancesD9B47E78"
+        },
+        "/test-invoke-stage/GET/users/*"
+       ]
+      ]
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/users/{id}/GET/ApiPermission.Test.CombinedStackRestApiFinancesE8ADE4F7.GET..users.{id}"
+    }
+   },
+   "RestApiFinancesusersidGET51BEDB9F": {
+    "Type": "AWS::ApiGateway::Method",
+    "Properties": {
+     "HttpMethod": "GET",
+     "ResourceId": {
+      "Ref": "RestApiFinancesusersid44237359"
+     },
+     "RestApiId": {
+      "Ref": "RestApiFinancesD9B47E78"
+     },
+     "AuthorizationType": "NONE",
+     "Integration": {
+      "IntegrationHttpMethod": "POST",
+      "Type": "AWS_PROXY",
+      "Uri": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:aws:apigateway:sa-east-1:lambda:path/2015-03-31/functions/",
+         {
+          "Fn::ImportValue": "CombinedStack:ExportsOutputFnGetAttUsersStackNestedStackUsersStackNestedStackResource2C361974OutputsCombinedStackUsersStackgetByUserIdFunctionHandler1DCB54ECArn22962F2C"
+         },
+         "/invocations"
+        ]
+       ]
+      }
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/users/{id}/GET/Resource"
+    }
+   },
+   "RestApiFinancestransaction582438CA": {
+    "Type": "AWS::ApiGateway::Resource",
+    "Properties": {
+     "ParentId": {
+      "Fn::GetAtt": [
+       "RestApiFinancesD9B47E78",
+       "RootResourceId"
+      ]
+     },
+     "PathPart": "transaction",
+     "RestApiId": {
+      "Ref": "RestApiFinancesD9B47E78"
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transaction/Resource"
+    }
+   },
+   "RestApiFinancestransactionreport543261AA": {
+    "Type": "AWS::ApiGateway::Resource",
+    "Properties": {
+     "ParentId": {
+      "Ref": "RestApiFinancestransaction582438CA"
+     },
+     "PathPart": "report",
+     "RestApiId": {
+      "Ref": "RestApiFinancesD9B47E78"
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transaction/report/Resource"
+    }
+   },
+   "RestApiFinancestransactionreporttestDD7765BF": {
+    "Type": "AWS::ApiGateway::Resource",
+    "Properties": {
+     "ParentId": {
+      "Ref": "RestApiFinancestransactionreport543261AA"
+     },
+     "PathPart": "test",
+     "RestApiId": {
+      "Ref": "RestApiFinancesD9B47E78"
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transaction/report/test/Resource"
+    }
+   },
+   "RestApiFinancestransactionreporttestPOSTApiPermissionCombinedStackRestApiFinancesE8ADE4F7POSTtransactionreporttest0A7F5976": {
+    "Type": "AWS::Lambda::Permission",
+    "Properties": {
+     "Action": "lambda:InvokeFunction",
+     "FunctionName": {
+      "Fn::ImportValue": "CombinedStack:OutputFnGetAttTransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549OutputsCombinedStackTransactionsStackTransactionsStackNestedStackTransactionsStackNestedStackResourceE1BDC835OutputsCombinedStackTransactionsStackc5C48459C"
+     },
+     "Principal": "apigateway.amazonaws.com",
+     "SourceArn": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:execute-api:sa-east-1:735084759467:",
+        {
+         "Ref": "RestApiFinancesD9B47E78"
+        },
+        "/",
+        {
+         "Ref": "RestApiFinancesDeploymentStagedev90A0F394"
+        },
+        "/POST/transaction/report/test"
+       ]
+      ]
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transaction/report/test/POST/ApiPermission.CombinedStackRestApiFinancesE8ADE4F7.POST..transaction.report.test"
+    }
+   },
+   "RestApiFinancestransactionreporttestPOSTApiPermissionTestCombinedStackRestApiFinancesE8ADE4F7POSTtransactionreporttestC7C4DA3C": {
+    "Type": "AWS::Lambda::Permission",
+    "Properties": {
+     "Action": "lambda:InvokeFunction",
+     "FunctionName": {
+      "Fn::ImportValue": "CombinedStack:OutputFnGetAttTransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549OutputsCombinedStackTransactionsStackTransactionsStackNestedStackTransactionsStackNestedStackResourceE1BDC835OutputsCombinedStackTransactionsStackc5C48459C"
+     },
+     "Principal": "apigateway.amazonaws.com",
+     "SourceArn": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:execute-api:sa-east-1:735084759467:",
+        {
+         "Ref": "RestApiFinancesD9B47E78"
+        },
+        "/test-invoke-stage/POST/transaction/report/test"
+       ]
+      ]
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transaction/report/test/POST/ApiPermission.Test.CombinedStackRestApiFinancesE8ADE4F7.POST..transaction.report.test"
+    }
+   },
+   "RestApiFinancestransactionreporttestPOST78ABE021": {
+    "Type": "AWS::ApiGateway::Method",
+    "Properties": {
+     "HttpMethod": "POST",
+     "ResourceId": {
+      "Ref": "RestApiFinancestransactionreporttestDD7765BF"
+     },
+     "RestApiId": {
+      "Ref": "RestApiFinancesD9B47E78"
+     },
+     "AuthorizationType": "NONE",
+     "Integration": {
+      "IntegrationHttpMethod": "POST",
+      "Type": "AWS_PROXY",
+      "Uri": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:aws:apigateway:sa-east-1:lambda:path/2015-03-31/functions/",
+         {
+          "Fn::ImportValue": "CombinedStack:OutputFnGetAttTransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549OutputsCombinedStackTransactionsStackTransactionsStackNestedStackTransactionsStackNestedStackResourceE1BDC835OutputsCombinedStackTransactionsStackc5C48459C"
+         },
+         "/invocations"
+        ]
+       ]
+      }
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transaction/report/test/POST/Resource"
+    }
+   },
+   "RestApiFinancestransactionPOSTApiPermissionCombinedStackRestApiFinancesE8ADE4F7POSTtransaction0A1C6E05": {
+    "Type": "AWS::Lambda::Permission",
+    "Properties": {
+     "Action": "lambda:InvokeFunction",
+     "FunctionName": {
+      "Fn::ImportValue": "CombinedStack:ExportsOutputFnGetAttTransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549OutputsCombinedStackTransactionsStackcreateTransactionsFunctionHandlerA272387FArn58161F9D"
+     },
+     "Principal": "apigateway.amazonaws.com",
+     "SourceArn": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:execute-api:sa-east-1:735084759467:",
+        {
+         "Ref": "RestApiFinancesD9B47E78"
+        },
+        "/",
+        {
+         "Ref": "RestApiFinancesDeploymentStagedev90A0F394"
+        },
+        "/POST/transaction"
+       ]
+      ]
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transaction/POST/ApiPermission.CombinedStackRestApiFinancesE8ADE4F7.POST..transaction"
+    }
+   },
+   "RestApiFinancestransactionPOSTApiPermissionTestCombinedStackRestApiFinancesE8ADE4F7POSTtransactionD8A31038": {
+    "Type": "AWS::Lambda::Permission",
+    "Properties": {
+     "Action": "lambda:InvokeFunction",
+     "FunctionName": {
+      "Fn::ImportValue": "CombinedStack:ExportsOutputFnGetAttTransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549OutputsCombinedStackTransactionsStackcreateTransactionsFunctionHandlerA272387FArn58161F9D"
+     },
+     "Principal": "apigateway.amazonaws.com",
+     "SourceArn": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:execute-api:sa-east-1:735084759467:",
+        {
+         "Ref": "RestApiFinancesD9B47E78"
+        },
+        "/test-invoke-stage/POST/transaction"
+       ]
+      ]
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transaction/POST/ApiPermission.Test.CombinedStackRestApiFinancesE8ADE4F7.POST..transaction"
+    }
+   },
+   "RestApiFinancestransactionPOST4B9E8C5D": {
+    "Type": "AWS::ApiGateway::Method",
+    "Properties": {
+     "HttpMethod": "POST",
+     "ResourceId": {
+      "Ref": "RestApiFinancestransaction582438CA"
+     },
+     "RestApiId": {
+      "Ref": "RestApiFinancesD9B47E78"
+     },
+     "AuthorizationType": "NONE",
+     "Integration": {
+      "IntegrationHttpMethod": "POST",
+      "Type": "AWS_PROXY",
+      "Uri": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:aws:apigateway:sa-east-1:lambda:path/2015-03-31/functions/",
+         {
+          "Fn::ImportValue": "CombinedStack:ExportsOutputFnGetAttTransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549OutputsCombinedStackTransactionsStackcreateTransactionsFunctionHandlerA272387FArn58161F9D"
+         },
+         "/invocations"
+        ]
+       ]
+      }
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transaction/POST/Resource"
+    }
+   },
+   "RestApiFinancestransactionidAC2D5931": {
+    "Type": "AWS::ApiGateway::Resource",
+    "Properties": {
+     "ParentId": {
+      "Ref": "RestApiFinancestransaction582438CA"
+     },
+     "PathPart": "{id}",
+     "RestApiId": {
+      "Ref": "RestApiFinancesD9B47E78"
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transaction/{id}/Resource"
+    }
+   },
+   "RestApiFinancestransactionidGETApiPermissionCombinedStackRestApiFinancesE8ADE4F7GETtransactionid87A61F41": {
+    "Type": "AWS::Lambda::Permission",
+    "Properties": {
+     "Action": "lambda:InvokeFunction",
+     "FunctionName": {
+      "Fn::ImportValue": "CombinedStack:ExportsOutputFnGetAttTransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549OutputsCombinedStackTransactionsStackfindTransactionFunctionHandlerBD6EE6E1Arn10B6ED16"
+     },
+     "Principal": "apigateway.amazonaws.com",
+     "SourceArn": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:execute-api:sa-east-1:735084759467:",
+        {
+         "Ref": "RestApiFinancesD9B47E78"
+        },
+        "/",
+        {
+         "Ref": "RestApiFinancesDeploymentStagedev90A0F394"
+        },
+        "/GET/transaction/*"
+       ]
+      ]
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transaction/{id}/GET/ApiPermission.CombinedStackRestApiFinancesE8ADE4F7.GET..transaction.{id}"
+    }
+   },
+   "RestApiFinancestransactionidGETApiPermissionTestCombinedStackRestApiFinancesE8ADE4F7GETtransactionidB2767D45": {
+    "Type": "AWS::Lambda::Permission",
+    "Properties": {
+     "Action": "lambda:InvokeFunction",
+     "FunctionName": {
+      "Fn::ImportValue": "CombinedStack:ExportsOutputFnGetAttTransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549OutputsCombinedStackTransactionsStackfindTransactionFunctionHandlerBD6EE6E1Arn10B6ED16"
+     },
+     "Principal": "apigateway.amazonaws.com",
+     "SourceArn": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:execute-api:sa-east-1:735084759467:",
+        {
+         "Ref": "RestApiFinancesD9B47E78"
+        },
+        "/test-invoke-stage/GET/transaction/*"
+       ]
+      ]
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transaction/{id}/GET/ApiPermission.Test.CombinedStackRestApiFinancesE8ADE4F7.GET..transaction.{id}"
+    }
+   },
+   "RestApiFinancestransactionidGETF34384DA": {
+    "Type": "AWS::ApiGateway::Method",
+    "Properties": {
+     "HttpMethod": "GET",
+     "ResourceId": {
+      "Ref": "RestApiFinancestransactionidAC2D5931"
+     },
+     "RestApiId": {
+      "Ref": "RestApiFinancesD9B47E78"
+     },
+     "AuthorizationType": "NONE",
+     "Integration": {
+      "IntegrationHttpMethod": "POST",
+      "Type": "AWS_PROXY",
+      "Uri": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:aws:apigateway:sa-east-1:lambda:path/2015-03-31/functions/",
+         {
+          "Fn::ImportValue": "CombinedStack:ExportsOutputFnGetAttTransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549OutputsCombinedStackTransactionsStackfindTransactionFunctionHandlerBD6EE6E1Arn10B6ED16"
+         },
+         "/invocations"
+        ]
+       ]
+      }
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transaction/{id}/GET/Resource"
+    }
+   },
+   "RestApiFinancestransactionuserCF1E6302": {
+    "Type": "AWS::ApiGateway::Resource",
+    "Properties": {
+     "ParentId": {
+      "Ref": "RestApiFinancestransaction582438CA"
+     },
+     "PathPart": "user",
+     "RestApiId": {
+      "Ref": "RestApiFinancesD9B47E78"
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transaction/user/Resource"
+    }
+   },
+   "RestApiFinancestransactionuseruserId4F90E546": {
+    "Type": "AWS::ApiGateway::Resource",
+    "Properties": {
+     "ParentId": {
+      "Ref": "RestApiFinancestransactionuserCF1E6302"
+     },
+     "PathPart": "{userId}",
+     "RestApiId": {
+      "Ref": "RestApiFinancesD9B47E78"
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transaction/user/{userId}/Resource"
+    }
+   },
+   "RestApiFinancestransactionuseruserIdGETApiPermissionCombinedStackRestApiFinancesE8ADE4F7GETtransactionuseruserId1277F9C4": {
+    "Type": "AWS::Lambda::Permission",
+    "Properties": {
+     "Action": "lambda:InvokeFunction",
+     "FunctionName": {
+      "Fn::ImportValue": "CombinedStack:ExportsOutputFnGetAttTransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549OutputsCombinedStackTransactionsStackfindAllWithQueryFunctionHandlerE20AA837Arn395D82EE"
+     },
+     "Principal": "apigateway.amazonaws.com",
+     "SourceArn": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:execute-api:sa-east-1:735084759467:",
+        {
+         "Ref": "RestApiFinancesD9B47E78"
+        },
+        "/",
+        {
+         "Ref": "RestApiFinancesDeploymentStagedev90A0F394"
+        },
+        "/GET/transaction/user/*"
+       ]
+      ]
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transaction/user/{userId}/GET/ApiPermission.CombinedStackRestApiFinancesE8ADE4F7.GET..transaction.user.{userId}"
+    }
+   },
+   "RestApiFinancestransactionuseruserIdGETApiPermissionTestCombinedStackRestApiFinancesE8ADE4F7GETtransactionuseruserIdAF9B933C": {
+    "Type": "AWS::Lambda::Permission",
+    "Properties": {
+     "Action": "lambda:InvokeFunction",
+     "FunctionName": {
+      "Fn::ImportValue": "CombinedStack:ExportsOutputFnGetAttTransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549OutputsCombinedStackTransactionsStackfindAllWithQueryFunctionHandlerE20AA837Arn395D82EE"
+     },
+     "Principal": "apigateway.amazonaws.com",
+     "SourceArn": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:execute-api:sa-east-1:735084759467:",
+        {
+         "Ref": "RestApiFinancesD9B47E78"
+        },
+        "/test-invoke-stage/GET/transaction/user/*"
+       ]
+      ]
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transaction/user/{userId}/GET/ApiPermission.Test.CombinedStackRestApiFinancesE8ADE4F7.GET..transaction.user.{userId}"
+    }
+   },
+   "RestApiFinancestransactionuseruserIdGET0680FC7C": {
+    "Type": "AWS::ApiGateway::Method",
+    "Properties": {
+     "HttpMethod": "GET",
+     "ResourceId": {
+      "Ref": "RestApiFinancestransactionuseruserId4F90E546"
+     },
+     "RestApiId": {
+      "Ref": "RestApiFinancesD9B47E78"
+     },
+     "AuthorizationType": "NONE",
+     "Integration": {
+      "IntegrationHttpMethod": "POST",
+      "Type": "AWS_PROXY",
+      "Uri": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:aws:apigateway:sa-east-1:lambda:path/2015-03-31/functions/",
+         {
+          "Fn::ImportValue": "CombinedStack:ExportsOutputFnGetAttTransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549OutputsCombinedStackTransactionsStackfindAllWithQueryFunctionHandlerE20AA837Arn395D82EE"
+         },
+         "/invocations"
+        ]
+       ]
+      }
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transaction/user/{userId}/GET/Resource"
+    }
+   },
+   "RestApiFinancestransactionuseruserIdlastB031B0F5": {
+    "Type": "AWS::ApiGateway::Resource",
+    "Properties": {
+     "ParentId": {
+      "Ref": "RestApiFinancestransactionuseruserId4F90E546"
+     },
+     "PathPart": "last",
+     "RestApiId": {
+      "Ref": "RestApiFinancesD9B47E78"
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transaction/user/{userId}/last/Resource"
+    }
+   },
+   "RestApiFinancestransactionuseruserIdlastGETApiPermissionCombinedStackRestApiFinancesE8ADE4F7GETtransactionuseruserIdlastBAFC363F": {
+    "Type": "AWS::Lambda::Permission",
+    "Properties": {
+     "Action": "lambda:InvokeFunction",
+     "FunctionName": {
+      "Fn::ImportValue": "CombinedStack:ExportsOutputFnGetAttTransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549OutputsCombinedStackTransactionsStackfindLastFunctionHandler09D8A05FArn0E9CAEFE"
+     },
+     "Principal": "apigateway.amazonaws.com",
+     "SourceArn": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:execute-api:sa-east-1:735084759467:",
+        {
+         "Ref": "RestApiFinancesD9B47E78"
+        },
+        "/",
+        {
+         "Ref": "RestApiFinancesDeploymentStagedev90A0F394"
+        },
+        "/GET/transaction/user/*/last"
+       ]
+      ]
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transaction/user/{userId}/last/GET/ApiPermission.CombinedStackRestApiFinancesE8ADE4F7.GET..transaction.user.{userId}.last"
+    }
+   },
+   "RestApiFinancestransactionuseruserIdlastGETApiPermissionTestCombinedStackRestApiFinancesE8ADE4F7GETtransactionuseruserIdlast6321AA98": {
+    "Type": "AWS::Lambda::Permission",
+    "Properties": {
+     "Action": "lambda:InvokeFunction",
+     "FunctionName": {
+      "Fn::ImportValue": "CombinedStack:ExportsOutputFnGetAttTransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549OutputsCombinedStackTransactionsStackfindLastFunctionHandler09D8A05FArn0E9CAEFE"
+     },
+     "Principal": "apigateway.amazonaws.com",
+     "SourceArn": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:execute-api:sa-east-1:735084759467:",
+        {
+         "Ref": "RestApiFinancesD9B47E78"
+        },
+        "/test-invoke-stage/GET/transaction/user/*/last"
+       ]
+      ]
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transaction/user/{userId}/last/GET/ApiPermission.Test.CombinedStackRestApiFinancesE8ADE4F7.GET..transaction.user.{userId}.last"
+    }
+   },
+   "RestApiFinancestransactionuseruserIdlastGETFD514D72": {
+    "Type": "AWS::ApiGateway::Method",
+    "Properties": {
+     "HttpMethod": "GET",
+     "ResourceId": {
+      "Ref": "RestApiFinancestransactionuseruserIdlastB031B0F5"
+     },
+     "RestApiId": {
+      "Ref": "RestApiFinancesD9B47E78"
+     },
+     "AuthorizationType": "NONE",
+     "Integration": {
+      "IntegrationHttpMethod": "POST",
+      "Type": "AWS_PROXY",
+      "Uri": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:aws:apigateway:sa-east-1:lambda:path/2015-03-31/functions/",
+         {
+          "Fn::ImportValue": "CombinedStack:ExportsOutputFnGetAttTransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549OutputsCombinedStackTransactionsStackfindLastFunctionHandler09D8A05FArn0E9CAEFE"
+         },
+         "/invocations"
+        ]
+       ]
+      }
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transaction/user/{userId}/last/GET/Resource"
+    }
+   },
+   "RestApiFinancestransactionuseruserIdtotalizer17FD3E1B": {
+    "Type": "AWS::ApiGateway::Resource",
+    "Properties": {
+     "ParentId": {
+      "Ref": "RestApiFinancestransactionuseruserId4F90E546"
+     },
+     "PathPart": "totalizer",
+     "RestApiId": {
+      "Ref": "RestApiFinancesD9B47E78"
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transaction/user/{userId}/totalizer/Resource"
+    }
+   },
+   "RestApiFinancestransactionuseruserIdtotalizerGETApiPermissionCombinedStackRestApiFinancesE8ADE4F7GETtransactionuseruserIdtotalizer65EBA476": {
+    "Type": "AWS::Lambda::Permission",
+    "Properties": {
+     "Action": "lambda:InvokeFunction",
+     "FunctionName": {
+      "Fn::ImportValue": "CombinedStack:ExportsOutputFnGetAttTransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549OutputsCombinedStackTransactionsStacktotalizersFunctionHandler4710814BArn22486094"
+     },
+     "Principal": "apigateway.amazonaws.com",
+     "SourceArn": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:execute-api:sa-east-1:735084759467:",
+        {
+         "Ref": "RestApiFinancesD9B47E78"
+        },
+        "/",
+        {
+         "Ref": "RestApiFinancesDeploymentStagedev90A0F394"
+        },
+        "/GET/transaction/user/*/totalizer"
+       ]
+      ]
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transaction/user/{userId}/totalizer/GET/ApiPermission.CombinedStackRestApiFinancesE8ADE4F7.GET..transaction.user.{userId}.totalizer"
+    }
+   },
+   "RestApiFinancestransactionuseruserIdtotalizerGETApiPermissionTestCombinedStackRestApiFinancesE8ADE4F7GETtransactionuseruserIdtotalizer72D2EEC1": {
+    "Type": "AWS::Lambda::Permission",
+    "Properties": {
+     "Action": "lambda:InvokeFunction",
+     "FunctionName": {
+      "Fn::ImportValue": "CombinedStack:ExportsOutputFnGetAttTransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549OutputsCombinedStackTransactionsStacktotalizersFunctionHandler4710814BArn22486094"
+     },
+     "Principal": "apigateway.amazonaws.com",
+     "SourceArn": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:execute-api:sa-east-1:735084759467:",
+        {
+         "Ref": "RestApiFinancesD9B47E78"
+        },
+        "/test-invoke-stage/GET/transaction/user/*/totalizer"
+       ]
+      ]
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transaction/user/{userId}/totalizer/GET/ApiPermission.Test.CombinedStackRestApiFinancesE8ADE4F7.GET..transaction.user.{userId}.totalizer"
+    }
+   },
+   "RestApiFinancestransactionuseruserIdtotalizerGETC6E53F1C": {
+    "Type": "AWS::ApiGateway::Method",
+    "Properties": {
+     "HttpMethod": "GET",
+     "ResourceId": {
+      "Ref": "RestApiFinancestransactionuseruserIdtotalizer17FD3E1B"
+     },
+     "RestApiId": {
+      "Ref": "RestApiFinancesD9B47E78"
+     },
+     "AuthorizationType": "NONE",
+     "Integration": {
+      "IntegrationHttpMethod": "POST",
+      "Type": "AWS_PROXY",
+      "Uri": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:aws:apigateway:sa-east-1:lambda:path/2015-03-31/functions/",
+         {
+          "Fn::ImportValue": "CombinedStack:ExportsOutputFnGetAttTransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549OutputsCombinedStackTransactionsStacktotalizersFunctionHandler4710814BArn22486094"
+         },
+         "/invocations"
+        ]
+       ]
+      }
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transaction/user/{userId}/totalizer/GET/Resource"
+    }
+   },
+   "RestApiFinancestransactionscategory31497881": {
+    "Type": "AWS::ApiGateway::Resource",
+    "Properties": {
+     "ParentId": {
+      "Fn::GetAtt": [
+       "RestApiFinancesD9B47E78",
+       "RootResourceId"
+      ]
+     },
+     "PathPart": "transactions-category",
+     "RestApiId": {
+      "Ref": "RestApiFinancesD9B47E78"
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transactions-category/Resource"
+    }
+   },
+   "RestApiFinancestransactionscategoryfind17A62EF0": {
+    "Type": "AWS::ApiGateway::Resource",
+    "Properties": {
+     "ParentId": {
+      "Ref": "RestApiFinancestransactionscategory31497881"
+     },
+     "PathPart": "find",
+     "RestApiId": {
+      "Ref": "RestApiFinancesD9B47E78"
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transactions-category/find/Resource"
+    }
+   },
+   "RestApiFinancestransactionscategoryfindid84B3C4B1": {
+    "Type": "AWS::ApiGateway::Resource",
+    "Properties": {
+     "ParentId": {
+      "Ref": "RestApiFinancestransactionscategoryfind17A62EF0"
+     },
+     "PathPart": "{id}",
+     "RestApiId": {
+      "Ref": "RestApiFinancesD9B47E78"
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transactions-category/find/{id}/Resource"
+    }
+   },
+   "RestApiFinancestransactionscategoryfindidGETApiPermissionCombinedStackRestApiFinancesE8ADE4F7GETtransactionscategoryfindidF9E5A4F8": {
+    "Type": "AWS::Lambda::Permission",
+    "Properties": {
+     "Action": "lambda:InvokeFunction",
+     "FunctionName": {
+      "Fn::ImportValue": "CombinedStack:ExportsOutputFnGetAttTransactionsCategoryStackNestedStackTransactionsCategoryStackNestedStackResource9BB6BDCCOutputsCombinedStackTransactionsCategoryStackfindTransactionTransactionFunctionHandler225C917AArn0FA930AE"
+     },
+     "Principal": "apigateway.amazonaws.com",
+     "SourceArn": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:execute-api:sa-east-1:735084759467:",
+        {
+         "Ref": "RestApiFinancesD9B47E78"
+        },
+        "/",
+        {
+         "Ref": "RestApiFinancesDeploymentStagedev90A0F394"
+        },
+        "/GET/transactions-category/find/*"
+       ]
+      ]
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transactions-category/find/{id}/GET/ApiPermission.CombinedStackRestApiFinancesE8ADE4F7.GET..transactions-category.find.{id}"
+    }
+   },
+   "RestApiFinancestransactionscategoryfindidGETApiPermissionTestCombinedStackRestApiFinancesE8ADE4F7GETtransactionscategoryfindidB10C5DBE": {
+    "Type": "AWS::Lambda::Permission",
+    "Properties": {
+     "Action": "lambda:InvokeFunction",
+     "FunctionName": {
+      "Fn::ImportValue": "CombinedStack:ExportsOutputFnGetAttTransactionsCategoryStackNestedStackTransactionsCategoryStackNestedStackResource9BB6BDCCOutputsCombinedStackTransactionsCategoryStackfindTransactionTransactionFunctionHandler225C917AArn0FA930AE"
+     },
+     "Principal": "apigateway.amazonaws.com",
+     "SourceArn": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:execute-api:sa-east-1:735084759467:",
+        {
+         "Ref": "RestApiFinancesD9B47E78"
+        },
+        "/test-invoke-stage/GET/transactions-category/find/*"
+       ]
+      ]
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transactions-category/find/{id}/GET/ApiPermission.Test.CombinedStackRestApiFinancesE8ADE4F7.GET..transactions-category.find.{id}"
+    }
+   },
+   "RestApiFinancestransactionscategoryfindidGETB3F17B1C": {
+    "Type": "AWS::ApiGateway::Method",
+    "Properties": {
+     "HttpMethod": "GET",
+     "ResourceId": {
+      "Ref": "RestApiFinancestransactionscategoryfindid84B3C4B1"
+     },
+     "RestApiId": {
+      "Ref": "RestApiFinancesD9B47E78"
+     },
+     "AuthorizationType": "NONE",
+     "Integration": {
+      "IntegrationHttpMethod": "POST",
+      "Type": "AWS_PROXY",
+      "Uri": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:aws:apigateway:sa-east-1:lambda:path/2015-03-31/functions/",
+         {
+          "Fn::ImportValue": "CombinedStack:ExportsOutputFnGetAttTransactionsCategoryStackNestedStackTransactionsCategoryStackNestedStackResource9BB6BDCCOutputsCombinedStackTransactionsCategoryStackfindTransactionTransactionFunctionHandler225C917AArn0FA930AE"
+         },
+         "/invocations"
+        ]
+       ]
+      }
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transactions-category/find/{id}/GET/Resource"
+    }
+   },
+   "RestApiFinancestransactionscategoryGETApiPermissionCombinedStackRestApiFinancesE8ADE4F7GETtransactionscategory02B5B6DA": {
+    "Type": "AWS::Lambda::Permission",
+    "Properties": {
+     "Action": "lambda:InvokeFunction",
+     "FunctionName": {
+      "Fn::ImportValue": "CombinedStack:ExportsOutputFnGetAttTransactionsCategoryStackNestedStackTransactionsCategoryStackNestedStackResource9BB6BDCCOutputsCombinedStackTransactionsCategoryStackfindAllTransactionCategoryFunctionHandler05C75695Arn0650754B"
+     },
+     "Principal": "apigateway.amazonaws.com",
+     "SourceArn": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:execute-api:sa-east-1:735084759467:",
+        {
+         "Ref": "RestApiFinancesD9B47E78"
+        },
+        "/",
+        {
+         "Ref": "RestApiFinancesDeploymentStagedev90A0F394"
+        },
+        "/GET/transactions-category"
+       ]
+      ]
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transactions-category/GET/ApiPermission.CombinedStackRestApiFinancesE8ADE4F7.GET..transactions-category"
+    }
+   },
+   "RestApiFinancestransactionscategoryGETApiPermissionTestCombinedStackRestApiFinancesE8ADE4F7GETtransactionscategory96EF3408": {
+    "Type": "AWS::Lambda::Permission",
+    "Properties": {
+     "Action": "lambda:InvokeFunction",
+     "FunctionName": {
+      "Fn::ImportValue": "CombinedStack:ExportsOutputFnGetAttTransactionsCategoryStackNestedStackTransactionsCategoryStackNestedStackResource9BB6BDCCOutputsCombinedStackTransactionsCategoryStackfindAllTransactionCategoryFunctionHandler05C75695Arn0650754B"
+     },
+     "Principal": "apigateway.amazonaws.com",
+     "SourceArn": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:execute-api:sa-east-1:735084759467:",
+        {
+         "Ref": "RestApiFinancesD9B47E78"
+        },
+        "/test-invoke-stage/GET/transactions-category"
+       ]
+      ]
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transactions-category/GET/ApiPermission.Test.CombinedStackRestApiFinancesE8ADE4F7.GET..transactions-category"
+    }
+   },
+   "RestApiFinancestransactionscategoryGET804747D1": {
+    "Type": "AWS::ApiGateway::Method",
+    "Properties": {
+     "HttpMethod": "GET",
+     "ResourceId": {
+      "Ref": "RestApiFinancestransactionscategory31497881"
+     },
+     "RestApiId": {
+      "Ref": "RestApiFinancesD9B47E78"
+     },
+     "AuthorizationType": "NONE",
+     "Integration": {
+      "IntegrationHttpMethod": "POST",
+      "Type": "AWS_PROXY",
+      "Uri": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:aws:apigateway:sa-east-1:lambda:path/2015-03-31/functions/",
+         {
+          "Fn::ImportValue": "CombinedStack:ExportsOutputFnGetAttTransactionsCategoryStackNestedStackTransactionsCategoryStackNestedStackResource9BB6BDCCOutputsCombinedStackTransactionsCategoryStackfindAllTransactionCategoryFunctionHandler05C75695Arn0650754B"
+         },
+         "/invocations"
+        ]
+       ]
+      }
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/RestApiFinances/Default/transactions-category/GET/Resource"
+    }
+   },
+   "CDKMetadata": {
+    "Type": "AWS::CDK::Metadata",
+    "Properties": {
+     "Analytics": "v2:deflate64:H4sIAAAAAAAA/02Pyw6CMBBFv8V9GR8LdOsjcaPR4AeYAiMWStv0ISEN/24bJLKac0/uTDIbSLewWtDOJEXZJJzl4B+WFg0J6um5rAz4i6zOWjpFji8x8UCoYhW12NEefIbG7hWLhQlPqLjsWxQ22lkK5yuMboTQl04XeKDmH36HRr6ifcsyqpEGwmmblxSCuaNumTFMiiEWbs4qZ+fbAxGyRKjN8rNOYb0Lz9aGsUQ7YVmLkI3zC1aM5IgIAQAA"
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/RestApiFinances/CDKMetadata/Default"
+    }
+   }
+  },
+  "Outputs": {
+   "RestApiFinancesEndpointC3302C66": {
+    "Value": {
+     "Fn::Join": [
+      "",
+      [
+       "https://",
+       {
+        "Ref": "RestApiFinancesD9B47E78"
+       },
+       ".execute-api.sa-east-1.",
+       {
+        "Ref": "AWS::URLSuffix"
+       },
+       "/",
+       {
+        "Ref": "RestApiFinancesDeploymentStagedev90A0F394"
+       },
+       "/"
+      ]
+     ]
+    }
+   },
+   "FinancesRestApiIdOutput": {
+    "Value": {
+     "Ref": "RestApiFinancesD9B47E78"
+    },
+    "Export": {
+     "Name": "FinancesRestApiId"
+    }
+   }
+  },
+  "Parameters": {
+   "BootstrapVersion": {
+    "Type": "AWS::SSM::Parameter::Value<String>",
+    "Default": "/cdk-bootstrap/hnb659fds/version",
+    "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+   }
+  },
+  "Rules": {
+   "CheckBootstrapVersion": {
+    "Assertions": [
+     {
+      "Assert": {
+       "Fn::Not": [
+        {
+         "Fn::Contains": [
+          [
+           "1",
+           "2",
+           "3",
+           "4",
+           "5"
+          ],
+          {
+           "Ref": "BootstrapVersion"
+          }
+         ]
+        }
+       ]
+      },
+      "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+     }
+    ]
+   }
+  }
+ }
+ 

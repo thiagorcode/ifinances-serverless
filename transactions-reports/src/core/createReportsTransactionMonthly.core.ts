@@ -12,7 +12,6 @@ export class CreateReportsTransactionMonthlyCore {
     console.info('init CreateReportsTransactionCore service')
     try {
       const reportMonthly = await this.repository.find({
-        year: transaction.year,
         yearMonth: transaction.yearMonth,
         userId: transaction.userId,
       })
