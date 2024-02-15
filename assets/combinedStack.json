@@ -1,0 +1,231 @@
+{
+  "Resources": {
+   "UsersStackNestedStackUsersStackNestedStackResource2C361974": {
+    "Type": "AWS::CloudFormation::Stack",
+    "Properties": {
+     "TemplateURL": {
+      "Fn::Join": [
+       "",
+       [
+        "https://s3.sa-east-1.",
+        {
+         "Ref": "AWS::URLSuffix"
+        },
+        "/cdk-hnb659fds-assets-735084759467-sa-east-1/632766aeffe22b3d1da7067fb894026ddf1997d52a82a32fb03a4fd57d36b107.json"
+       ]
+      ]
+     }
+    },
+    "UpdateReplacePolicy": "Delete",
+    "DeletionPolicy": "Delete",
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/UsersStack.NestedStack/UsersStack.NestedStackResource",
+     "aws:asset:path": "CombinedStackUsersStack34149813.nested.template.json",
+     "aws:asset:property": "TemplateURL"
+    }
+   },
+   "TransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549": {
+    "Type": "AWS::CloudFormation::Stack",
+    "Properties": {
+     "TemplateURL": {
+      "Fn::Join": [
+       "",
+       [
+        "https://s3.sa-east-1.",
+        {
+         "Ref": "AWS::URLSuffix"
+        },
+        "/cdk-hnb659fds-assets-735084759467-sa-east-1/fb97718baa91d3caca1c53697cf3bd07dfcc081f438664e00519b37d3e06b0e7.json"
+       ]
+      ]
+     }
+    },
+    "UpdateReplacePolicy": "Delete",
+    "DeletionPolicy": "Delete",
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/TransactionsStack.NestedStack/TransactionsStack.NestedStackResource",
+     "aws:asset:path": "CombinedStackTransactionsStack7299AA40.nested.template.json",
+     "aws:asset:property": "TemplateURL"
+    }
+   },
+   "TransactionsCategoryStackNestedStackTransactionsCategoryStackNestedStackResource9BB6BDCC": {
+    "Type": "AWS::CloudFormation::Stack",
+    "Properties": {
+     "TemplateURL": {
+      "Fn::Join": [
+       "",
+       [
+        "https://s3.sa-east-1.",
+        {
+         "Ref": "AWS::URLSuffix"
+        },
+        "/cdk-hnb659fds-assets-735084759467-sa-east-1/b4cd9fe2f06dc2519e30f3caecaf5b8dd943dcb13209e2b552fd688a91f83838.json"
+       ]
+      ]
+     }
+    },
+    "UpdateReplacePolicy": "Delete",
+    "DeletionPolicy": "Delete",
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/TransactionsCategoryStack.NestedStack/TransactionsCategoryStack.NestedStackResource",
+     "aws:asset:path": "CombinedStackTransactionsCategoryStack806378AC.nested.template.json",
+     "aws:asset:property": "TemplateURL"
+    }
+   },
+   "CDKMetadata": {
+    "Type": "AWS::CDK::Metadata",
+    "Properties": {
+     "Analytics": "v2:deflate64:H4sIAAAAAAAA/zPSMzPXM1BMLC/WTU7J1s3JTNKrDi5JTM7WcU7LgzOCUovzS4uSU2t18vJTUvWyivXLDM30DC2AOrOKMzN1i0rzSjJzU/WCIDQAIEHXU1UAAAA="
+    },
+    "Metadata": {
+     "aws:cdk:path": "CombinedStack/CDKMetadata/Default"
+    }
+   }
+  },
+  "Outputs": {
+   "ExportsOutputFnGetAttUsersStackNestedStackUsersStackNestedStackResource2C361974OutputsCombinedStackUsersStackcreateUserFunctionHandlerE163D791ArnC96C9A67": {
+    "Value": {
+     "Fn::GetAtt": [
+      "UsersStackNestedStackUsersStackNestedStackResource2C361974",
+      "Outputs.CombinedStackUsersStackcreateUserFunctionHandlerE163D791Arn"
+     ]
+    },
+    "Export": {
+     "Name": "CombinedStack:ExportsOutputFnGetAttUsersStackNestedStackUsersStackNestedStackResource2C361974OutputsCombinedStackUsersStackcreateUserFunctionHandlerE163D791ArnC96C9A67"
+    }
+   },
+   "ExportsOutputFnGetAttUsersStackNestedStackUsersStackNestedStackResource2C361974OutputsCombinedStackUsersStackgetByUserIdFunctionHandler1DCB54ECArn22962F2C": {
+    "Value": {
+     "Fn::GetAtt": [
+      "UsersStackNestedStackUsersStackNestedStackResource2C361974",
+      "Outputs.CombinedStackUsersStackgetByUserIdFunctionHandler1DCB54ECArn"
+     ]
+    },
+    "Export": {
+     "Name": "CombinedStack:ExportsOutputFnGetAttUsersStackNestedStackUsersStackNestedStackResource2C361974OutputsCombinedStackUsersStackgetByUserIdFunctionHandler1DCB54ECArn22962F2C"
+    }
+   },
+   "ExportsOutputFnGetAttTransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549OutputsCombinedStackTransactionsStackTransactionsStackNestedStackTransactionsStackNestedStackResourceE1BDC835OutputsCombinedStackTransactionsStackc5C48459C": {
+    "Value": {
+     "Fn::GetAtt": [
+      "TransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549",
+      "Outputs.CombinedStackTransactionsStackTransactionsStackNestedStackTransactionsStackNestedStackResourceE1BDC835OutputsCombinedStackTransactionsStackcreateReportsTransactionsMonthlyFunctionHandler03F75746Arn"
+     ]
+    },
+    "Export": {
+     "Name": "CombinedStack:OutputFnGetAttTransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549OutputsCombinedStackTransactionsStackTransactionsStackNestedStackTransactionsStackNestedStackResourceE1BDC835OutputsCombinedStackTransactionsStackc5C48459C"
+    }
+   },
+   "ExportsOutputFnGetAttTransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549OutputsCombinedStackTransactionsStackcreateTransactionsFunctionHandlerA272387FArn58161F9D": {
+    "Value": {
+     "Fn::GetAtt": [
+      "TransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549",
+      "Outputs.CombinedStackTransactionsStackcreateTransactionsFunctionHandlerA272387FArn"
+     ]
+    },
+    "Export": {
+     "Name": "CombinedStack:ExportsOutputFnGetAttTransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549OutputsCombinedStackTransactionsStackcreateTransactionsFunctionHandlerA272387FArn58161F9D"
+    }
+   },
+   "ExportsOutputFnGetAttTransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549OutputsCombinedStackTransactionsStackfindTransactionFunctionHandlerBD6EE6E1Arn10B6ED16": {
+    "Value": {
+     "Fn::GetAtt": [
+      "TransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549",
+      "Outputs.CombinedStackTransactionsStackfindTransactionFunctionHandlerBD6EE6E1Arn"
+     ]
+    },
+    "Export": {
+     "Name": "CombinedStack:ExportsOutputFnGetAttTransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549OutputsCombinedStackTransactionsStackfindTransactionFunctionHandlerBD6EE6E1Arn10B6ED16"
+    }
+   },
+   "ExportsOutputFnGetAttTransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549OutputsCombinedStackTransactionsStackfindAllWithQueryFunctionHandlerE20AA837Arn395D82EE": {
+    "Value": {
+     "Fn::GetAtt": [
+      "TransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549",
+      "Outputs.CombinedStackTransactionsStackfindAllWithQueryFunctionHandlerE20AA837Arn"
+     ]
+    },
+    "Export": {
+     "Name": "CombinedStack:ExportsOutputFnGetAttTransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549OutputsCombinedStackTransactionsStackfindAllWithQueryFunctionHandlerE20AA837Arn395D82EE"
+    }
+   },
+   "ExportsOutputFnGetAttTransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549OutputsCombinedStackTransactionsStackfindLastFunctionHandler09D8A05FArn0E9CAEFE": {
+    "Value": {
+     "Fn::GetAtt": [
+      "TransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549",
+      "Outputs.CombinedStackTransactionsStackfindLastFunctionHandler09D8A05FArn"
+     ]
+    },
+    "Export": {
+     "Name": "CombinedStack:ExportsOutputFnGetAttTransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549OutputsCombinedStackTransactionsStackfindLastFunctionHandler09D8A05FArn0E9CAEFE"
+    }
+   },
+   "ExportsOutputFnGetAttTransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549OutputsCombinedStackTransactionsStacktotalizersFunctionHandler4710814BArn22486094": {
+    "Value": {
+     "Fn::GetAtt": [
+      "TransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549",
+      "Outputs.CombinedStackTransactionsStacktotalizersFunctionHandler4710814BArn"
+     ]
+    },
+    "Export": {
+     "Name": "CombinedStack:ExportsOutputFnGetAttTransactionsStackNestedStackTransactionsStackNestedStackResourceCB35A549OutputsCombinedStackTransactionsStacktotalizersFunctionHandler4710814BArn22486094"
+    }
+   },
+   "ExportsOutputFnGetAttTransactionsCategoryStackNestedStackTransactionsCategoryStackNestedStackResource9BB6BDCCOutputsCombinedStackTransactionsCategoryStackfindTransactionTransactionFunctionHandler225C917AArn0FA930AE": {
+    "Value": {
+     "Fn::GetAtt": [
+      "TransactionsCategoryStackNestedStackTransactionsCategoryStackNestedStackResource9BB6BDCC",
+      "Outputs.CombinedStackTransactionsCategoryStackfindTransactionTransactionFunctionHandler225C917AArn"
+     ]
+    },
+    "Export": {
+     "Name": "CombinedStack:ExportsOutputFnGetAttTransactionsCategoryStackNestedStackTransactionsCategoryStackNestedStackResource9BB6BDCCOutputsCombinedStackTransactionsCategoryStackfindTransactionTransactionFunctionHandler225C917AArn0FA930AE"
+    }
+   },
+   "ExportsOutputFnGetAttTransactionsCategoryStackNestedStackTransactionsCategoryStackNestedStackResource9BB6BDCCOutputsCombinedStackTransactionsCategoryStackfindAllTransactionCategoryFunctionHandler05C75695Arn0650754B": {
+    "Value": {
+     "Fn::GetAtt": [
+      "TransactionsCategoryStackNestedStackTransactionsCategoryStackNestedStackResource9BB6BDCC",
+      "Outputs.CombinedStackTransactionsCategoryStackfindAllTransactionCategoryFunctionHandler05C75695Arn"
+     ]
+    },
+    "Export": {
+     "Name": "CombinedStack:ExportsOutputFnGetAttTransactionsCategoryStackNestedStackTransactionsCategoryStackNestedStackResource9BB6BDCCOutputsCombinedStackTransactionsCategoryStackfindAllTransactionCategoryFunctionHandler05C75695Arn0650754B"
+    }
+   }
+  },
+  "Parameters": {
+   "BootstrapVersion": {
+    "Type": "AWS::SSM::Parameter::Value<String>",
+    "Default": "/cdk-bootstrap/hnb659fds/version",
+    "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+   }
+  },
+  "Rules": {
+   "CheckBootstrapVersion": {
+    "Assertions": [
+     {
+      "Assert": {
+       "Fn::Not": [
+        {
+         "Fn::Contains": [
+          [
+           "1",
+           "2",
+           "3",
+           "4",
+           "5"
+          ],
+          {
+           "Ref": "BootstrapVersion"
+          }
+         ]
+        }
+       ]
+      },
+      "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+     }
+    ]
+   }
+  }
+ }

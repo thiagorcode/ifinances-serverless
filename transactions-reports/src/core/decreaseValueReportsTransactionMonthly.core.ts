@@ -10,7 +10,6 @@ export class DecreaseValueReportsTransactionMonthlyCore {
     console.info('init DecreaseValueReportsTransactionMonthlyCore service')
     try {
       const reportMonthly = await this.repository.find({
-        year: oldTransaction.year,
         yearMonth: oldTransaction.yearMonth,
         userId: oldTransaction.userId,
       })

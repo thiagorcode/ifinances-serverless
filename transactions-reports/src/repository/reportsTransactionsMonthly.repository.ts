@@ -3,13 +3,13 @@ import { PutCommand, ScanCommand, DynamoDBDocumentClient, QueryCommand, UpdateCo
 
 import {
   ReportTransactionsMonthlyType,
-  FindReportMonthlyTypes,
+  FindReportMonthlyQueryType,
   ReportsMonthlyTypes,
   UpdateExpenseValueMonthlyType,
   UpdateRecipeValueMonthlyType,
   UpdateDecreaseValueReportsMonthlyType,
 } from '../shared/types'
-import ReportsTransactionMonthlyInterface from './interface/reportsTransactionMonthly.interface'
+import { ReportsTransactionMonthlyInterface } from './interface/reportsTransactionMonthly.interface'
 
 export class ReportsTransactionsMonthlyRepository implements ReportsTransactionMonthlyInterface {
   private dynamodbClient: DynamoDB
@@ -53,7 +53,7 @@ export class ReportsTransactionsMonthlyRepository implements ReportsTransactionM
     if (!result.Items) return []
     return result.Items as ReportTransactionsMonthlyType[]
   }
-  async find({ year, yearMonth, userId }: FindReportMonthlyTypes): Promise<ReportsMonthlyTypes | null> {
+  async find({ yearMonth, userId }: FindReportMonthlyQueryType): Promise<ReportsMonthlyTypes | null> {
     const params = new QueryCommand({
       TableName: process.env.TABLE_NAME,
       KeyConditionExpression: 'userId = :userId AND yearMonth = :yearMonth',
