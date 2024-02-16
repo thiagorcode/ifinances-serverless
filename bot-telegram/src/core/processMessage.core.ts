@@ -1,4 +1,3 @@
-import { AppErrorException } from '../utils'
 import { messages } from '../shared/constants/messages'
 import { ProcessMessageType } from '../shared/types'
 import { parseCommand } from '../utils/parseCommand'

@@ -1,4 +1,4 @@
-import { Callback, Context } from 'aws-lambda'
+import { Callback } from 'aws-lambda'
 
 import { EventReportMonthlyType } from '../shared/types'
 import { AppErrorException } from '../utils'
@@ -7,7 +7,7 @@ import { messages } from '../shared/constants/messages'
 import { ReportTransactionCardRepository } from '../repository/reportTransactionCard.repository'
 import { ReportTransactionCardCore } from '../core/reportTransactionCard.core'
 
-export const handler = async (event: EventReportMonthlyType, context: Context, callback: Callback) => {
+export const handler = async (event: EventReportMonthlyType, callback: Callback) => {
   console.info('Event:', event)
   console.info('ReportCardHandler')
 
