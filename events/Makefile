@@ -2,7 +2,7 @@
 .PHONY: build-RuntimeDependenciesLayer build-lambda-common 
 
 build-EventsTransactionFunction:
-	$(MAKE) HANDLER=src/handlers/create.ts build-lambda-common
+	$(MAKE) HANDLER=src/handlers/eventsTransactions.ts build-lambda-common
 
 build-lambda-common:
 	npm install

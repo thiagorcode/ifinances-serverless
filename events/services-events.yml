@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: API de transação
+Description: Stack of events
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Parameters:
@@ -30,17 +30,27 @@ Resources:
         - nodejs18.x
       RetentionPolicy: Retain
   
+  EventsTransactionsQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: 
+        Fn::Join:
+          - '-'
+          - - Ref: AWS::StackName
+            - sqs-transactions
+      FifoQueue: true
+
   EventsTransactionFunction:
     Type: AWS::Serverless::Function 
     Metadata:
       BuildMethod: makefile
     Properties:
-      Handler: dist/handlers/create.handler
+      Handler: dist/handlers/eventsTransactions.handler
       FunctionName:
         Fn::Join:
           - '-'
           - - Ref: AWS::StackName
-            - create
+            - transactions
       Environment:
         Variables:
           EVENTS_TRANSACTIONS_TABLE_NAME: !Ref EventsTransactionsTableName
@@ -49,6 +59,12 @@ Resources:
             TableName: !Ref EventsTransactionsTableName
         - DynamoDBReadPolicy:
             TableName: !Ref EventsTransactionsTableName
+      Events:
+        SQSEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt EventsTransactionsQueue.Arn
+            BatchSize: 1
 
   EventsTransactionLambdaLogGroup:
     Type: AWS::Logs::LogGroup

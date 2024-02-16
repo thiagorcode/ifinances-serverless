@@ -1,11 +1,7 @@
-import {
-  CreateTransactionsType,
-  TransactionsTypes,
-  UpdateTransactionsType,
-} from '../../shared/types'
+import { EventTransactions } from '../../shared/types'
 
 export interface EventsTransactionsRepositoryInterface {
-  create(transaction: CreateTransactionsType): Promise<void>
-  findAll(): Promise<TransactionsTypes>
-  update(id: string, transaction: UpdateTransactionsType): Promise<void>
+  create(eventTransaction: EventTransactions): Promise<void>
+  findAll(): Promise<EventTransactions[]>
+  update(id: string, eventTransaction: EventTransactions): Promise<void>
 }

@@ -1,17 +1,8 @@
 import { DynamoDB } from '@aws-sdk/client-dynamodb'
-import {
-  PutCommand,
-  ScanCommand,
-  DynamoDBDocumentClient,
-  UpdateCommand,
-} from '@aws-sdk/lib-dynamodb'
+import { PutCommand, ScanCommand, DynamoDBDocumentClient, UpdateCommand } from '@aws-sdk/lib-dynamodb'
 
-import {
-  CreateTransactionsType,
-  UpdateTransactionsType,
-} from '../shared/types'
+import { EventTransactions, UpdateTransactionsType } from '../shared/types'
 import { EventsTransactionsRepositoryInterface } from './interface/eventsTransactionsRepository.interface '
-
 
 export class EventsTransactionsRepository implements EventsTransactionsRepositoryInterface {
   private dynamodbClient: DynamoDB
@@ -22,7 +13,7 @@ export class EventsTransactionsRepository implements EventsTransactionsRepositor
     this.dynamodbDocumentClient = DynamoDBDocumentClient.from(this.dynamodbClient)
   }
 
-  async create(data: CreateTransactionsType): Promise<void> {
+  async create(data: EventTransactions): Promise<void> {
     const params = new PutCommand({
       TableName: process.env.EVENTS_TRANSACTIONS_TABLE_NAME,
       Item: data,
@@ -30,9 +21,8 @@ export class EventsTransactionsRepository implements EventsTransactionsRepositor
 
     await this.dynamodbDocumentClient.send(params)
   }
-  
 
-  async findAll(): Promise<TransactionsTypes[]> {
+  async findAll(): Promise<EventTransactions[]> {
     const params = new ScanCommand({
       TableName: process.env.EVENTS_TRANSACTIONS_TABLE_NAME,
     })
@@ -40,16 +30,14 @@ export class EventsTransactionsRepository implements EventsTransactionsRepositor
     const result = await this.dynamodbDocumentClient.send(params)
 
     if (!result.Items) return []
-    return result.Items as unknown as TransactionsTypes[]
+    return result.Items as unknown as EventTransactions[]
   }
 
-  
   async update(id: string, transaction: UpdateTransactionsType): Promise<void> {
     const params = new UpdateCommand({
       TableName: process.env.EVENTS_TRANSACTIONS_TABLE_NAME,
       Key: { id },
-      UpdateExpression:
-        'SET description = :description, value = :value, year = :year, yearMonth = :yearMonth, categoryId = :categoryId, dtUpdated = :dtUpdated',
+      UpdateExpression: 'SET description = :description, value = :value, dtUpdated = :dtUpdated',
       ExpressionAttributeValues: {
         ':description': transaction.description,
         ':value': transaction.value,
@@ -61,5 +49,4 @@ export class EventsTransactionsRepository implements EventsTransactionsRepositor
     })
     await this.dynamodbDocumentClient.send(params)
   }
-
 }

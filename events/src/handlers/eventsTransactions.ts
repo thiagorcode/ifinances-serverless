@@ -1,48 +1,24 @@
-import { APIGatewayProxyResult } from 'aws-lambda'
-import { TransactionRepository } from '../repository/transactions.repository'
-import { CreateCore } from '../core/create.core'
-import { AppErrorException, formatResponse } from '../utils'
-import { CreateTransactionsType, TransactionsTypes } from '../shared/types'
+import destr from 'destr'
+import { SQSEvent } from 'aws-lambda'
+import { EventsTransactionsRepository } from '../repository/eventsTransactions.repository'
+import { EventTransactions } from '../shared/types'
+import { EventsTransactionsCore } from '../core/eventsTransactions.core'
 
-enum EventTypeEnum {
-  SEND_QUEUE = 'SEND_QUEUE',
-  ERROR_IN_SEND_QUEUE = 'ERROR_IN_SEND_QUEUE',
-  TRANSACTION_CREATED = 'TRANSACTION_CREATED',
-  TRANSACTION_ERROR_IN_CREATED = 'TRANSACTION_ERROR_IN_CREATED',
-}
+export const handler = async (event: SQSEvent): Promise<PromiseSettledResult<void>[]> => {
+  const eventsTransactionsRepository = new EventsTransactionsRepository()
+  const eventTransactionCore = new EventsTransactionsCore(eventsTransactionsRepository)
 
-interface EventTransactions {
-  requestId: string
-  eventType: EventTypeEnum
-  transactionId?: string
-  origin: 'web' | 'telegram'
-  infoTransaction: TransactionsTypes
-}
+  const recordPromises = event.Records.map(async (record) => {
+    console.log(`MessageId: ${record.messageId} `)
+    console.log(`Record: ${JSON.stringify(record)} `)
 
-export const handler = async (event: EventTransactions): Promise<APIGatewayProxyResult> => {
-  try {
-    const body = event
-    console.debug('Body:', body)
-    if (!body) {
-      throw new AppErrorException(400, 'Body not found!')
-    }
-    const repository = new TransactionRepository()
-    const createTransactionCore = new CreateCore(repository)
+    const body = destr<EventTransactions>(record.body)
+    console.log(`Body: ${JSON.stringify(body)} `)
 
-    await createTransactionCore.execute(bodyParse)
-    return formatResponse(200, {
-      message: 'Transação criada com sucesso!',
-    })
-  } catch (err) {
-    console.error(err)
+    await eventTransactionCore.execute(body)
+  })
+  const resultPromises = await Promise.allSettled(recordPromises)
+  console.debug('resultPromises: ', resultPromises)
 
-    if (err instanceof AppErrorException) {
-      return formatResponse(err.statusCode, {
-        message: err.message,
-      })
-    }
-    return formatResponse(500, {
-      message: 'some error happened',
-    })
-  }
+  return resultPromises
 }
