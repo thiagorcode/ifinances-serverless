@@ -178,8 +178,10 @@ Resources:
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref TableReportTransactionsMonthlyName
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TableReportTransactionsMonthlyName
 
-  
   # Logs
   SQSReportsCategoryTransactionLambdaLogGroup:
     Type: AWS::Logs::LogGroup
