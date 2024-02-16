@@ -1,4 +1,4 @@
-import { Callback, Context } from 'aws-lambda'
+import { Callback } from 'aws-lambda'
 
 import { EventCreateTransactionByChatType } from '../shared/types'
 import { AppErrorException } from '../utils'
@@ -8,7 +8,7 @@ import { SQSRepository } from '../repository/sqs.repository'
 import { TransactionCategoryRepository } from '../repository/transactionCategory.repository'
 import { TransactionCardRepository } from '../repository/transactionCard.repository'
 
-export const handler = async (event: EventCreateTransactionByChatType, context: Context, callback: Callback) => {
+export const handler = async (event: EventCreateTransactionByChatType, callback: Callback) => {
   console.info('Event:', event)
   const { chatId, attributes, user, type } = event
   // Repository

@@ -1,17 +1,13 @@
 import { UsersTypes } from '../shared/types'
-import { AppErrorException } from '../utils'
 import { SSMClient, GetParameterCommand } from '@aws-sdk/client-ssm'
-import { SendMessageTelegramCore } from './sendMessageTelegram.core'
 import { messages } from '../shared/constants/messages'
 
 export class ValidateCore {
   private headers: any
   private user: UsersTypes | null
-  private sendMessage: SendMessageTelegramCore
-  constructor(headers: any, user: UsersTypes | null, sendMessage: SendMessageTelegramCore) {
+  constructor(headers: any, user: UsersTypes | null) {
     this.headers = headers
     this.user = user
-    this.sendMessage = sendMessage
   }
   async setParameters() {
     const client = new SSMClient()
@@ -37,7 +33,7 @@ export class ValidateCore {
     }
   }
 
-  async execute(): Promise<{ isValidRequest: boolean; user: UsersTypes }> {
+  async execute(): Promise<{ isValidRequest: boolean; user: UsersTypes | null; message?: string }> {
     console.info('call validate core')
     let validateData = null
     validateData = await this.validateHeader()
@@ -46,8 +42,11 @@ export class ValidateCore {
       throw new Error()
     }
     if (!this.user) {
-      await this.sendMessage.execute(messages.user.not_found)
-      throw new AppErrorException(1, messages.user.not_found)
+      return {
+        user: null,
+        isValidRequest: false,
+        message: messages.user.not_found,
+      }
     }
 
     return {

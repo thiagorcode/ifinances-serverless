@@ -33,9 +33,9 @@ export class CreateTransactionQueueCore {
     return categorySelected
   }
 
-  private async filterCard(cardName: string) {
+  private async filterCard(cardName: string, userId: string) {
     if (!cardName) return undefined
-    const listCard = await this.transactionCardRepository.findAll()
+    const listCard = await this.transactionCardRepository.findByUserId(userId)
 
     const cardSelected = listCard.find((card) => card.name.toLowerCase() === cardName.toLowerCase())
 
@@ -63,7 +63,7 @@ export class CreateTransactionQueueCore {
 
   async execute(transaction: CreateTransactionTelegramType) {
     const categorySelected = await this.filterCategory(transaction.type, transaction.categoryName)
-    const cardSelected = await this.filterCard(transaction.cardName)
+    const cardSelected = await this.filterCard(transaction.cardName, transaction.userId)
     try {
       console.info('call CreateTransactionQueueCore')
       const newTransaction = {
