@@ -10,6 +10,8 @@ Parameters:
     Type: String
   TableReportTransactionsCardName:
     Type: String
+  BusTransactionsName:
+    Type: String
 Globals:
   Function:
     Timeout: 15
@@ -34,136 +36,103 @@ Resources:
         - nodejs18.x
       RetentionPolicy: Retain
 
-  ReportsTransactionsMonthlyQueue:
-    Type: AWS::SQS::Queue
+  TransactionsEventBridgeRule:
+    Type: AWS::Events::Rule
     Properties:
-      QueueName: 
-        Fn::Join:
-          - '-'
-          - - Ref: AWS::StackName
-            - sqs-monthly
+      EventBusName: !Ref BusTransactionsName
+      EventPattern:
+        source:
+          - lambda.transaction-event
+        detail-type:
+          - REPORT
+      Targets:
+        - Arn: !GetAtt ProcessReportsTransactionMonthlyFunction.Arn
+          Id: ReportTransactionsMonthly
+        - Arn: !GetAtt ProcessReportsTransactionCategoryFunction.Arn
+          Id: ReportTransactionsCategory
+        - Arn: !GetAtt ProcessReportsTransactionCardFunction.Arn
+          Id: ReportTransactionsCard
 
-  ReportsTransactionsCategoryQueue:
-    Type: AWS::SQS::Queue
-    Properties:
-      QueueName:
-        Fn::Join:
-          - '-'
-          - - Ref: AWS::StackName
-            - sqs-category
+  # ReportsTransactionsQueuePolicy:
+  #   Type: AWS::SQS::QueuePolicy
+  #   Properties:
+  #     PolicyDocument:
+  #       Version: "2012-10-17"
+  #       Statement:
+  #         - Action:
+  #             - sqs:*
+  #           Effect: Allow
+  #           Principal:
+  #             AWS: !Ref AWS::AccountId
+  #           Resource: !GetAtt ReportsTransactionsMonthlyQueue.Arn
+  #         - Action:
+  #             - sqs:*
+  #           Effect: Allow
+  #           Principal:
+  #             AWS: !Ref AWS::AccountId
+  #           Resource: !GetAtt ReportsTransactionsCardQueue.Arn
+  #         - Action:
+  #             - sqs:*
+  #           Effect: Allow
+  #           Principal:
+  #             AWS: !Ref AWS::AccountId
+  #           Resource: !GetAtt ReportsTransactionsCategoryQueue.Arn
+  #     Queues:
+  #       - !Ref ReportsTransactionsMonthlyQueue
+  #       - !Ref ReportsTransactionsCardQueue
+  #       - !Ref ReportsTransactionsCategoryQueue
 
-  ReportsTransactionsCardQueue:
-    Type: AWS::SQS::Queue
-    Properties:
-      QueueName: 
-        Fn::Join:
-          - '-'
-          - - Ref: AWS::StackName
-            - sqs-card
-  
-  ReportsTransactionsQueuePolicy:
-    Type: AWS::SQS::QueuePolicy
-    Properties:
-      PolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Action:
-              - sqs:*
-            Effect: Allow
-            Principal:
-              AWS: !Ref AWS::AccountId
-            Resource: !GetAtt ReportsTransactionsMonthlyQueue.Arn
-          - Action:
-              - sqs:*
-            Effect: Allow
-            Principal:
-              AWS: !Ref AWS::AccountId
-            Resource: !GetAtt ReportsTransactionsCardQueue.Arn
-          - Action:
-              - sqs:*
-            Effect: Allow
-            Principal:
-              AWS: !Ref AWS::AccountId
-            Resource: !GetAtt ReportsTransactionsCategoryQueue.Arn
-      Queues:
-        - !Ref ReportsTransactionsMonthlyQueue
-        - !Ref ReportsTransactionsCardQueue
-        - !Ref ReportsTransactionsCategoryQueue
-
-  SQSReportsTransactionMonthlyFunction:
+  ProcessReportsTransactionMonthlyFunction:
     Type: AWS::Serverless::Function 
     Metadata:
       BuildMethod: makefile
     Properties:
-      Handler: dist/handlers/sqsReportsTransactionsMonthly.handler
+      Handler: dist/handlers/processReportsTransactionsMonthly.handler
       FunctionName:
         Fn::Join:
           - '-'
           - - Ref: AWS::StackName
-            - monthly
+            - process-monthly
       Environment:
         Variables:
           TABLE_NAME: !Ref TableReportTransactionsMonthlyName
-      Policies:
-        - DynamoDBWritePolicy:
-            TableName: !Ref TableReportTransactionsMonthlyName
-        - DynamoDBReadPolicy:
-            TableName: !Ref TableReportTransactionsMonthlyName
-      Events:
-        SQSEvent:
-          Type: SQS
-          Properties:
-            Queue: !GetAtt ReportsTransactionsMonthlyQueue.Arn
+          EVENTS_REPORT_TABLE_NAME: !Ref IFinancesEventsTransactionsReportsTable
+      Policies: !Ref ReportsTransactionFunctionPolicies
 
-  SQSReportsTransactionCategoryFunction:
+  ProcessReportsTransactionCategoryFunction:
     Type: AWS::Serverless::Function 
     Metadata:
       BuildMethod: makefile
     Properties:
-      Handler: dist/handlers/sqsReportsTransactionsCategory.handler
+      Handler: dist/handlers/processReportsTransactionsCategory.handler
       FunctionName:
         Fn::Join:
           - '-'
           - - Ref: AWS::StackName
-            - category
+            - process-category
       Environment:
         Variables:
           TABLE_NAME: !Ref TableReportTransactionsCategoryName
-      Policies:
-        - DynamoDBWritePolicy:
-            TableName: !Ref TableReportTransactionsCategoryName
-        - DynamoDBReadPolicy:
-            TableName: !Ref TableReportTransactionsCategoryName
-      Events:
-        SQSEvent:
-          Type: SQS
-          Properties:
-            Queue: !GetAtt ReportsTransactionsCategoryQueue.Arn
-  
-  SQSReportsTransactionCardFunction:
+          EVENTS_REPORT_TABLE_NAME: !Ref IFinancesEventsTransactionsReportsTable
+      Policies: !Ref ReportsTransactionFunctionPolicies
+      
+  ProcessReportsTransactionCardFunction:
     Type: AWS::Serverless::Function 
     Metadata:
       BuildMethod: makefile
     Properties:
-      Handler: dist/handlers/sqsReportsTransactionsCard.handler
+      Handler: dist/handlers/processReportsTransactionsCard.handler
       FunctionName:
         Fn::Join:
           - '-'
           - - Ref: AWS::StackName
-            - card
+            - process-card
       Environment:
         Variables:
           TABLE_NAME: !Ref TableReportTransactionsCardName
-      Policies:
-        - DynamoDBWritePolicy:
-            TableName: !Ref TableReportTransactionsCardName
-        - DynamoDBReadPolicy:
-            TableName: !Ref TableReportTransactionsCardName
-      Events:
-        SQSEvent:
-          Type: SQS
-          Properties:
-            Queue: !GetAtt ReportsTransactionsCardQueue.Arn
+          EVENTS_REPORT_TABLE_NAME: !Ref IFinancesEventsTransactionsReportsTable
+      Policies: !Ref ReportsTransactionFunctionPolicies
+
   FindReportMonthlyTransactionFunction:
     Type: AWS::Serverless::Function
     Metadata:
@@ -182,21 +151,63 @@ Resources:
         Variables:
           TABLE_NAME: !Ref TableReportTransactionsMonthlyName
 
+  IFinancesEventsTransactionsReportsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: "PAY_PER_REQUEST"
+      TableName: 
+        Fn::Join:
+          - '-'
+          - - Ref: AWS::StackName
+            - table
+      AttributeDefinitions:
+        - AttributeName: pk
+          AttributeType: S
+        - AttributeName: sk
+          AttributeType: S
+      KeySchema:
+        - AttributeName: pk
+          KeyType: HASH
+        - AttributeName: sk
+          KeyType: RANGE
+
+  ReportsTransactionFunctionPolicies:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: dynamodb:*
+            Resource: 
+              Fn::Sub: arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${TableReportTransactionsCategoryName}
+          - Effect: Allow
+            Action: dynamodb:*
+            Resource: 
+              Fn::Sub: arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${TableReportTransactionsCardName}
+          - Effect: Allow
+            Action: dynamodb:*
+            Resource: 
+              Fn::Sub: arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${TableReportTransactionsMonthlyName}
+          - Effect: Allow
+            Action: dynamodb:*
+            Resource: !GetAtt IFinancesEventsTransactionsReportsTable.Arn
   # Logs
-  SQSReportsCategoryTransactionLambdaLogGroup:
+
+  ProcessReportsCategoryTransactionLambdaLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub /aws/lambda/${SQSReportsTransactionCategoryFunction}
+      LogGroupName: !Sub /aws/lambda/${ProcessReportsTransactionCategoryFunction}
       RetentionInDays: 14
-  SQSReportsCardTransactionLambdaLogGroup:
+  ProcessReportsCardTransactionLambdaLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub /aws/lambda/${SQSReportsTransactionCardFunction}
+      LogGroupName: !Sub /aws/lambda/${ProcessReportsTransactionCardFunction}
       RetentionInDays: 14
-  SQSReportsMonthlyTransactionLambdaLogGroup:
+  ProcessReportsMonthlyTransactionLambdaLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub /aws/lambda/${SQSReportsTransactionMonthlyFunction}
+      LogGroupName: !Sub /aws/lambda/${ProcessReportsTransactionMonthlyFunction}
       RetentionInDays: 14
   FindReportMonthlyTransactionLambdaLogGroup:
     Type: AWS::Logs::LogGroup

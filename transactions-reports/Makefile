@@ -1,19 +1,16 @@
-.PHONY: build-SQSReportsTransactionCategoryFunction build-SQSReportsTransactionCardFunction build-SQSReportsTransactionMonthlyFunction
+.PHONY: build-ProcessReportsTransactionCategoryFunction build-ProcessReportsTransactionCardFunction build-ProcessReportsTransactionMonthlyFunction
 .PHONY: build-UpdateTransactionFunction build-UpdateTransactionFunction build-FindReportMonthlyTransactionFunction
 .PHONY: build-RuntimeDependenciesLayer build-lambda-common 
 
 
-build-SQSReportsTransactionMonthlyFunction:
+build-ProcessReportsTransactionMonthlyFunction:
 	$(MAKE) HANDLER=src/handlers/sqsReportsTransactionsMonthly.ts build-lambda-common
 
-build-SQSReportsTransactionCategoryFunction:
+build-ProcessReportsTransactionCategoryFunction:
 	$(MAKE) HANDLER=src/handlers/sqsReportsTransactionsCategory.ts build-lambda-common
 
-build-SQSReportsTransactionCardFunction:
+build-ProcessReportsTransactionCardFunction:
 	$(MAKE) HANDLER=src/handlers/sqsReportsTransactionsCard.ts build-lambda-common
-
-build-SQSCreateTransactionFunction:
-	$(MAKE) HANDLER=src/handlers/sqsCreateTransaction.ts build-lambda-common
 
 build-FindReportMonthlyTransactionFunction:
 	$(MAKE) HANDLER=src/handlers/findReportMonthly.ts build-lambda-common

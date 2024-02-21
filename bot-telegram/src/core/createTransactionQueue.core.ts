@@ -1,14 +1,14 @@
 import { createTransactionFromTelegramSchema } from '../shared/schemas'
-import { SQSRepositoryInterface } from '../repository/interface/sqsRepository.interface'
 import { CreateTransactionTelegramType } from '../shared/types/createTransactionFromTelegram.type'
 import { AppErrorException } from '../utils'
 import { messages } from '../shared/constants/messages'
 import { TransactionCategoryRepositoryInterface } from '../repository/interface/transactionCategory.interface'
 import { TransactionCardRepository } from '../repository/transactionCard.repository'
+import { EventBridgeRepository } from '../repository/eventBridge.repository'
 
 export class CreateTransactionQueueCore {
   constructor(
-    private sqsRepository: SQSRepositoryInterface,
+    private eventBridgeRepository: EventBridgeRepository,
     private transactionCategoryRepository: TransactionCategoryRepositoryInterface,
     private transactionCardRepository: TransactionCardRepository,
   ) {}
@@ -75,7 +75,11 @@ export class CreateTransactionQueueCore {
 
       const transactionParsed = createTransactionFromTelegramSchema.parse(newTransaction)
       console.log('transaction', transactionParsed)
-      await this.sqsRepository.send(transactionParsed, process.env.CREATE_TRANSACTION_QUEUE_NAME)
+      await this.eventBridgeRepository.push(
+        transactionParsed,
+        'lambda.transaction-event',
+        process.env.BUS_TRANSACTIONS_NAME ?? '',
+      )
       return
     } catch (error: any) {
       console.error(error)

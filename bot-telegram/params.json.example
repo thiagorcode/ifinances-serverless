@@ -1,10 +1,10 @@
 {
   "TableUserName": "",
-  "CreateTransactionsQueueName": "",
   "TableTransactionsCardName": "",
   "TableTransactionsCategoryName": "",
   "Env": "dev"
   "SecretTelegram": "",
   "TableReportTransactionsMonthlyName": "",
   "TableReportTransactionsCardName": "",
+  "BusTransactions": "",
 }

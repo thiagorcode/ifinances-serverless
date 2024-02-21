@@ -1,5 +1,5 @@
 import { DynamoDB } from '@aws-sdk/client-dynamodb'
-import { QueryCommand, DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb'
+import { ScanCommand, DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb'
 
 import { TransactionCardType } from '../shared/types'
 import { TransactionCardRepositoryInterface } from './interface/transactionCard.interface'
@@ -15,10 +15,11 @@ export class TransactionCardRepository implements TransactionCardRepositoryInter
     this.tableName = process.env.TABLE_TRANSACTIONS_CARD_NAME ?? ''
   }
 
+  // TODO: Alterar para QueryCommand precisa alterar a tabela
   async findByUserId(userId: string): Promise<TransactionCardType[]> {
-    const params = new QueryCommand({
+    const params = new ScanCommand({
       TableName: this.tableName,
-      KeyConditionExpression: 'userId = :userId',
+      FilterExpression: 'userId = :userId',
       ExpressionAttributeValues: {
         ':userId': userId,
       },

@@ -1,10 +1,13 @@
 .PHONY: build-CreateTransactionFunction build-FindTransactionFunction build-FindByUserIdTransactionFunction build-FindAllTransactionFunction build-FindLastTransactionFunction
-.PHONY: build-DDBStreamReportsTransactionFunction 
+.PHONY: build-DDBStreamReportsTransactionFunction build-ProcessCreateTransactionFunction 
 .PHONY: build-UpdateTransactionFunction
 .PHONY: build-RuntimeDependenciesLayer build-lambda-common 
 
 build-CreateTransactionFunction:
 	$(MAKE) HANDLER=src/handlers/create.ts build-lambda-common
+
+build-ProcessCreateTransactionFunction:
+	$(MAKE) HANDLER=src/handlers/processCreateTransaction.ts build-lambda-common
 
 build-FindTransactionFunction:
 	$(MAKE) HANDLER=src/handlers/find.ts build-lambda-common
@@ -42,6 +45,7 @@ build-RuntimeDependenciesLayer:
 	rm -rf "$(ARTIFACTS_DIR)/nodejs/node_modules/aws-sdk"
 
 build-deploy-common:
+	sam validate -t services-transactions.yml
 	sam build -t services-transactions.yml
 	cp -r ./samconfig.toml .aws-sam/build
 	$(eval PARAMS := $(shell cat "params.$(env).json" | jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]'))

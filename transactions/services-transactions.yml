@@ -16,6 +16,8 @@ Parameters:
     Type: String
   QueueReportTransactionsCardName:
     Type: String
+  BusTransactionsName:
+    Type: String
 Globals:
   Function:
     Timeout: 15
@@ -72,14 +74,6 @@ Resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL
-  CreateTransactionsQueue:
-    Type: AWS::SQS::Queue
-    Properties:
-      QueueName: 
-        Fn::Join:
-          - '-'
-          - - Ref: AWS::StackName
-            - sqs-create
   
   CreateTransactionFunction:
     Type: AWS::Serverless::Function 
@@ -112,16 +106,10 @@ Resources:
             - ddb-stream-reports
       Environment:
         Variables:
-          REPORTS_TRANSACTIONS_MONTHLY_QUEUE_NAME: !Ref QueueReportTransactionsMonthlyName
-          REPORTS_TRANSACTIONS_CATEGORY_QUEUE_NAME: !Ref QueueReportTransactionsCategoryName
-          REPORTS_TRANSACTIONS_CARD_QUEUE_NAME: !Ref QueueReportTransactionsCardName
+          BUS_TRANSACTIONS_NAME: !Ref BusTransactionsName
       Policies:
-        - SQSSendMessagePolicy:
-            QueueName: !Ref QueueReportTransactionsMonthlyName
-        - SQSSendMessagePolicy:
-            QueueName: !Ref QueueReportTransactionsCategoryName
-        - SQSSendMessagePolicy:
-            QueueName: !Ref QueueReportTransactionsCardName
+        - EventBridgePutEventsPolicy:
+            EventBusName: !Ref BusTransactionsName
       Events:
         DynamoDBEvent:
           Type: DynamoDB
@@ -130,17 +118,17 @@ Resources:
             StartingPosition: LATEST
     
   
-  SQSCreateTransactionFunction:
+  ProcessCreateTransactionFunction:
     Type: AWS::Serverless::Function 
     Metadata:
       BuildMethod: makefile
     Properties:
-      Handler: dist/handlers/sqsCreateTransaction.handler
+      Handler: dist/handlers/processCreateTransaction.handler
       FunctionName:
         Fn::Join:
           - '-'
           - - Ref: AWS::StackName
-            - sqs-create
+            - process-create
       Environment:
         Variables:
           TABLE_NAME: !Ref IFinancesTransactionsTable
@@ -148,11 +136,16 @@ Resources:
         - DynamoDBWritePolicy:
             TableName: !Ref IFinancesTransactionsTable
       Events:
-        SQSEvent:
-          Type: SQS
+        Trigger:
+          Type: EventBridgeRule 
           Properties:
-            Queue: !GetAtt CreateTransactionsQueue.Arn
-  
+            EventBusName: !Ref BusTransactionsName
+            Pattern:
+              source:
+                - lambda.transaction-event
+              detail-type:
+                - TRANSACTION_CREATE
+
   FindTransactionFunction:
     Type: AWS::Serverless::Function
     Metadata:
@@ -240,6 +233,8 @@ Resources:
       Policies:
         - DynamoDBWritePolicy:
             TableName: !Ref IFinancesTransactionsTable
+
+  
   # Logs
   FindTransactionLambdaLogGroup:
     Type: AWS::Logs::LogGroup
@@ -276,10 +271,10 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${DDBStreamReportsTransactionFunction}
       RetentionInDays: 14
-  SQSCreateTransactionLambdaLogGroup:
+  ProcessCreateTransactionLambdaLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub /aws/lambda/${SQSCreateTransactionFunction}
+      LogGroupName: !Sub /aws/lambda/${ProcessCreateTransactionFunction}
       RetentionInDays: 14
   UpdateTransactionLambdaLogGroup:
     Type: AWS::Logs::LogGroup

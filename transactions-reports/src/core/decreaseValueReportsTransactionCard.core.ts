@@ -1,9 +1,9 @@
 import { TransactionsTypes, UpdateDecreaseValueReportsCardType } from '../shared/types'
-import { ReportsTransactionsCardRepository } from '../repository/reportsTransactionsCard.repository'
 import { TransactionTypesEnum } from '../enums'
+import ReportsTransactionCardInterface from '../repository/interface/reportsTransactionCard.interface'
 
 export class DecreaseValueReportsTransactionCardCore {
-  constructor(private repository: ReportsTransactionsCardRepository) {}
+  constructor(private repository: ReportsTransactionCardInterface) {}
 
   async execute(transaction: TransactionsTypes) {
     console.info('init DecreaseValueReportsTransactionCardCore service')
