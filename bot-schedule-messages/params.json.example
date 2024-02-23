@@ -1,0 +1,10 @@
+{
+  "TableUserName": "",
+  "TableTransactionsCardName": "",
+  "TableTransactionsCategoryName": "",
+  "Env": "dev"
+  "SecretTelegram": "",
+  "TableReportTransactionsMonthlyName": "",
+  "TableReportTransactionsCardName": "",
+  "BusTransactions": "",
+}
