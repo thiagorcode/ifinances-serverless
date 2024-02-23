@@ -1,5 +1,5 @@
-import { EventBridgeRepository } from '../repository/eventBridge.repository'
 import { DynamoDBStreamEvent } from 'aws-lambda'
+import { EventBridgeRepository } from '../repository/eventBridge.repository'
 import { SendTransactionsReportsEventCore } from '../core/sendTransactionsReportsEvents.core'
 import { parseEventDynamoDB } from '../utils/parseEventDynamoDB'
 import { SendTransactionsReportsEBridgeType, TransactionsTypes } from '../shared/types'

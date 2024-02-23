@@ -8,7 +8,7 @@ export type CreateEventTransactionsReportType = {
   eventType: z.infer<typeof EventTypeEnum>
   action: 'CREATE' | 'UPDATE'
   infoTransaction?: any
-  from: string
+  reportName: string
 }
 
 export type UpdateEventTransactionsReportType = {

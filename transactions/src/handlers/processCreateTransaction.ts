@@ -9,8 +9,6 @@ export const handler = async (event: EventBridgeEvent<'TRANSACTION_CREATE', Crea
   const repository = new TransactionRepository()
   const createTransactionCore = new CreateCore(repository)
 
-  // usar outra coisa sem ser JSON.parse
-
   const body = event.detail
 
   await createTransactionCore.execute(body)

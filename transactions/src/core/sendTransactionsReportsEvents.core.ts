@@ -11,7 +11,19 @@ export class SendTransactionsReportsEventCore {
       transactionReports,
       'lambda.transaction-event',
       process.env.BUS_TRANSACTIONS_NAME ?? '',
-      'REPORT',
+      'REPORT_CATEGORY',
+    )
+    await this.repositoryEBridge.push(
+      transactionReports,
+      'lambda.transaction-event',
+      process.env.BUS_TRANSACTIONS_NAME ?? '',
+      'REPORT_CARD',
+    )
+    await this.repositoryEBridge.push(
+      transactionReports,
+      'lambda.transaction-event',
+      process.env.BUS_TRANSACTIONS_NAME ?? '',
+      'REPORT_MONTHLY',
     )
   }
 }

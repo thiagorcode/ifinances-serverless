@@ -4,6 +4,9 @@
 build-FindTransactionsCategoryFunction:
 	$(MAKE) HANDLER=src/handlers/find.ts build-lambda-common
 
+build-CreateTransactionsCategoryFunction:
+	$(MAKE) HANDLER=src/handlers/create.ts build-lambda-common
+
 build-lambda-common:
 	npm install
 	rm -rf dist

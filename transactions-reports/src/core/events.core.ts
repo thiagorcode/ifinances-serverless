@@ -8,24 +8,28 @@ import { EventsTransactionsReportInterface } from '../repository/interface/event
 
 export class EventsCore {
   private pkTransaction: string
+  private skTransaction: string
   constructor(private repository: EventsTransactionsReportInterface) {
     this.pkTransaction = ''
+    this.skTransaction = ''
   }
 
-  async create({ requestId, action, eventType, infoTransaction, from }: CreateEventTransactionsReportType) {
+  async create({ requestId, action, eventType, infoTransaction, reportName }: CreateEventTransactionsReportType) {
     console.info('init create Events service')
     const timestamp = Date.now()
     const ttl = ~~(timestamp / 1000 + 20 + 60)
-    this.pkTransaction = `${action}#${timestamp}`
+    this.pkTransaction = `${reportName}#${timestamp}`
+    this.skTransaction = `${action}#${requestId}`
+
     const event: EventTransactionsReportType = {
       eventType,
       infoTransaction,
-      from,
+      reportName,
       requestId: requestId,
       action,
       ttl,
       pk: this.pkTransaction,
-      sk: `#report_${requestId}`,
+      sk: this.skTransaction,
     }
 
     console.info('create event ', action)
@@ -39,6 +43,6 @@ export class EventsCore {
 
     console.info('update eventType ', eventType)
 
-    await this.repository.update(this.pkTransaction, { eventType })
+    await this.repository.update(this.pkTransaction, this.skTransaction, { eventType })
   }
 }

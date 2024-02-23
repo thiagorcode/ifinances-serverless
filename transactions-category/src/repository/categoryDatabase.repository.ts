@@ -1,24 +1,27 @@
-import { DynamoDB, ScanCommand } from '@aws-sdk/client-dynamodb'
-import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb'
+import { DynamoDB } from '@aws-sdk/client-dynamodb'
+import { DynamoDBDocumentClient, ScanCommand, PutCommand } from '@aws-sdk/lib-dynamodb'
 
-import DynamoDBRepositoryInterface from './interface/dynamodbRepository.interface'
+import CategoryDatabaseRepositoryInterface from './interface/categoryDatabaseRepository.interface'
 import { TransactionsCategoryTypes } from '../shared/types'
 
 // TODO: Preciso pensar uma maneira para refatorar e separar cada metódo em um arquivo execute
 
-export class DynamoDBRepository implements DynamoDBRepositoryInterface {
+export class CategoryDatabaseRepository implements CategoryDatabaseRepositoryInterface {
   private dynamodbClient: DynamoDB
   private dynamodbDocumentClient: DynamoDBDocumentClient
 
   constructor() {
     this.dynamodbClient = new DynamoDB()
     this.dynamodbDocumentClient = DynamoDBDocumentClient.from(this.dynamodbClient)
-    //  {
-    //   endpoint: 'http://localhost:4569',
-    //   region: 'sa-east-1',
-    //   accessKeyId: 'local',
-    //   secretAccessKey: 'local',
-    // }
+  }
+
+  async create(category: TransactionsCategoryTypes) {
+    const params = new PutCommand({
+      TableName: process.env.TABLE_NAME,
+      Item: category,
+    })
+
+    await this.dynamodbDocumentClient.send(params)
   }
 
   async findAll(): Promise<TransactionsCategoryTypes[]> {

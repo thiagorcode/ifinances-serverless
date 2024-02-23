@@ -1,4 +1,4 @@
 import * as z from 'zod'
-import { transactionsCategorySchema } from '../schemas'
+import { TransactionsCategorySchema } from '../schemas'
 
-export type TransactionsCategoryTypes = z.infer<typeof transactionsCategorySchema>
+export type TransactionsCategoryTypes = z.infer<typeof TransactionsCategorySchema>

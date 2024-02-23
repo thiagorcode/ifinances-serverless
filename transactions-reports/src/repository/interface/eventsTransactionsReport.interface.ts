@@ -2,5 +2,5 @@ import { EventTransactionsReportType, UpdateEventTransactionsReportType } from '
 
 export interface EventsTransactionsReportInterface {
   create(event: EventTransactionsReportType): Promise<void>
-  update(id: string, data: UpdateEventTransactionsReportType): Promise<void>
+  update(pk: string, sk: string, data: UpdateEventTransactionsReportType): Promise<void>
 }

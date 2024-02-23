@@ -36,22 +36,7 @@ Resources:
         - nodejs18.x
       RetentionPolicy: Retain
 
-  TransactionsEventBridgeRule:
-    Type: AWS::Events::Rule
-    Properties:
-      EventBusName: !Ref BusTransactionsName
-      EventPattern:
-        source:
-          - lambda.transaction-event
-        detail-type:
-          - REPORT
-      Targets:
-        - Arn: !GetAtt ProcessReportsTransactionMonthlyFunction.Arn
-          Id: ReportTransactionsMonthly
-        - Arn: !GetAtt ProcessReportsTransactionCategoryFunction.Arn
-          Id: ReportTransactionsCategory
-        - Arn: !GetAtt ProcessReportsTransactionCardFunction.Arn
-          Id: ReportTransactionsCard
+  
 
   # ReportsTransactionsQueuePolicy:
   #   Type: AWS::SQS::QueuePolicy
@@ -97,8 +82,17 @@ Resources:
         Variables:
           TABLE_NAME: !Ref TableReportTransactionsMonthlyName
           EVENTS_REPORT_TABLE_NAME: !Ref IFinancesEventsTransactionsReportsTable
-      Policies: !Ref ReportsTransactionFunctionPolicies
-
+      Role: !GetAtt ReportsTransactionFunctionRole.Arn
+      Events:
+        Trigger:
+          Type: EventBridgeRule 
+          Properties:
+            EventBusName: !Ref BusTransactionsName
+            Pattern:
+              source:
+                - lambda.transaction-event
+              detail-type:
+                - REPORT_MONTHLY
   ProcessReportsTransactionCategoryFunction:
     Type: AWS::Serverless::Function 
     Metadata:
@@ -114,8 +108,17 @@ Resources:
         Variables:
           TABLE_NAME: !Ref TableReportTransactionsCategoryName
           EVENTS_REPORT_TABLE_NAME: !Ref IFinancesEventsTransactionsReportsTable
-      Policies: !Ref ReportsTransactionFunctionPolicies
-      
+      Role: !GetAtt ReportsTransactionFunctionRole.Arn
+      Events:
+        Trigger:
+          Type: EventBridgeRule 
+          Properties:
+            EventBusName: !Ref BusTransactionsName
+            Pattern:
+              source:
+                - lambda.transaction-event
+              detail-type:
+                - REPORT_CATEGORY
   ProcessReportsTransactionCardFunction:
     Type: AWS::Serverless::Function 
     Metadata:
@@ -131,7 +134,17 @@ Resources:
         Variables:
           TABLE_NAME: !Ref TableReportTransactionsCardName
           EVENTS_REPORT_TABLE_NAME: !Ref IFinancesEventsTransactionsReportsTable
-      Policies: !Ref ReportsTransactionFunctionPolicies
+      Role: !GetAtt ReportsTransactionFunctionRole.Arn
+      Events:
+        Trigger:
+          Type: EventBridgeRule 
+          Properties:
+            EventBusName: !Ref BusTransactionsName
+            Pattern:
+              source:
+                - lambda.transaction-event
+              detail-type:
+                - REPORT_CARD
 
   FindReportMonthlyTransactionFunction:
     Type: AWS::Serverless::Function
@@ -159,7 +172,7 @@ Resources:
         Fn::Join:
           - '-'
           - - Ref: AWS::StackName
-            - table
+            - events-table
       AttributeDefinitions:
         - AttributeName: pk
           AttributeType: S
@@ -171,27 +184,52 @@ Resources:
         - AttributeName: sk
           KeyType: RANGE
 
-  ReportsTransactionFunctionPolicies:
-    Type: AWS::IAM::ManagedPolicy
+  ReportsTransactionFunctionRole:
+    Type: AWS::IAM::Role
     Properties:
-      PolicyDocument:
-        Version: '2012-10-17'
+      Description: Role to access DDB
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
         Statement:
-          - Effect: Allow
-            Action: dynamodb:*
-            Resource: 
-              Fn::Sub: arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${TableReportTransactionsCategoryName}
-          - Effect: Allow
-            Action: dynamodb:*
-            Resource: 
-              Fn::Sub: arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${TableReportTransactionsCardName}
-          - Effect: Allow
-            Action: dynamodb:*
-            Resource: 
-              Fn::Sub: arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${TableReportTransactionsMonthlyName}
-          - Effect: Allow
-            Action: dynamodb:*
-            Resource: !GetAtt IFinancesEventsTransactionsReportsTable.Arn
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Policies:
+      - PolicyName: ReportsTransactionsLambdaPolicy
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action: 
+                - "dynamodb:*"
+              Resource: 
+                - Fn::Sub: arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${TableReportTransactionsCategoryName}
+                - Fn::Sub: arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${TableReportTransactionsCategoryName}/*
+            - Effect: Allow
+              Action: 
+                - "dynamodb:*"
+              Resource: 
+                - Fn::Sub: arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${TableReportTransactionsCardName}
+                - Fn::Sub: arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${TableReportTransactionsCardName}/*
+            - Effect: Allow
+              Action: 
+                - "dynamodb:*"
+              Resource: 
+                - Fn::Sub: arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${TableReportTransactionsMonthlyName}
+                - Fn::Sub: arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${TableReportTransactionsMonthlyName}/*
+            - Effect: Allow
+              Action: 
+                - "dynamodb:*"
+              Resource: !GetAtt IFinancesEventsTransactionsReportsTable.Arn
+            - Effect: Allow
+              Action: 
+                - "logs:CreateLogGroup"
+                - "logs:CreateLogStream"
+                - "logs:PutLogEvents"
+              Resource: "*"
   # Logs
 
   ProcessReportsCategoryTransactionLambdaLogGroup:

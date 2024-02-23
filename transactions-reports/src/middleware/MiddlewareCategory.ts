@@ -1,4 +1,4 @@
-import { SendTransactionsReportsSQSType } from '../shared/types'
+import { SendTransactionsReportsEventType } from '../shared/types'
 import { EventsTransactionsReportRepository } from '../repository/eventsTransactionsReport.repository'
 import { EventsCore } from '../core/events.core'
 import { EventTypeEnum } from '../shared/schemas'
@@ -7,7 +7,7 @@ import { DecreaseValueReportsTransactionCategoryCore } from '../core/decreaseVal
 import { CreateReportsTransactionCategoryCore } from '../core/createReportsTransactionCategory.core'
 
 export class MiddlewareCategory {
-  private body: SendTransactionsReportsSQSType
+  private body: SendTransactionsReportsEventType
   private requestId: string
   private categoryRepository: ReportsTransactionsCategoryRepository
   private createReportsTransactionCategoryCore: CreateReportsTransactionCategoryCore
@@ -16,7 +16,7 @@ export class MiddlewareCategory {
   private eventsCore: EventsCore
   private nameReport: string
 
-  constructor(body: SendTransactionsReportsSQSType, requestId: string) {
+  constructor(body: SendTransactionsReportsEventType, requestId: string, reportName: string) {
     this.body = body
     this.requestId = requestId
     this.categoryRepository = new ReportsTransactionsCategoryRepository()
@@ -27,7 +27,7 @@ export class MiddlewareCategory {
     // Events
     this.repositoryEvents = new EventsTransactionsReportRepository()
     this.eventsCore = new EventsCore(this.repositoryEvents)
-    this.nameReport = 'ReportCategory'
+    this.nameReport = reportName
   }
 
   private async remove() {
@@ -36,7 +36,13 @@ export class MiddlewareCategory {
         requestId: this.requestId,
         action: 'UPDATE',
         eventType: EventTypeEnum.enum.UPDATE_IN_PROCESSING,
-        from: this.nameReport,
+        reportName: this.nameReport,
+        infoTransaction: {
+          value: this.body.oldItem.value,
+          yearMonth: this.body.oldItem.yearMonth,
+          category: this.body.oldItem.category,
+          id: this.body.oldItem.id,
+        },
       })
 
       await this.decreaseValueReportsTransactionCategoryCore.execute(this.body.oldItem)
@@ -53,7 +59,18 @@ export class MiddlewareCategory {
         requestId: this.requestId,
         action: 'UPDATE',
         eventType: EventTypeEnum.enum.UPDATE_IN_PROCESSING,
-        from: this.nameReport,
+        reportName: this.nameReport,
+        infoTransaction: {
+          newValue: this.body.newItem.value,
+          newYearMonth: this.body.newItem.yearMonth,
+          newType: this.body.newItem.type,
+          newCategory: this.body.newItem.category,
+          value: this.body.oldItem.value,
+          yearMonth: this.body.oldItem.yearMonth,
+          category: this.body.oldItem.category,
+          type: this.body.oldItem.type,
+          id: this.body.oldItem.id,
+        },
       })
       await this.decreaseValueReportsTransactionCategoryCore.execute(this.body.oldItem)
       await this.createReportsTransactionCategoryCore.execute(this.body.newItem)
@@ -67,9 +84,15 @@ export class MiddlewareCategory {
     try {
       await this.eventsCore.create({
         requestId: this.requestId,
-        action: 'UPDATE',
+        action: 'CREATE',
         eventType: EventTypeEnum.enum.IN_PROCESSING,
-        from: this.nameReport,
+        reportName: this.nameReport,
+        infoTransaction: {
+          value: this.body.newItem.value,
+          yearMonth: this.body.newItem.yearMonth,
+          category: this.body.newItem.category,
+          id: this.body.newItem.id,
+        },
       })
       await this.createReportsTransactionCategoryCore.execute(this.body.newItem)
       await this.eventsCore.update({ eventType: EventTypeEnum.enum.REPORT_CREATED })
@@ -79,6 +102,7 @@ export class MiddlewareCategory {
   }
 
   async execute() {
+    console.info('---- START MIDDLEWARE ---', this.body.eventType)
     if (this.body.eventType === 'REMOVE') {
       await this.remove()
     }

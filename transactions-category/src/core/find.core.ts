@@ -1,9 +1,9 @@
-import DynamoDBRepositoryInterface from '../repository/interface/dynamodbRepository.interface'
+import CategoryDatabaseRepositoryInterface from '../repository/interface/categoryDatabaseRepository.interface'
 import { AppErrorException } from '../utils'
 
 // TODO: Aplicar injenção de depedências
 export class FindAllCore {
-  constructor(private repository: DynamoDBRepositoryInterface) {}
+  constructor(private repository: CategoryDatabaseRepositoryInterface) {}
 
   async execute() {
     console.info('init FindAllCategory service')

@@ -11,7 +11,7 @@ export const EventTypeEnum = z.enum([
 
 export const EventTransactionsReportSchema = z.object({
   requestId: z.string(),
-  from: z.string(),
+  reportName: z.string(),
   eventType: EventTypeEnum,
   infoTransaction: z.any(),
   action: z.enum(['CREATE', 'UPDATE']),

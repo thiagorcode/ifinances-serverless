@@ -22,10 +22,10 @@ export class EventsTransactionsReportRepository implements EventsTransactionsRep
     await this.dynamodbDocumentClient.send(params)
   }
 
-  async update(id: string, data: UpdateEventTransactionsReportType): Promise<void> {
+  async update(pk: string, sk: string, data: UpdateEventTransactionsReportType): Promise<void> {
     const params = new UpdateCommand({
       TableName: process.env.EVENTS_REPORT_TABLE_NAME,
-      Key: { pk: id },
+      Key: { pk: pk, sk },
       UpdateExpression: 'SET eventType = :eventType',
       ExpressionAttributeValues: {
         ':eventType': data.eventType,
