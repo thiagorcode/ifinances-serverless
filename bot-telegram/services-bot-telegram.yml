@@ -79,3 +79,31 @@ Resources:
             ParameterName: '*'
         - EventBridgePutEventsPolicy:
             EventBusName: !Ref BusTransactionsName
+    
+  SendMessageBotFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/processChat.handler
+      FunctionName:
+        Fn::Join:
+        - '-'
+        - - Ref: AWS::StackName
+          - send-message
+      Environment:
+        Variables:
+          ENV: !Ref Env
+          SECRET_TELEGRAM: !Ref SecretTelegram
+      Policies:
+        - SSMParameterReadPolicy: 
+            ParameterName: '*'
+      Events:
+        Trigger:
+          Type: EventBridgeRule 
+          Properties:
+            EventBusName: !Ref BusTransactionsName
+            Pattern:
+              source:
+                - lambda.send-message
+
