@@ -1,8 +1,8 @@
 .PHONY: build-RuntimeDependenciesLayer build-lambda-common 
-.PHONY: build-ImportDataFunction
+.PHONY: build-SendAmountRemainingMonthlyFunction
 
-build-ImportDataFunction:
-	$(MAKE) HANDLER=src/handlers/importDataEvent.ts build-lambda-common
+build-SendAmountRemainingMonthlyFunction:
+	$(MAKE) HANDLER=src/handlers/amountRemainingMonthly.ts build-lambda-common
 
 build-lambda-common:
 	npm install

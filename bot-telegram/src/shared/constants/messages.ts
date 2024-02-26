@@ -22,8 +22,7 @@ export const messages = {
     card_invalid: 'Cartão inválido! Selecione um dos cartões abaixo: \n\n',
     date_invalid: 'Data inválida.',
     success: 'Transação adicionada com sucesso!',
-    invalid:
-      'Erro ao adicionar transação. Tente novamente com o padrão [data] - [categoria] - [valor] - [cartão] - [descrição]',
+    invalid: 'Tente novamente com o padrão [data] - [categoria] - [valor] - [descrição] - [cartão]',
   },
   firstAccess: {
     init: 'Olá seja bem vindo ao Ifinances! \n \n Em breve teremos novidades.',

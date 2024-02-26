@@ -6,11 +6,12 @@ Description: Stack management data ifinances
 Parameters:
   # TableTransactionsCardName:
   #   Type: String
-  # TableTransactionsCategoryName:
-  #   Type: String
-  TableTransactionsCategoryName:
+  TableUserBotPreferencesName:
     Type: String
- 
+  TableReportTransactionsMonthlyName:
+    Type: String
+  BusTransactionsName:
+    Type: String
 Globals:
   Function:
     Timeout: 15
@@ -35,22 +36,32 @@ Resources:
         - nodejs20.x
       RetentionPolicy: Retain
   
-  ImportDataFunction:
+  SendAmountRemainingMonthlyFunction:
     Type: AWS::Serverless::Function
     Metadata:
       BuildMethod: makefile
     Properties:
-      Handler: dist/handlers/importDataEvent.handler
+      Handler: dist/handlers/amountRemainingMonthly.handler
       FunctionName:
         Fn::Join:
-        - '-'
-        - - Ref: AWS::StackName
+          - '-'
+          - - Ref: AWS::StackName
+            - amount-remaining-monthly
       Environment:
         Variables:
-          TABLE_TRANSACTIONS_CATEGORY_NAME: !Ref TableTransactionsCategoryName
+          BUS_TRANSACTIONS_NAME: !Ref BusTransactionsName
+          TABLE_REPORT_TRANSACTIONS_MONTHLY_NAME: !Ref TableReportTransactionsMonthlyName
+          TABLE_USER_BOT_PREFERENCES_NAME: !Ref TableUserBotPreferencesName
+
       Policies:
         - DynamoDBReadPolicy:
-            TableName: !Ref TableTransactionsCategoryName
-        - DynamoDBWritePolicy:
-            TableName: !Ref TableTransactionsCategoryName
-       
+            TableName: !Ref TableReportTransactionsMonthlyName
+        - DynamoDBReadPolicy:
+            TableName: !Ref TableUserBotPreferencesName
+        - EventBridgePutEventsPolicy:
+            EventBusName: !Ref BusTransactionsName
+      Events:
+        ScheduleEvent:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 9 * * ? *)

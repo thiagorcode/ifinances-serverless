@@ -85,7 +85,7 @@ Resources:
     Metadata:
       BuildMethod: makefile
     Properties:
-      Handler: dist/handlers/processChat.handler
+      Handler: dist/handlers/sendMessageBot.handler
       FunctionName:
         Fn::Join:
         - '-'

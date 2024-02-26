@@ -3,9 +3,9 @@ version = 0.1
 [prod]
 [prod.deploy]
 [prod.deploy.parameters]
-stack_name = "cfstack-ifinances-prod-bot-schedule-messages"
+stack_name = "cfstack-ifinances-prod-bot-sch-messages"
 s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-1v5lyb89zw0sl"
-s3_prefix = "cfstack-ifinances-prod-bot-schedule-messages"
+s3_prefix = "cfstack-ifinances-prod-bot-sch-messages"
 region = "sa-east-1"
 confirm_changeset = true
 capabilities = "CAPABILITY_IAM"
@@ -15,9 +15,9 @@ image_repositories = []
 [dev]
 [dev.deploy]
 [dev.deploy.parameters]
-stack_name = "cfstack-ifinances-dev-bot-schedule-messages"
+stack_name = "cfstack-ifinances-dev-bot-sch-messages"
 s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-1v5lyb89zw0sl"
-s3_prefix = "cfstack-ifinances-dev-bot-schedule-messages"
+s3_prefix = "cfstack-ifinances-dev-bot-sch-messages"
 region = "sa-east-1"
 confirm_changeset = true
 capabilities = "CAPABILITY_IAM"

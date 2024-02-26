@@ -1,5 +1,5 @@
 import { EventBridgeClient, PutEventsCommand } from '@aws-sdk/client-eventbridge'
-import EventBridgeRepositoryInterface from './interface/eventBridgeRepository.interface'
+import { EventBridgeRepositoryInterface } from './interface/eventBridgeRepository.interface'
 
 export class EventBridgeRepository implements EventBridgeRepositoryInterface {
   private client: EventBridgeClient

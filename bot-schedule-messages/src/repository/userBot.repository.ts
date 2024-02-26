@@ -4,8 +4,6 @@ import { ScanCommand, DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb'
 import { UsersBotTypes } from '../shared/types'
 import { UserBotRepositoryInterface } from './interface/userBotRepository.interface'
 
-// TODO: Preciso pensar uma maneira para refatorar e separar cada metódo em um arquivo execute
-
 export class UserBotRepository implements UserBotRepositoryInterface {
   private dynamodbClient: DynamoDB
   private dynamodbDocumentClient: DynamoDBDocumentClient

@@ -3,4 +3,5 @@ export type UsersBotTypes = {
   firstAccess: boolean
   username: string
   userId: string
+  chatId: string
 }
