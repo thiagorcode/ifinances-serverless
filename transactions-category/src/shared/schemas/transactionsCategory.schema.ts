@@ -1,6 +1,6 @@
 import * as z from 'zod'
 
-export const transactionsCategorySchema = z.object({
+export const TransactionsCategorySchema = z.object({
   id: z.string(),
   name: z.string(),
   icon: z.string(),

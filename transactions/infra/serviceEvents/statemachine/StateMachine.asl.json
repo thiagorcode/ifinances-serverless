@@ -1,0 +1,29 @@
+{
+  "Comment": "A state machine that processes an SQS message and sends lambda create",
+  "StartAt": "SaveOriginalMessage",
+  "States": {
+    "SaveOriginalMessage": {
+      "Type": "Pass",
+      "Parameters": {
+        "originalInput.$": "$[0]"
+      },
+      "Next": "ProcessMessage"
+    },
+    "ProcessMessage": {
+      "Type": "Task",
+      "Resource": "${CreateTransactionFunctionArn}",
+      "Parameters": {
+        "input.$": "$.originalInput.body"
+      },
+      "End": true,
+      "Retry": [
+        {
+          "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException", "Lambda.TooManyRequestsException"],
+          "IntervalSeconds": 5,
+          "MaxAttempts": 6,
+          "BackoffRate": 2
+        }
+      ]
+    }
+  }
+}

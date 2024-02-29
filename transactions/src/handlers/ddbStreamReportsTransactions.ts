@@ -1,12 +1,12 @@
-import { SQSRepository } from '../repository/sqs.repository'
 import { DynamoDBStreamEvent } from 'aws-lambda'
-import { SendTransactionsReportsSQSCore } from '../core/sendTransactionsReportsSQS.core'
+import { EventBridgeRepository } from '../repository/eventBridge.repository'
+import { SendTransactionsReportsEventCore } from '../core/sendTransactionsReportsEvents.core'
 import { parseEventDynamoDB } from '../utils/parseEventDynamoDB'
-import { SendTransactionsReportsSQSType, TransactionsTypes } from '../shared/types'
+import { SendTransactionsReportsEBridgeType, TransactionsTypes } from '../shared/types'
 
 export const handler = async (event: DynamoDBStreamEvent): Promise<PromiseSettledResult<void>[]> => {
-  const repositorySQS = new SQSRepository()
-  const sendTransactionsReportsSQSCore = new SendTransactionsReportsSQSCore(repositorySQS)
+  const repositorySQS = new EventBridgeRepository()
+  const sendTransactionsReportsEventCore = new SendTransactionsReportsEventCore(repositorySQS)
   console.debug('Records: ', event.Records)
   const recordPromises = event.Records.map(async (record) => {
     console.log(`EventId: ${record?.eventID} `)
@@ -16,14 +16,14 @@ export const handler = async (event: DynamoDBStreamEvent): Promise<PromiseSettle
     const eventType = record.eventName
     const parsedEventNewImageDynamoDb = parseEventDynamoDB(record.dynamodb?.NewImage) as TransactionsTypes
     const parsedEventOldImageDynamoDb = parseEventDynamoDB(record.dynamodb?.OldImage) as TransactionsTypes
-    const transactionsReports: SendTransactionsReportsSQSType = {
+    const transactionsReports: SendTransactionsReportsEBridgeType = {
       eventType,
       newItem: parsedEventNewImageDynamoDb,
       oldItem: parsedEventOldImageDynamoDb,
     }
     console.log(`Parsed transactionsReports Event: ${JSON.stringify(transactionsReports)}`)
 
-    await sendTransactionsReportsSQSCore.execute(transactionsReports)
+    await sendTransactionsReportsEventCore.execute(transactionsReports)
   })
   const resultPromises = await Promise.allSettled(recordPromises)
   console.debug('resultPromises: ', resultPromises)

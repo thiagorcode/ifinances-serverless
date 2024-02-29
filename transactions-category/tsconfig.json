@@ -3,6 +3,10 @@
     "lib": [
       "es2020"
     ],
+    "removeComments": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "module": "commonjs",
     "target": "es2020",
     "strict": true,
@@ -14,11 +18,6 @@
     "outDir": "./dist",
     "baseUrl": ".",
     "resolveJsonModule": true,
-    // "paths": {
-    //   "@handlers/*": ["./src/handlers/*"],
-    //   "@services/*": ["./src/services/*"],
-    //   "@shared/*": ["./src/shared/*"]
-    // }
   },
   "include": [
     "src/**/*.ts",

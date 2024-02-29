@@ -4,6 +4,9 @@
 build-BotTelegramFunction:
 	$(MAKE) HANDLER=src/handlers/processChat.ts build-lambda-common
 
+build-SendMessageBotFunction:
+	$(MAKE) HANDLER=src/handlers/sendMessageBot.ts build-lambda-common
+
 build-lambda-common:
 	npm install
 	rm -rf dist

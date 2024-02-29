@@ -1,10 +1,13 @@
 .PHONY: build-CreateTransactionFunction build-FindTransactionFunction build-FindByUserIdTransactionFunction build-FindAllTransactionFunction build-FindLastTransactionFunction
-.PHONY: build-SQSReportsTransactionCategoryFunction build-DDBStreamReportsTransactionFunction build-SQSReportsTransactionCardFunction build-SQSReportsTransactionMonthlyFunction
-.PHONY: build-UpdateTransactionFunction build-UpdateTransactionFunction
+.PHONY: build-DDBStreamReportsTransactionFunction build-ProcessCreateTransactionFunction 
+.PHONY: build-UpdateTransactionFunction
 .PHONY: build-RuntimeDependenciesLayer build-lambda-common 
 
 build-CreateTransactionFunction:
 	$(MAKE) HANDLER=src/handlers/create.ts build-lambda-common
+
+build-ProcessCreateTransactionFunction:
+	$(MAKE) HANDLER=src/handlers/processCreateTransaction.ts build-lambda-common
 
 build-FindTransactionFunction:
 	$(MAKE) HANDLER=src/handlers/find.ts build-lambda-common
@@ -27,18 +30,6 @@ build-UpdateTransactionFunction:
 build-DDBStreamReportsTransactionFunction:
 	$(MAKE) HANDLER=src/handlers/ddbStreamReportsTransactions.ts build-lambda-common
 
-build-SQSReportsTransactionMonthlyFunction:
-	$(MAKE) HANDLER=src/handlers/sqsReportsTransactionsMonthly.ts build-lambda-common
-
-build-SQSReportsTransactionCategoryFunction:
-	$(MAKE) HANDLER=src/handlers/sqsReportsTransactionsCategory.ts build-lambda-common
-
-build-SQSReportsTransactionCardFunction:
-	$(MAKE) HANDLER=src/handlers/sqsReportsTransactionsCard.ts build-lambda-common
-
-build-SQSCreateTransactionFunction:
-	$(MAKE) HANDLER=src/handlers/sqsCreateTransaction.ts build-lambda-common
-
 build-lambda-common:
 	npm install
 	rm -rf dist
@@ -54,6 +45,7 @@ build-RuntimeDependenciesLayer:
 	rm -rf "$(ARTIFACTS_DIR)/nodejs/node_modules/aws-sdk"
 
 build-deploy-common:
+	sam validate -t services-transactions.yml
 	sam build -t services-transactions.yml
 	cp -r ./samconfig.toml .aws-sam/build
 	$(eval PARAMS := $(shell cat "params.$(env).json" | jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]'))

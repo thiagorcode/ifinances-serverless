@@ -1,0 +1,153 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: API de Cartões para Transação
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Parameters:
+  TableTransactionsCardName:
+    Type: String
+Globals:
+  Function:
+    Timeout: 15
+    Tracing: Active
+    Runtime: nodejs18.x
+    Architectures:
+      - x86_64
+    Layers:
+      - !Ref RuntimeDependenciesLayer
+    Environment:
+        Variables:
+          TABLE_NAME: !Ref TableTransactionsCardName
+  Api:
+    TracingEnabled: true
+
+Resources:
+  RuntimeDependenciesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Metadata:
+      BuildMethod: makefile 
+    Properties:
+      Description: Runtime dependencies for Lambdas
+      ContentUri: ./
+      CompatibleRuntimes:
+        - nodejs20.x
+      RetentionPolicy: Retain
+      
+  
+  CreateCardTransactionFunction:
+    Type: AWS::Serverless::Function 
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/create.handler
+      FunctionName:
+        Fn::Join:
+          - '-'
+          - - Ref: AWS::StackName
+            - create
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref TableTransactionsCardName
+  CreateCardTransactionLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${CreateCardTransactionFunction}
+      RetentionInDays: 14
+  
+  FindCardTransactionFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/find.handler
+      FunctionName:
+        Fn::Join:
+          - '-'
+          - - Ref: AWS::StackName
+            - find
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref TableTransactionsCardName
+  FindCardTransactionLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${FindCardTransactionFunction}
+      RetentionInDays: 14
+  FindByUserIdCardTransactionFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/findByUserId.handler
+      FunctionName:
+        Fn::Join:
+          - '-'
+          - - Ref: AWS::StackName
+            - find-userId
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref TableTransactionsCardName
+  FindByUserIdTransactionLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${FindByUserIdCardTransactionFunction}
+      RetentionInDays: 14
+
+  
+  FindAllCardTransactionFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/findAll.handler
+      FunctionName:
+        Fn::Join:
+          - '-'
+          - - Ref: AWS::StackName
+            - find-all
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref TableTransactionsCardName
+  FindAllCardTransactionLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${FindAllCardTransactionFunction}
+      RetentionInDays: 14
+  DeleteCardTransactionFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/delete.handler
+      FunctionName:
+        Fn::Join:
+          - '-'
+          - - Ref: AWS::StackName
+            - delete
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref TableTransactionsCardName
+  DeleteCardTransactionLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${DeleteCardTransactionFunction}
+      RetentionInDays: 14
+  UpdateCardTransactionFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/update.handler
+      FunctionName:
+          Fn::Join:
+            - '-'
+            - - Ref: AWS::StackName
+              - update
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref TableTransactionsCardName
+  UpdateTransactionLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${UpdateCardTransactionFunction}
+      RetentionInDays: 14

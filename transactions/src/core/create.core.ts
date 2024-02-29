@@ -32,6 +32,7 @@ export class CreateCore {
       for (const transaction of transactions) {
         await this.repository.create(transaction)
       }
+      console.info('-------- TRANSACTION CREATED -------')
     } catch (error) {
       console.error(error)
       throw new AppErrorException(400, 'Erro inesperado, tente novamente mais tarde!')

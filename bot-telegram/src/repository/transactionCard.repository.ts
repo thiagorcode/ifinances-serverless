@@ -15,9 +15,14 @@ export class TransactionCardRepository implements TransactionCardRepositoryInter
     this.tableName = process.env.TABLE_TRANSACTIONS_CARD_NAME ?? ''
   }
 
-  async findAll(): Promise<TransactionCardType[]> {
+  // TODO: Alterar para QueryCommand precisa alterar a tabela
+  async findByUserId(userId: string): Promise<TransactionCardType[]> {
     const params = new ScanCommand({
       TableName: this.tableName,
+      FilterExpression: 'userId = :userId',
+      ExpressionAttributeValues: {
+        ':userId': userId,
+      },
     })
     const result = await this.dynamodbDocumentClient.send(params)
 

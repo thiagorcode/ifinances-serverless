@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.438.0",
-    "@aws-sdk/client-sqs": "^3.450.0",
+    "@aws-sdk/client-eventbridge": "^3.515.0",
     "@aws-sdk/lib-dynamodb": "^3.438.0",
     "date-fns": "^2.30.0",
     "destr": "^2.0.2",
