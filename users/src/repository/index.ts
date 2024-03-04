@@ -1,1 +1,1 @@
-export * from './dynamodb.repository'
+export * from './users.repository'

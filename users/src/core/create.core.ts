@@ -1,5 +1,5 @@
 import { usersSchema } from '../shared/schemas'
-import DynamoDBRepositoryInterface from '../repository/interface/dynamodbRepository.interface'
+import DynamoDBRepositoryInterface from '../repository/interface/usersRepository.interface'
 import { UsersTypes } from '../shared/types'
 
 // TODO: Aplicar injenção de depedências

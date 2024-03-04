@@ -1,6 +1,6 @@
 import * as crypto from 'crypto'
 import jwt from 'jsonwebtoken'
-import DynamoDBRepositoryInterface from '../repository/interface/dynamodbRepository.interface'
+import DynamoDBRepositoryInterface from '../repository/interface/usersRepository.interface'
 import { AppErrorException } from '../utils'
 
 export class ValidateAuthCore {

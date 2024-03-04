@@ -1,5 +1,5 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import { DynamoDBRepository } from '../repository/dynamodb.repository'
+import { UsersRepository } from '../repository/users.repository'
 import { AppErrorException, formatResponse } from '../utils'
 import { ValidateAuthCore } from '../core/validateAuth.core'
 import destr from 'destr'
@@ -7,7 +7,7 @@ import destr from 'destr'
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {
     console.debug('Event:', event)
-    const repository = new DynamoDBRepository()
+    const repository = new UsersRepository()
     const validateAuth = new ValidateAuthCore(repository)
 
     if (!event.body) {
