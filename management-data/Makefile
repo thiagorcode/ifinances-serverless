@@ -1,8 +1,11 @@
-.PHONY: build-RuntimeDependenciesLayer build-lambda-common 
-.PHONY: build-ImportDataFunction
+.PHONY: build-RuntimeDependenciesLayer  build-lambda-common 
+.PHONY: build-ImportDataFunction build-ImportTransactionsFunction
 
 build-ImportDataFunction:
 	$(MAKE) HANDLER=src/handlers/importDataEvent.ts build-lambda-common
+
+build-ImportTransactionsFunction:
+	$(MAKE) HANDLER=src/handlers/importTransactions.ts build-lambda-common
 
 build-lambda-common:
 	npm install

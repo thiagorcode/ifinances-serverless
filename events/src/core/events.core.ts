@@ -1,8 +1,8 @@
 import { EventTransactions } from '../shared/types'
-import { EventsTransactionsRepositoryInterface } from '../repository/interface/eventsTransactionsRepository.interface '
+import { EventsRepositoryInterface } from '../repository/interface/eventsRepository.interface'
 
-export class EventsTransactionsCore {
-  constructor(private repository: EventsTransactionsRepositoryInterface) {}
+export class EventsCore {
+  constructor(private repository: EventsRepositoryInterface) {}
 
   async execute(eventTransaction: EventTransactions) {
     console.info('init events service')
@@ -13,12 +13,14 @@ export class EventsTransactionsCore {
       infoTransaction: eventTransaction.infoTransaction,
       origin: eventTransaction.origin,
       requestId: eventTransaction.requestId,
-      transactionId: eventTransaction.transactionId,
+      bodyId: eventTransaction.bodyId,
       typeRequest: eventTransaction.typeRequest,
       ttl,
-      pk: `#transaction_${eventTransaction.transactionId}`,
       sk: `${eventTransaction.eventType}#${timestamp}`,
+      pk: `#transaction_${eventTransaction.bodyId}`,
     })
+
+    await this.repository.create()
     // if (eventTransaction.typeRequest === 'CREATE') {
 
     // }

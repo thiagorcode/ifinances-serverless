@@ -21,15 +21,19 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.438.0",
     "@aws-sdk/lib-dynamodb": "^3.438.0",
+    "csv-parser": "^3.0.0",
+    "csvtojson": "^2.0.10",
     "date-fns": "^3.1.0",
     "destr": "^2.0.2",
     "esbuild": "^0.14.14",
+    "parse-multipart": "^1.0.4",
     "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.92",
     "@types/jest": "^29.5.6",
     "@types/node": "^18.11.4",
+    "@types/parse-multipart": "^1.0.2",
     "@typescript-eslint/eslint-plugin": "^5.10.2",
     "@typescript-eslint/parser": "^5.10.2",
     "esbuild-jest": "^0.5.0",

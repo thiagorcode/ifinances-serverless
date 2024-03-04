@@ -22,6 +22,7 @@ export const handler = async (event: EventReportMonthlyType, callback: Callback)
     await sendMessageTelegramCore.execute(messageReportMonthly)
     return callback(null)
   } catch (error) {
+    console.error(error)
     if (error instanceof AppErrorException) {
       await sendMessageTelegramCore.execute(error.message)
 

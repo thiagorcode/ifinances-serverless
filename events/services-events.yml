@@ -4,7 +4,9 @@ Description: Stack of events
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Parameters:
-  EventsTransactionsTableName:
+  # EventsTransactionsTableName:
+  #   Type: String
+  EventsImportTransactionsTableName:
     Type: String
 Globals:
   Function:
@@ -29,45 +31,58 @@ Resources:
       CompatibleRuntimes:
         - nodejs18.x
       RetentionPolicy: Retain
-  
-  EventsTransactionsQueue:
-    Type: AWS::SQS::Queue
-    Properties:
-      QueueName: 
-        Fn::Join:
-          - '-'
-          - - Ref: AWS::StackName
-            - sqs-transactions
-      FifoQueue: true
 
-  EventsTransactionFunction:
+  ProcessEventsFunction:
     Type: AWS::Serverless::Function 
     Metadata:
       BuildMethod: makefile
     Properties:
-      Handler: dist/handlers/eventsTransactions.handler
+      Handler: dist/handlers/processEvents.handler
       FunctionName:
         Fn::Join:
           - '-'
           - - Ref: AWS::StackName
-            - transactions
+            - process
+      Role: !GetAtt EventsFunctionRole.Arn
       Environment:
         Variables:
-          EVENTS_TRANSACTIONS_TABLE_NAME: !Ref EventsTransactionsTableName
-      Policies:
-        - DynamoDBWritePolicy:
-            TableName: !Ref EventsTransactionsTableName
-        - DynamoDBReadPolicy:
-            TableName: !Ref EventsTransactionsTableName
-      Events:
-        SQSEvent:
-          Type: SQS
-          Properties:
-            Queue: !GetAtt EventsTransactionsQueue.Arn
-            BatchSize: 1
+          # EVENTS_TRANSACTIONS_TABLE_NAME: !Ref EventsTransactionsTableName
+          EVENTS_IMPORT_TRANSACTIONS_TABLE_NAME: !Ref EventsImportTransactionsTableName
 
-  EventsTransactionLambdaLogGroup:
+  EventsFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Description: Role to access DDB
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Policies:
+      - PolicyName: EventsLambdaPolicy
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action: 
+                - "dynamodb:*"
+              Resource: 
+                - Fn::Sub: arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${EventsImportTransactionsTableName}
+                - Fn::Sub: arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${EventsImportTransactionsTableName}/*
+          
+            - Effect: Allow
+              Action: 
+                - "logs:CreateLogGroup"
+                - "logs:CreateLogStream"
+                - "logs:PutLogEvents"
+              Resource: "*"
+
+  EventsLambdaLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub /aws/lambda/${EventsTransactionFunction}
+      LogGroupName: !Sub /aws/lambda/${ProcessEventsFunction}
       RetentionInDays: 14

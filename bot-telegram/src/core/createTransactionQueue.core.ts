@@ -1,5 +1,8 @@
 import { createTransactionFromTelegramSchema } from '../shared/schemas'
-import { CreateTransactionTelegramType } from '../shared/types/createTransactionFromTelegram.type'
+import {
+  CreateTransactionFromTelegramType,
+  CreateTransactionTelegramType,
+} from '../shared/types/createTransactionFromTelegram.type'
 import { AppErrorException } from '../utils'
 import { messages } from '../shared/constants/messages'
 import { TransactionCategoryRepositoryInterface } from '../repository/interface/transactionCategory.interface'
@@ -63,17 +66,18 @@ export class CreateTransactionQueueCore {
 
   async execute(transaction: CreateTransactionTelegramType) {
     const categorySelected = await this.filterCategory(transaction.type, transaction.categoryName)
-    let cardSelected
+    let cardSelected = null
     if (transaction.cardName) {
-      cardSelected = (await this.filterCard(transaction.cardName, transaction.userId)) ?? ''
+      cardSelected = (await this.filterCard(transaction.cardName, transaction.userId)) ?? null
     }
     try {
       console.info('call CreateTransactionQueueCore')
-      const newTransaction = {
+      const newTransaction: CreateTransactionFromTelegramType = {
         ...transaction,
         date: this.validDate(transaction.date),
         card: cardSelected,
         category: categorySelected,
+        isInstallments: transaction.currentInstallment && transaction.finalInstallments ? true : false,
       }
 
       const transactionParsed = createTransactionFromTelegramSchema.parse(newTransaction)

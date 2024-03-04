@@ -110,7 +110,7 @@ export class MiddlewareCard {
     if (this.body.eventType === 'MODIFY') {
       await this.update()
     }
-    if (this.body.eventType === 'INSERT') {
+    if (this.body.eventType === 'INSERT' && this.body.newItem.card?.id) {
       await this.create()
     }
   }
