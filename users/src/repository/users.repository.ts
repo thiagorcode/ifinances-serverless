@@ -1,5 +1,5 @@
 import { DynamoDB, ScanCommand } from '@aws-sdk/client-dynamodb'
-import { PutCommand, DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb'
+import { PutCommand, DynamoDBDocumentClient, GetCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb'
 
 import UsersRepositoryInterface from './interface/usersRepository.interface'
 import { UsersTypes } from '../shared/types'
@@ -60,5 +60,19 @@ export class UsersRepository implements UsersRepositoryInterface {
 
     if (!result.Items) return []
     return result.Items as unknown as UsersTypes[]
+  }
+
+  async resetPassword(userId: string, newPassword: string, newSalt: string): Promise<void> {
+    const params = new UpdateCommand({
+      TableName: process.env.TABLE_NAME,
+      Key: { id: userId },
+      UpdateExpression: 'SET password = :password, salt = :salt, dtUpdated = :dtUpdated',
+      ExpressionAttributeValues: {
+        ':password': newPassword,
+        ':salt': newSalt,
+        ':dtUpdated': new Date().toISOString(),
+      },
+    })
+    await this.dynamodbDocumentClient.send(params)
   }
 }
