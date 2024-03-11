@@ -1,7 +1,6 @@
 import { destr } from 'destr'
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { UsersRepository } from '../repository/users.repository'
-import { CreateCore } from '../core/create.core'
 import { AppErrorException, formatResponse } from '../utils'
 import { UserResetPasswordType } from '../shared'
 import { ResetPasswordCore } from '../core/resetPassword.core'

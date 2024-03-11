@@ -32,7 +32,7 @@ export class ValidateAuthCore {
         email: user.email,
       },
       jwtSecret,
-      { expiresIn: '2h' },
+      { expiresIn: '12h' },
     )
     return {
       token: jwtToken,

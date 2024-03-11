@@ -1,8 +1,8 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
+import destr from 'destr'
 import { UsersRepository } from '../repository/users.repository'
 import { AppErrorException, formatResponse } from '../utils'
 import { ValidateAuthCore } from '../core/validateAuth.core'
-import destr from 'destr'
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {

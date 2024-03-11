@@ -7,19 +7,20 @@ import { FindAllWithQueryOriginType } from '../shared/types'
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {
     console.debug('Event:', event)
-    const userId = event.pathParameters?.userId
+    const userId = event.requestContext.authorizer?.lambda?.userId as string
     if (!userId) {
-      throw new AppErrorException(400, 'Não foi enviado o parâmetro userId!')
+      throw new AppErrorException(400, 'Não foi enviado o userId!')
     }
     const query = event.queryStringParameters as FindAllWithQueryOriginType
     const repository = new TransactionRepository()
     const findAllCore = new FindAllCore(repository)
     const transactions = await findAllCore.execute({
       userId,
-      categoryId: query.categoryId,
-      date: query.date,
-      isPaid: query.isPaid,
-      type: query.type,
+      categoryId: query?.categoryId,
+      startDate: query?.startDate,
+      endDate: query?.endDate,
+      isPaid: query?.isPaid,
+      type: query?.type,
     })
 
     return formatResponse(200, {
@@ -35,7 +36,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
       })
     }
     return formatResponse(500, {
-      message: 'some error happened',
+      message: 'Internal server error',
     })
   }
 }

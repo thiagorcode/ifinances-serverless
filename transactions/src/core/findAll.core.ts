@@ -7,9 +7,9 @@ import { totalizersValue } from '../utils/totalizersValue'
 export class FindAllCore {
   constructor(private repository: TransactionRepositoryInterface) {}
 
-  async execute({ categoryId, date, isPaid, type, userId }: FindAllWithQueryType) {
+  async execute({ categoryId, startDate, endDate, isPaid, type, userId }: FindAllWithQueryType) {
     console.info('init findAll service')
-    const query = { userId, categoryId, date, isPaid, type }
+    const query = { userId, categoryId, startDate, endDate, isPaid, type }
 
     try {
       console.log('FindAll paths', query)
@@ -20,7 +20,7 @@ export class FindAllCore {
 
       return {
         totalizers,
-        ...transactions,
+        transactions,
       }
     } catch (error) {
       console.error(error)

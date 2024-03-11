@@ -26,6 +26,9 @@ Globals:
       - x86_64
     Layers:
       - !Ref RuntimeDependenciesLayer
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref IFinancesTransactionsTable
   Api:
     TracingEnabled: true
 
@@ -73,6 +76,12 @@ Resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL
+          - IndexName: TransactionByUserId
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
   
   CreateTransactionFunction:
     Type: AWS::Serverless::Function 
@@ -85,9 +94,6 @@ Resources:
           - '-'
           - - Ref: AWS::StackName
             - create
-      Environment:
-        Variables:
-          TABLE_NAME: !Ref IFinancesTransactionsTable
       Policies:
         - DynamoDBWritePolicy:
             TableName: !Ref IFinancesTransactionsTable
@@ -128,9 +134,6 @@ Resources:
           - '-'
           - - Ref: AWS::StackName
             - process-create
-      Environment:
-        Variables:
-          TABLE_NAME: !Ref IFinancesTransactionsTable
       Policies:
         - DynamoDBWritePolicy:
             TableName: !Ref IFinancesTransactionsTable
