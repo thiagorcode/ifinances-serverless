@@ -3,19 +3,16 @@ import { TransactionRepository } from '../repository/transactions.repository'
 import { CreateCore } from '../core/create.core'
 import { AppErrorException, formatResponse } from '../utils'
 import { CreateTransactionsType } from '../shared/types'
+import { ValidateRequestCore } from '../core/validateRequest.core'
+import { transactionsSchema } from '../shared/schemas'
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {
-    const body = event.body
-    console.debug('Body:', body)
-    if (!body) {
-      throw new AppErrorException(400, 'Body not found!')
-    }
-    const bodyParse: CreateTransactionsType = JSON.parse(body)
+    const body = ValidateRequestCore.execute<CreateTransactionsType>(transactionsSchema, event)
     const repository = new TransactionRepository()
     const createTransactionCore = new CreateCore(repository)
 
-    await createTransactionCore.execute(bodyParse)
+    await createTransactionCore.execute(body)
     return formatResponse(200, {
       message: 'Transação criada com sucesso!',
     })
