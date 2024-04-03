@@ -14,6 +14,7 @@ const booleanStringSchema = z
 export const findAllWithQuerySchema = z.object({
   userId: z.string().uuid(),
   categoryId: z.string().optional(),
+  cardId: z.string().optional(),
   startDate: z.string().optional(),
   endDate: z.string().optional(),
   type: z.string().optional(),

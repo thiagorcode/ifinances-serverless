@@ -21,6 +21,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
       endDate: query?.endDate,
       isPaid: query?.isPaid,
       type: query?.type,
+      cardId: query?.cardId,
     })
 
     return formatResponse(200, {

@@ -7,13 +7,21 @@ import { totalizersValue } from '../utils/totalizersValue'
 export class FindAllCore {
   constructor(private repository: TransactionRepositoryInterface) {}
 
-  async execute({ categoryId, startDate, endDate, isPaid, type, userId }: FindAllWithQueryType) {
+  async execute(queryParams: FindAllWithQueryType) {
     console.info('init findAll service')
-    const query = { userId, categoryId, startDate, endDate, isPaid, type }
+    const { userId, categoryId, startDate, endDate, isPaid, type, cardId } = queryParams
 
     try {
-      console.log('FindAll paths', query)
-      const validatedQuery = findAllWithQuerySchema.parse(query)
+      console.log('FindAll paths', queryParams)
+      const validatedQuery = findAllWithQuerySchema.parse({
+        userId,
+        categoryId,
+        startDate,
+        endDate,
+        isPaid,
+        type,
+        cardId,
+      })
       // TODO: Precisamos adicionar um redis
       const transactions = await this.repository.findAllWithQuery(validatedQuery)
       const totalizers = totalizersValue(transactions)

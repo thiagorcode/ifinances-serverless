@@ -2,11 +2,12 @@ import * as z from 'zod'
 import { findAllWithQuerySchema } from '../schemas'
 
 export type FindAllWithQueryOriginType = {
-  categoryId: string | undefined
-  startDate: string | undefined
-  endDate: string | undefined
-  type: string | undefined
-  isPaid: boolean | undefined
+  categoryId?: string
+  startDate?: string
+  endDate?: string
+  type?: string
+  cardId?: string
+  isPaid?: boolean
 }
 
 export type FindAllWithQueryServiceDto = FindAllWithQueryOriginType & {

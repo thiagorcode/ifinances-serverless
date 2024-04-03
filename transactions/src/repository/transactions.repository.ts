@@ -16,7 +16,8 @@ import {
   TransactionsTypes,
   UpdateTransactionsType,
 } from '../shared/types'
-import { buildQueryFindAll } from '../utils'
+import { QueryBuilder } from '../utils'
+import { compareDesc } from 'date-fns'
 
 // TODO: Preciso pensar uma maneira para refatorar e separar cada metódo em um arquivo execute
 
@@ -79,19 +80,21 @@ export class TransactionRepository implements TransactionRepositoryInterface {
     isPaid,
     type,
     userId,
+    cardId,
   }: FindAllWithQueryType): Promise<TransactionsTypes[]> {
+    const queryBuilder = new QueryBuilder()
     const params = new QueryCommand({
-      TableName: process.env.TABLE_NAME, // Substitua pelo nome correto da tabela
+      TableName: process.env.TABLE_NAME,
       IndexName: 'TransactionByUserId',
       KeyConditionExpression: 'userId = :userId',
       ProjectionExpression:
         // 'id, #type, #date, userId, #value, isPaid, card, #description, #categoryName, #categoryId',
         'id, #type, #date, userId, #value, isPaid, card, #description, category',
-      ScanIndexForward: true,
+      ScanIndexForward: false,
     })
-    const newParams = buildQueryFindAll({ categoryId, startDate, endDate, isPaid, type })
-    console.log('newParams', newParams)
-    params.input.FilterExpression = newParams.filterExpression
+    const newParams = queryBuilder.buildQueryFindAll({ categoryId, startDate, endDate, isPaid, type, cardId })
+
+    params.input.FilterExpression = newParams.filterExpression ? newParams.filterExpression : undefined
     params.input.ExpressionAttributeValues = {
       ':userId': userId,
       ...newParams.expressionAttributesValues,
@@ -101,14 +104,16 @@ export class TransactionRepository implements TransactionRepositoryInterface {
       '#date': 'date',
       '#value': 'value',
       '#description': 'description',
-      // '#categoryName': 'category.name',
-      // '#categoryId': 'category.id',
       ...newParams.expressionAttributeNames,
     }
 
-    const { Items } = await this.dynamodbDocumentClient.send(params)
+    const { Items, ...props } = await this.dynamodbDocumentClient.send(params)
+    console.log(JSON.stringify({ ...props }))
+    if (!Items) {
+      return [] as TransactionsTypes[]
+    }
 
-    return Items as TransactionsTypes[]
+    return Items.sort((a, b) => compareDesc(new Date(a.date), new Date(b.date))) as TransactionsTypes[]
   }
   async findLast(userId: string): Promise<TransactionsTypes[]> {
     const params = new QueryCommand({

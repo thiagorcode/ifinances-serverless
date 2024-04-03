@@ -12,7 +12,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
 
     const category = await findAllCore.execute()
     return formatResponse(200, {
-      message: 'Buscas realizada com sucesso!',
+      message: 'Busca realizada com sucesso!',
       category,
     })
   } catch (err) {

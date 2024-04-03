@@ -1,51 +1,61 @@
 import { FindAllWithQueryType } from '../shared/types'
 
-type ParamsFindAll = {
-  filterExpression: string
-  expressionAttributesValues: {
-    ':type'?: string
-    ':startDate'?: string
-    ':endDate'?: string
-    ':categoryId'?: string
-    ':isPaid'?: boolean
-  }
-  expressionAttributeNames: {
-    '#category'?: string
-  }
-}
+export class QueryBuilder {
+  private filterExpression: string
+  private expressionAttributesValues: Record<string, string | boolean>
+  private expressionAttributeNames: Record<string, string>
 
-const buildFilterExpression = (filterExpression: string, expression: string) => {
-  return filterExpression ? ` AND ${expression}` : expression
-}
-
-export const buildQueryFindAll = ({
-  type,
-  startDate,
-  endDate,
-  categoryId,
-  isPaid,
-}: Omit<FindAllWithQueryType, 'userId'>) => {
-  const params: ParamsFindAll = { filterExpression: '', expressionAttributesValues: {}, expressionAttributeNames: {} }
-  if (type !== undefined) {
-    params.filterExpression += buildFilterExpression(params.filterExpression, '#type = :type')
-    params.expressionAttributesValues[':type'] = type
+  constructor() {
+    this.filterExpression = ''
+    this.expressionAttributesValues = {}
+    this.expressionAttributeNames = {}
   }
 
-  if (startDate !== undefined && endDate !== undefined) {
-    params.filterExpression += buildFilterExpression(params.filterExpression, '#date BETWEEN :startDate AND :endDate')
-    params.expressionAttributesValues[':startDate'] = startDate
-    params.expressionAttributesValues[':endDate'] = endDate
+  private buildFilterExpression(expression: string) {
+    this.filterExpression += this.filterExpression ? ` AND ${expression}` : expression
   }
 
-  if (categoryId !== undefined) {
-    params.filterExpression += buildFilterExpression(params.filterExpression, '#category.id = :categoryId')
-    params.expressionAttributesValues[':categoryId'] = categoryId
-    params.expressionAttributeNames['#category'] = 'category'
-  }
+  public buildQueryFindAll({
+    type,
+    startDate,
+    endDate,
+    categoryId,
+    isPaid,
+    cardId,
+  }: Omit<FindAllWithQueryType, 'userId'>) {
+    if (type !== undefined) {
+      this.buildFilterExpression('#type = :type')
+      this.expressionAttributesValues[':type'] = type
+    }
 
-  if (isPaid !== undefined) {
-    params.filterExpression += buildFilterExpression(params.filterExpression, 'isPaid = :isPaid')
-    params.expressionAttributesValues[':isPaid'] = isPaid
+    if (startDate !== undefined && endDate !== undefined) {
+      this.buildFilterExpression('#date BETWEEN :startDate AND :endDate')
+      this.expressionAttributesValues[':startDate'] = startDate
+      this.expressionAttributesValues[':endDate'] = endDate + 'T23:59:59'
+    }
+
+    if (categoryId !== undefined) {
+      this.buildFilterExpression('#category.id = :categoryId')
+      this.expressionAttributesValues[':categoryId'] = categoryId
+      this.expressionAttributeNames['#category'] = 'category'
+    }
+
+    if (cardId !== undefined) {
+      this.buildFilterExpression('#card.id = :cardId')
+      this.expressionAttributesValues[':cardId'] = cardId
+      this.expressionAttributeNames['#card'] = 'card'
+    }
+
+    if (isPaid !== undefined) {
+      this.buildFilterExpression('isPaid = :isPaid')
+      this.expressionAttributesValues[':isPaid'] = isPaid
+    }
+
+    const params = {
+      filterExpression: this.filterExpression,
+      expressionAttributesValues: this.expressionAttributesValues,
+      expressionAttributeNames: this.expressionAttributeNames,
+    }
+    return params
   }
-  return params
 }
