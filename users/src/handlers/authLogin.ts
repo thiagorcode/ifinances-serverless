@@ -1,21 +1,18 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import destr from 'destr'
 import { UsersRepository } from '../repository/users.repository'
 import { AppErrorException, formatResponse } from '../utils'
-import { ValidateAuthCore } from '../core/validateAuth.core'
+import { LoginCore } from '../core/login.core'
+import { ValidateRequestCore } from '../core/validateRequest.core'
+import { LoginSchema } from '../shared'
+import { LoginTypes } from 'shared/types/login.types'
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {
-    console.debug('Event:', event)
+    const body = ValidateRequestCore.execute<LoginTypes>(LoginSchema, event)
     const repository = new UsersRepository()
-    const validateAuth = new ValidateAuthCore(repository)
+    const loginCore = new LoginCore(repository)
 
-    if (!event.body) {
-      throw new AppErrorException(400, 'Body not found!')
-    }
-    const body = destr<{ username: string; password: string }>(event.body)
-    console.debug('Body:', body)
-    const userAccess = await validateAuth.execute(body.username, body.password)
+    const userAccess = await loginCore.execute(body.username, body.password)
 
     return formatResponse(200, {
       message: 'Acesso realizado com sucesso',
@@ -30,7 +27,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
       })
     }
     return formatResponse(500, {
-      message: 'Erro inesperado',
+      message: 'Erro inesperado!',
     })
   }
 }

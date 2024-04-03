@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 import DynamoDBRepositoryInterface from '../repository/interface/usersRepository.interface'
 import { AppErrorException } from '../utils'
 
-export class ValidateAuthCore {
+export class LoginCore {
   constructor(private repository: DynamoDBRepositoryInterface) {}
 
   private comparePassword(password: string, userHashPassword: string, salt: string) {

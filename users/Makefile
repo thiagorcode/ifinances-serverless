@@ -19,7 +19,7 @@ build-lambda-common:
 	npm install
 	rm -rf dist
 	echo "{\"extends\": \"./tsconfig.json\", \"include\": [\"${HANDLER}\"] }" > tsconfig-only-handler.json
-	npm run build -- --build tsconfig-only-handler.json
+	npm run build -- "${HANDLER}" --platform=node --tree-shaking=true --bundle --format=cjs --outdir=dist/handlers
 	cp -r dist "$(ARTIFACTS_DIR)/"
 
 build-RuntimeDependenciesLayer:
