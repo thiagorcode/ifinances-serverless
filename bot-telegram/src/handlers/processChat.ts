@@ -5,6 +5,7 @@ import { handler as CreateTransactionByChatHandler } from './createTransactionBy
 import { handler as StartHandler } from './start'
 import { handler as ReportMonthlyHandler } from './reportMonthly'
 import { handler as ReportCardHandler } from './reportCard'
+import { handler as ReportCategoryHandler } from './reportCategory'
 import { EventTelegramType } from '../shared/types'
 import { extractTextFromEvent } from '../utils'
 import { FindUserByBotUsernameCore, ProcessMessageCore, SendMessageTelegramCore, ValidateCore } from '../core'
@@ -47,6 +48,8 @@ export const handler = async (event: APIGatewayProxyEvent, _: Context, callback:
       return await ReportMonthlyHandler({ attributes, chatId, user: userValidated }, callback)
     case commandsChat.SHOW_REPORT_CARD:
       return await ReportCardHandler({ attributes, chatId, user: userValidated }, callback)
+    case commandsChat.SHOW_REPORT_CATEGORY:
+      return await ReportCategoryHandler({ attributes, chatId, user: userValidated }, callback)
     default:
       await sendMessageTelegramCore.execute(messages.commands.not_found)
       return callback(null)

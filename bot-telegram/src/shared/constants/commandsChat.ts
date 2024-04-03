@@ -4,5 +4,6 @@ export const commandsChat = {
   ADD_TRANSACTION_EXPENSE: '/despesa',
   SHOW_REPORT_MONTHLY: '/relatorio',
   SHOW_REPORT_CARD: '/relatoriocartao',
+  SHOW_REPORT_CATEGORY: '/relatoriocategoria',
   HELP: '/help',
 }

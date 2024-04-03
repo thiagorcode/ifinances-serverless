@@ -12,6 +12,8 @@ Parameters:
     Type: String
   TableReportTransactionsMonthlyName:
     Type: String
+  TableReportTransactionsCategoryName:
+    Type: String
   TableReportTransactionsCardName:
     Type: String
   Env:
@@ -62,6 +64,7 @@ Resources:
           TABLE_USER_BOT_PREFERENCES_NAME: !Ref TableUserBotPreferencesName
           TABLE_TRANSACTIONS_CARD_NAME: !Ref TableTransactionsCardName
           TABLE_REPORT_TRANSACTIONS_MONTHLY_NAME: !Ref TableReportTransactionsMonthlyName
+          TABLE_REPORT_TRANSACTIONS_CATEGORY_NAME: !Ref TableReportTransactionsCategoryName
           TABLE_REPORT_TRANSACTIONS_CARD_NAME: !Ref TableReportTransactionsCardName
           BUS_TRANSACTIONS_NAME: !Ref BusTransactionsName
       Policies:
@@ -75,6 +78,8 @@ Resources:
             TableName: !Ref TableReportTransactionsMonthlyName
         - DynamoDBReadPolicy:
             TableName: !Ref TableReportTransactionsCardName
+        - DynamoDBReadPolicy:
+            TableName: !Ref TableReportTransactionsCategoryName
         - SSMParameterReadPolicy: 
             ParameterName: '*'
         - EventBridgePutEventsPolicy:

@@ -30,6 +30,8 @@ export class EventsCore {
       ttl,
       pk: this.pkTransaction,
       sk: this.skTransaction,
+      dtCreated: new Date().toISOString(),
+      dtUpdated: new Date().toISOString(),
     }
 
     console.info('create event ', action)

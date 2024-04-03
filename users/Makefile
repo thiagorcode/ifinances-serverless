@@ -13,6 +13,8 @@ build-AuthLoginFunction:
 build-AuthorizerFunction:
 	$(MAKE) HANDLER=src/handlers/authorizer.ts build-lambda-common
 
+build-ResetPasswordUserFunction:
+	$(MAKE) HANDLER=src/handlers/resetPassword.ts build-lambda-common
 build-lambda-common:
 	npm install
 	rm -rf dist

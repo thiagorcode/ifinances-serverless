@@ -1,12 +1,12 @@
 import { Callback } from 'aws-lambda'
 
-import { EventReportMonthlyType } from '../shared/types'
+import { EventHandlerType } from '../shared/types'
 import { AppErrorException } from '../utils'
 import { SendMessageTelegramCore, ReportTransactionMonthlyCore } from '../core'
 import { messages } from '../shared/constants/messages'
 import { ReportTransactionMonthlyRepository } from '../repository/reportTransactionMonthly.repository'
 
-export const handler = async (event: EventReportMonthlyType, callback: Callback) => {
+export const handler = async (event: EventHandlerType, callback: Callback) => {
   console.info('Event:', event)
   console.info('ReportMonthlyHandler')
 
@@ -22,6 +22,7 @@ export const handler = async (event: EventReportMonthlyType, callback: Callback)
     await sendMessageTelegramCore.execute(messageReportMonthly)
     return callback(null)
   } catch (error) {
+    console.error(error)
     if (error instanceof AppErrorException) {
       await sendMessageTelegramCore.execute(error.message)
 

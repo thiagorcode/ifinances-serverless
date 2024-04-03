@@ -18,4 +18,6 @@ export const EventTransactionsReportSchema = z.object({
   ttl: z.number(),
   pk: z.string(),
   sk: z.string(),
+  dtCreated: z.string().default(new Date().toISOString()),
+  dtUpdated: z.string().default(new Date().toISOString()),
 })

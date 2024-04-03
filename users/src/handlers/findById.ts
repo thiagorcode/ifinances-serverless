@@ -1,5 +1,5 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import { DynamoDBRepository } from '../repository/dynamodb.repository'
+import { UsersRepository } from '../repository/users.repository'
 import { AppErrorException, formatResponse } from '../utils'
 import { FindByIdCore } from '../core/findById.core'
 
@@ -7,7 +7,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
   try {
     console.debug('Event:', event)
     const userId = event.pathParameters?.id
-    const repository = new DynamoDBRepository()
+    const repository = new UsersRepository()
     const findByIdCore = new FindByIdCore(repository)
     const users = await findByIdCore.execute(userId)
 

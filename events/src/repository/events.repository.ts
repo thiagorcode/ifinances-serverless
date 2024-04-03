@@ -1,41 +1,32 @@
 import { DynamoDB } from '@aws-sdk/client-dynamodb'
-import { PutCommand, ScanCommand, DynamoDBDocumentClient, UpdateCommand } from '@aws-sdk/lib-dynamodb'
+import { PutCommand, DynamoDBDocumentClient, UpdateCommand } from '@aws-sdk/lib-dynamodb'
 
 import { EventTransactions, UpdateTransactionsType } from '../shared/types'
-import { EventsTransactionsRepositoryInterface } from './interface/eventsTransactionsRepository.interface '
+import { EventsRepositoryInterface } from './interface/eventsRepository.interface'
 
-export class EventsTransactionsRepository implements EventsTransactionsRepositoryInterface {
+export class EventsRepository implements EventsRepositoryInterface {
   private dynamodbClient: DynamoDB
   private dynamodbDocumentClient: DynamoDBDocumentClient
+  private tableName: string
 
-  constructor() {
+  constructor(tableName: string) {
     this.dynamodbClient = new DynamoDB()
     this.dynamodbDocumentClient = DynamoDBDocumentClient.from(this.dynamodbClient)
+    this.tableName = tableName
   }
 
   async create(data: EventTransactions): Promise<void> {
     const params = new PutCommand({
-      TableName: process.env.EVENTS_TRANSACTIONS_TABLE_NAME,
+      TableName: this.tableName,
       Item: data,
     })
 
     await this.dynamodbDocumentClient.send(params)
   }
 
-  async findAll(): Promise<EventTransactions[]> {
-    const params = new ScanCommand({
-      TableName: process.env.EVENTS_TRANSACTIONS_TABLE_NAME,
-    })
-
-    const result = await this.dynamodbDocumentClient.send(params)
-
-    if (!result.Items) return []
-    return result.Items as unknown as EventTransactions[]
-  }
-
   async update(id: string, transaction: UpdateTransactionsType): Promise<void> {
     const params = new UpdateCommand({
-      TableName: process.env.EVENTS_TRANSACTIONS_TABLE_NAME,
+      TableName: this.tableName,
       Key: { id },
       UpdateExpression: 'SET description = :description, value = :value, dtUpdated = :dtUpdated',
       ExpressionAttributeValues: {

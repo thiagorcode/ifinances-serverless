@@ -48,6 +48,25 @@ Resources:
         - DynamoDBReadPolicy:
             TableName: !Ref TableReportTransactionsCategoryName
 
+  FindInternalTransactionsCategoryFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/findInternal.handler
+      FunctionName:
+        Fn::Join:
+          - '-'
+          - - Ref: AWS::StackName
+            - find-internal
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TableReportTransactionsCategoryName
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref TableReportTransactionsCategoryName
+
+
   CreateTransactionsCategoryFunction:
     Type: AWS::Serverless::Function
     Metadata:

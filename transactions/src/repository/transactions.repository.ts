@@ -16,6 +16,7 @@ import {
   TransactionsTypes,
   UpdateTransactionsType,
 } from '../shared/types'
+import { buildQueryFindAll } from '../utils'
 
 // TODO: Preciso pensar uma maneira para refatorar e separar cada metódo em um arquivo execute
 
@@ -73,51 +74,38 @@ export class TransactionRepository implements TransactionRepositoryInterface {
   }
   async findAllWithQuery({
     categoryId,
-    date,
+    startDate,
+    endDate,
     isPaid,
     type,
     userId,
   }: FindAllWithQueryType): Promise<TransactionsTypes[]> {
     const params = new QueryCommand({
       TableName: process.env.TABLE_NAME, // Substitua pelo nome correto da tabela
-      IndexName: 'UserFindIndex',
+      IndexName: 'TransactionByUserId',
       KeyConditionExpression: 'userId = :userId',
-      ExpressionAttributeValues: {
-        ':userId': userId,
-      },
       ProjectionExpression:
         // 'id, #type, #date, userId, #value, isPaid, card, #description, #categoryName, #categoryId',
-        'id, #type, #date, userId, #value, isPaid, card, #description',
-      ExpressionAttributeNames: {
-        '#type': 'type',
-        '#date': 'date',
-        '#value': 'value',
-        '#description': 'description',
-        // '#categoryName': 'category.name',
-        // '#categoryId': 'category.id',
-      },
-      ScanIndexForward: false,
+        'id, #type, #date, userId, #value, isPaid, card, #description, category',
+      ScanIndexForward: true,
     })
-
-    if (type !== undefined) {
-      params.input.FilterExpression = ' #type = :type'
-      params.input.ExpressionAttributeValues![':type'] = type
+    const newParams = buildQueryFindAll({ categoryId, startDate, endDate, isPaid, type })
+    console.log('newParams', newParams)
+    params.input.FilterExpression = newParams.filterExpression
+    params.input.ExpressionAttributeValues = {
+      ':userId': userId,
+      ...newParams.expressionAttributesValues,
+    }
+    params.input.ExpressionAttributeNames = {
+      '#type': 'type',
+      '#date': 'date',
+      '#value': 'value',
+      '#description': 'description',
+      // '#categoryName': 'category.name',
+      // '#categoryId': 'category.id',
+      ...newParams.expressionAttributeNames,
     }
 
-    if (date !== undefined) {
-      params.input.FilterExpression = '#yearMonth = :yearMonth'
-      params.input.ExpressionAttributeValues![':yearMonth'] = date
-    }
-
-    if (categoryId !== undefined) {
-      params.input.FilterExpression = '#categoryId = :categoryId'
-      params.input.ExpressionAttributeValues![':categoryId'] = categoryId
-    }
-
-    if (isPaid !== undefined) {
-      params.input.FilterExpression = 'isPaid = :isPaid'
-      params.input.ExpressionAttributeValues![':isPaid'] = isPaid
-    }
     const { Items } = await this.dynamodbDocumentClient.send(params)
 
     return Items as TransactionsTypes[]

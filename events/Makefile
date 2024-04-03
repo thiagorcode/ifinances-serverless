@@ -1,7 +1,7 @@
 .PHONY: build-EventsTransactionFunction 
 .PHONY: build-RuntimeDependenciesLayer build-lambda-common 
 
-build-EventsTransactionFunction:
+build-ProcessEventsTransactionFunction:
 	$(MAKE) HANDLER=src/handlers/eventsTransactions.ts build-lambda-common
 
 build-lambda-common:

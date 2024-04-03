@@ -1,2 +1,6 @@
 export * from './appErrorException'
 export * from './formatResponse'
+export * from './parseEventDynamoDB'
+export * from './calculateNewValues'
+export * from './totalizersValue'
+export * from './buildQueryFindAll'

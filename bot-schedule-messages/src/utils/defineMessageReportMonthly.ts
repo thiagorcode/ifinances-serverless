@@ -1,4 +1,5 @@
 import { ReportTransactionMonthlyType } from '../shared/types'
+import { formatCurrencyPtBr } from './formatCurrency'
 
 type DefineMessagesReportMonthlyType = {
   currentReport: ReportTransactionMonthlyType | null
@@ -13,31 +14,28 @@ export function defineMessageReportMonthly({
   nextMonthYear,
   nextMonthReport,
 }: DefineMessagesReportMonthlyType): string {
-  if (currentReport?.goal && nextMonthReport?.goal) {
-    return `Relatório Mensal - ${currentMonthYear}\nDespesa total: ${positive(
-      currentReport.expenseValue,
-    )}\nMeta de gastos: ${currentReport.goal}\nValor Sobrando: ${
-      currentReport.goal - positive(currentReport.expenseValue)
-    }\n\nRelatório Mensal - ${nextMonthYear}\nDespesa total: ${positive(
-      nextMonthReport.expenseValue,
-    )}\nMeta de gastos: ${nextMonthReport.goal}\nValor Sobrando: ${
-      nextMonthReport.goal - positive(nextMonthReport.expenseValue)
-    }`
+  if (!currentReport?.goal || !nextMonthReport?.goal) {
+    return ''
   }
+  let message = ''
+  const currentExpenseValue = positive(currentReport.expenseValue)
+  const nextExpenseValue = positive(nextMonthReport.expenseValue)
+
   if (currentReport?.goal) {
-    return `Relatório Mensal - ${currentMonthYear}\n Despesa total: ${positive(
-      currentReport.expenseValue,
-    )}\n Meta de gastos: ${currentReport.goal}\n Valor Sobrando: ${
-      currentReport.goal - positive(currentReport.expenseValue)
-    }\n\n`
-  }
-  if (nextMonthReport?.goal) {
-    return `Relatório Mensal - ${nextMonthYear}\nDespesa total: ${positive(
-      nextMonthReport.expenseValue,
-    )}\nMeta de gastos: ${nextMonthReport.goal}\nValor Sobrando: ${
-      nextMonthReport.goal - positive(nextMonthReport.expenseValue)
-    }`
+    const currentAmountRemaining = formatCurrencyPtBr(currentReport.goal - currentExpenseValue)
+    const currentReportGoal = formatCurrencyPtBr(currentReport.goal)
+    message = `Relatório Mensal - ${currentMonthYear}\n\nDespesa total: ${formatCurrencyPtBr(
+      currentExpenseValue,
+    )}\n Meta de gastos: ${currentReportGoal}\n Valor Sobrando: ${currentAmountRemaining}\n\n`
   }
 
-  return ''
+  if (nextMonthReport?.goal) {
+    const nextAmountRemaining = formatCurrencyPtBr(nextMonthReport.goal - nextExpenseValue)
+    const nextMonthReportGoal = formatCurrencyPtBr(nextMonthReport.goal)
+    message += `Relatório Mensal - ${nextMonthYear}\n\nDespesa total: ${formatCurrencyPtBr(
+      nextExpenseValue,
+    )}\nMeta de gastos: ${nextMonthReportGoal}\nValor Sobrando: ${nextAmountRemaining}`
+  }
+
+  return message
 }

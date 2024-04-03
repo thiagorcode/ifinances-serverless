@@ -11,7 +11,7 @@ const categoryValidate = z.object({
 })
 
 export const createTransactionFromTelegramSchema = z.object({
-  card: cardValidate.optional(),
+  card: cardValidate.optional().nullable(),
   category: categoryValidate,
   date: z.date(),
   value: z.union([z.string(), z.number().positive()]).transform((val) => {
@@ -25,6 +25,13 @@ export const createTransactionFromTelegramSchema = z.object({
     // Se não for possível converter para número, retorna o valor original
     return val
   }),
+  currentInstallment: z.number().refine((value) => value >= 0, {
+    message: 'O número deve ser zero ou positivo.',
+  }),
+  finalInstallments: z.number().refine((value) => value >= 0, {
+    message: 'O número deve ser zero ou positivo.',
+  }),
+  isInstallments: z.boolean(),
   type: z.string(),
   userId: z.string().uuid(),
   description: z.string().optional().default(''),

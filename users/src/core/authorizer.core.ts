@@ -5,7 +5,7 @@ export class AuthorizerCore {
     console.info('init validateAuthorizerToken service')
     try {
       if (!headerToken) {
-        return false
+        return { isAuthorized: false }
       }
       const token = headerToken.split(' ')[1]
 
@@ -13,10 +13,10 @@ export class AuthorizerCore {
       const jwtSecret = 'teste123'
       const verify = jwt.verify(token, jwtSecret)
       console.info(verify)
-      return true
+      return { isAuthorized: true, data: verify }
     } catch (error) {
       console.error(error)
-      return false
+      return { isAuthorized: false }
     }
   }
 }

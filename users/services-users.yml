@@ -63,6 +63,9 @@ Resources:
         - '-'
         - - Ref: AWS::StackName
           - find-by-id
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TableUserName
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref TableUserName
@@ -70,6 +73,31 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Sub /aws/lambda/${FindByIdUserFunction}
+      RetentionInDays: 14
+
+  ResetPasswordUserFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/resetPassword.handler
+      FunctionName:
+        Fn::Join:
+        - '-'
+        - - Ref: AWS::StackName
+          - reset-password
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TableUserName
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref TableUserName
+        - DynamoDBWritePolicy:
+            TableName: !Ref TableUserName
+  ResetPasswordUserLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${ResetPasswordUserFunction}
       RetentionInDays: 14
 
   AuthLoginFunction:

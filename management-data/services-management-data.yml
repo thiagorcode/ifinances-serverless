@@ -6,8 +6,8 @@ Description: Stack management data ifinances
 Parameters:
   # TableTransactionsCardName:
   #   Type: String
-  # TableTransactionsCategoryName:
-  #   Type: String
+  TransactionsTableName:
+    Type: String
   TableTransactionsCategoryName:
     Type: String
  
@@ -53,4 +53,24 @@ Resources:
             TableName: !Ref TableTransactionsCategoryName
         - DynamoDBWritePolicy:
             TableName: !Ref TableTransactionsCategoryName
-       
+
+  ImportTransactionsFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/importTransactions.handler
+      FunctionName:
+        Fn::Join:
+        - '-'
+        - - Ref: AWS::StackName
+          - transactions
+      Environment:
+        Variables:
+          TRANSACTIONS_TABLE_NAME: !Ref TransactionsTableName
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref TransactionsTableName
+        - DynamoDBWritePolicy:
+            TableName: !Ref TransactionsTableName
+      

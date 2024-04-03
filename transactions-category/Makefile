@@ -1,4 +1,4 @@
-.PHONY: build-FindTransactionsCategoryFunction build-FindUserFunction build-FindByIdUserFunction
+ .PHONY: build-FindTransactionsCategoryFunction build-FindUserFunction build-FindFunctionTransactionsCategoryFunction
 .PHONY: build-RuntimeDependenciesLayer build-lambda-common 
 
 build-FindTransactionsCategoryFunction:
@@ -6,6 +6,9 @@ build-FindTransactionsCategoryFunction:
 
 build-CreateTransactionsCategoryFunction:
 	$(MAKE) HANDLER=src/handlers/create.ts build-lambda-common
+
+build-FindInternalTransactionsCategoryFunction:
+	$(MAKE) HANDLER=src/handlers/findInternal.ts build-lambda-common
 
 build-lambda-common:
 	npm install
@@ -21,4 +24,9 @@ build-RuntimeDependenciesLayer:
 	rm "$(ARTIFACTS_DIR)/nodejs/package.json" # to avoid rebuilding when changes aren't related to dependencies
 	rm -rf "$(ARTIFACTS_DIR)/nodejs/node_modules/aws-sdk"
 
-
+build-deploy-common:
+	sam validate -t services-transactions-category.yml
+	sam build -t services-transactions-category.yml
+	cp -r ./samconfig.toml .aws-sam/build
+	$(eval PARAMS := $(shell cat "params.$(env).json" | jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]'))
+	cd .aws-sam/build && sam deploy --on-failure DELETE --region sa-east-1 --parameter-overrides $(PARAMS) --config-env dev

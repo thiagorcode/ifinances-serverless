@@ -28,14 +28,14 @@ Resources:
   RuntimeDependenciesLayer:
     Type: AWS::Serverless::LayerVersion
     Metadata:
-      BuildMethod: makefile 
+      BuildMethod: makefile
     Properties:
       Description: Runtime dependencies for Lambdas
       ContentUri: ./
       CompatibleRuntimes:
         - nodejs20.x
       RetentionPolicy: Retain
-  
+
   SendAmountRemainingMonthlyFunction:
     Type: AWS::Serverless::Function
     Metadata:
@@ -64,4 +64,4 @@ Resources:
         ScheduleEvent:
           Type: Schedule
           Properties:
-            Schedule: cron(0 9 * * ? *)
+            Schedule: cron(0 12 * * ? *)

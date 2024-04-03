@@ -6,6 +6,8 @@ export type CreateTransactionTelegramType = {
   categoryName: string
   cardName: string | null
   value: string
+  currentInstallment: number
+  finalInstallments: number
   description: string
   userId: string
   type: string
