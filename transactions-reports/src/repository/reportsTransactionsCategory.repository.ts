@@ -81,14 +81,14 @@ export class ReportsTransactionsCategoryRepository implements ReportsTransaction
   async updateReportValue(id: string, currentReport: UpdateReportTransactionsCategoryType): Promise<void> {
     const params = new UpdateCommand({
       TableName: process.env.TABLE_NAME,
-      Key: { id: id },
-      UpdateExpression:
-        'SET #curr_value = :current_value, quantityTransactions = :qtdTransactions, dtUpdated = :dtUpdated',
+      Key: { id },
+      UpdateExpression: 'SET #currValue = :currentValue, #qtdTransactions = :qtdTransactions, dtUpdated = :dtUpdated',
       ExpressionAttributeNames: {
-        '#curr_value': 'value',
+        '#currValue': 'value',
+        '#qtdTransactions': 'quantityTransactions',
       },
       ExpressionAttributeValues: {
-        ':current_value': currentReport.value,
+        ':currentValue': currentReport.value,
         ':qtdTransactions': currentReport.quantityTransactions,
         ':dtUpdated': new Date().toISOString(),
       },
@@ -100,10 +100,14 @@ export class ReportsTransactionsCategoryRepository implements ReportsTransaction
     const params = new UpdateCommand({
       TableName: process.env.TABLE_NAME,
       Key: { id: id },
-      UpdateExpression: 'SET value = :value quantityTransactions = :quantityTransactions dtUpdated = :dtUpdated',
+      ExpressionAttributeNames: {
+        '#currValue': 'value',
+        '#qtdTransactions': 'quantityTransactions',
+      },
+      UpdateExpression: 'SET #currValue = :currValue, #qtdTransactions = :qtdTransactions, dtUpdated = :dtUpdated',
       ExpressionAttributeValues: {
-        ':quantityTransactions': currentReport.quantityTransactions,
-        ':value': currentReport.value,
+        ':qtdTransactions': currentReport.quantityTransactions,
+        ':currValue': currentReport.value,
         ':dtUpdated': new Date().toISOString(),
       },
     })

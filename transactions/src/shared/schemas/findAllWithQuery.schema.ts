@@ -18,5 +18,6 @@ export const findAllWithQuerySchema = z.object({
   startDate: z.string().optional(),
   endDate: z.string().optional(),
   type: z.string().optional(),
+  yearMonth: z.string().optional(),
   isPaid: booleanStringSchema.optional(),
 })

@@ -54,6 +54,7 @@ export class TransactionCardRepository implements TransactionCardRepositoryInter
   async findByUserId(userId: string): Promise<TransactionsTypes[]> {
     const params = new QueryCommand({
       TableName: process.env.TABLE_NAME,
+      IndexName: 'CardByUserId',
       KeyConditionExpression: 'userId = :userId',
       ExpressionAttributeValues: {
         ':userId': userId,

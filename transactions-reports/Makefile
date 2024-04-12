@@ -4,13 +4,13 @@
 
 
 build-ProcessReportsTransactionMonthlyFunction:
-	$(MAKE) HANDLER=src/handlers/sqsReportsTransactionsMonthly.ts build-lambda-common
+	$(MAKE) HANDLER=src/handlers/processReportsTransactionsMonthly.ts build-lambda-common
 
 build-ProcessReportsTransactionCategoryFunction:
-	$(MAKE) HANDLER=src/handlers/sqsReportsTransactionsCategory.ts build-lambda-common
+	$(MAKE) HANDLER=src/handlers/processReportsTransactionsCategory.ts build-lambda-common
 
 build-ProcessReportsTransactionCardFunction:
-	$(MAKE) HANDLER=src/handlers/sqsReportsTransactionsCard.ts build-lambda-common
+	$(MAKE) HANDLER=src/handlers/processReportsTransactionsCard.ts build-lambda-common
 
 build-FindReportMonthlyTransactionFunction:
 	$(MAKE) HANDLER=src/handlers/findReportMonthly.ts build-lambda-common
@@ -19,7 +19,7 @@ build-lambda-common:
 	npm install
 	rm -rf dist
 	echo "{\"extends\": \"./tsconfig.json\", \"include\": [\"${HANDLER}\"] }" > tsconfig-only-handler.json
-	npm run build -- --build tsconfig-only-handler.json
+	HANDLER="${HANDLER}" node build.js
 	cp -r dist "$(ARTIFACTS_DIR)/"
 
 build-RuntimeDependenciesLayer:

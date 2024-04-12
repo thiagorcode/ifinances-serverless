@@ -8,6 +8,7 @@ export type FindAllWithQueryOriginType = {
   type?: string
   cardId?: string
   isPaid?: boolean
+  yearMonth?: string
 }
 
 export type FindAllWithQueryServiceDto = FindAllWithQueryOriginType & {

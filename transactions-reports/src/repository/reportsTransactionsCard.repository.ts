@@ -75,10 +75,10 @@ export class ReportsTransactionsCardRepository implements ReportsTransactionCard
     const params = new UpdateCommand({
       TableName: process.env.TABLE_NAME,
       Key: { id },
-      UpdateExpression:
-        'SET #curr_value = :currentValue, quantityTransactions = :qtdTransactions, dtUpdated = :dtUpdated',
+      UpdateExpression: 'SET #currValue = :currentValue, #qtdTransactions = :qtdTransactions, dtUpdated = :dtUpdated',
       ExpressionAttributeNames: {
-        '#curr_value': 'value',
+        '#currValue': 'value',
+        '#qtdTransactions': 'quantityTransactions',
       },
       ExpressionAttributeValues: {
         ':currentValue': currentReport.value,
@@ -93,12 +93,16 @@ export class ReportsTransactionsCardRepository implements ReportsTransactionCard
     const params = new UpdateCommand({
       TableName: process.env.TABLE_NAME,
       Key: { id: id },
-      UpdateExpression: 'SET value = :value quantityTransactions = :quantityTransactions dtUpdated = :dtUpdated',
+      ExpressionAttributeNames: {
+        '#currValue': 'value',
+        '#qtdTransactions': 'quantityTransactions',
+      },
       ExpressionAttributeValues: {
-        ':quantityTransactions': currentReport.quantityTransactions,
-        ':value': currentReport.value,
+        ':currentValue': currentReport.value,
+        ':qtdTransactions': currentReport.quantityTransactions,
         ':dtUpdated': new Date().toISOString(),
       },
+      UpdateExpression: 'SET #currValue = :value, #qtdTransactions = :qtdTransactions, dtUpdated = :dtUpdated',
     })
     await this.dynamodbDocumentClient.send(params)
   }

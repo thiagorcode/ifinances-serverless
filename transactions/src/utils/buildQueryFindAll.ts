@@ -22,6 +22,7 @@ export class QueryBuilder {
     categoryId,
     isPaid,
     cardId,
+    yearMonth,
   }: Omit<FindAllWithQueryType, 'userId'>) {
     if (type !== undefined) {
       this.buildFilterExpression('#type = :type')
@@ -49,6 +50,11 @@ export class QueryBuilder {
     if (isPaid !== undefined) {
       this.buildFilterExpression('isPaid = :isPaid')
       this.expressionAttributesValues[':isPaid'] = isPaid
+    }
+
+    if (yearMonth !== undefined) {
+      this.buildFilterExpression('yearMonth = :yearMonth')
+      this.expressionAttributesValues[':yearMonth'] = yearMonth
     }
 
     const params = {

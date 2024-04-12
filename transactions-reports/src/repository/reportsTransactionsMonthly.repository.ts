@@ -74,10 +74,12 @@ export class ReportsTransactionsMonthlyRepository implements ReportsTransactionM
     const params = new UpdateCommand({
       TableName: process.env.TABLE_NAME,
       Key: { id: id, yearMonth: currentReport.yearMonth },
+
       UpdateExpression:
-        'SET recipeValue = :recipeValue, #totalValue = :totalValue, quantityTransactions = :qtdTransactions, dtUpdated = :dtUpdated',
+        'SET recipeValue = :recipeValue, #totalValue = :totalValue, #qtdTransactions = :qtdTransactions, dtUpdated = :dtUpdated',
       ExpressionAttributeNames: {
         '#totalValue': 'total',
+        '#qtdTransactions': 'quantityTransactions',
       },
       ExpressionAttributeValues: {
         ':recipeValue': currentReport.recipeValue,
@@ -94,9 +96,10 @@ export class ReportsTransactionsMonthlyRepository implements ReportsTransactionM
       TableName: process.env.TABLE_NAME,
       Key: { id, yearMonth: currentReport.yearMonth },
       UpdateExpression:
-        'SET expenseValue = :expenseValue, #totalValue = :totalValue, quantityTransactions = :qtdTransactions, dtUpdated = :dtUpdated',
+        'SET expenseValue = :expenseValue, #totalValue = :totalValue, #qtdTransactions = :qtdTransactions, dtUpdated = :dtUpdated',
       ExpressionAttributeNames: {
         '#totalValue': 'total',
+        '#qtdTransactions': 'quantityTransactions',
       },
       ExpressionAttributeValues: {
         ':expenseValue': currentReport.expenseValue,
@@ -113,9 +116,12 @@ export class ReportsTransactionsMonthlyRepository implements ReportsTransactionM
       TableName: process.env.TABLE_NAME,
       Key: { id: id },
       UpdateExpression:
-        'SET recipeValue = :recipeValue expenseValue = :expenseValue total = :total quantityTransactions = :quantityTransactions dtUpdated = :dtUpdated',
+        'SET recipeValue = :recipeValue, expenseValue = :expenseValue ,total = :total, #qtdTransactions = :qtdTransactions, dtUpdated = :dtUpdated',
+      ExpressionAttributeNames: {
+        '#qtdTransactions': 'quantityTransactions',
+      },
       ExpressionAttributeValues: {
-        ':quantityTransactions': currentReport.quantityTransactions,
+        ':qtdTransactions': currentReport.quantityTransactions,
         ':recipeValue': currentReport.recipeValue,
         ':expenseValue': currentReport.expenseValue,
         ':total': currentReport.total,

@@ -12,7 +12,7 @@ export class FindByUserIdCore {
       }
       return await this.repository.findByUserId(userId)
     } catch (error) {
-      throw new AppErrorException(400, 'Erro inesperado, tente novamente mais tarde!')
+      throw new AppErrorException(400, 'Erro inesperado, tente novamente mais tarde!' + error)
     }
   }
 }

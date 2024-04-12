@@ -21,7 +21,7 @@ export class EventBridgeRepository implements EventBridgeRepositoryInterface {
       ],
     })
     console.log('send message command: ', command)
-    const responseSQS = await this.client.send(command)
-    console.info('response event: ', responseSQS)
+    const responseEvent = await this.client.send(command)
+    console.info('response event: ', responseEvent)
   }
 }

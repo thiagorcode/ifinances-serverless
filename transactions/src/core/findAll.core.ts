@@ -9,7 +9,7 @@ export class FindAllCore {
 
   async execute(queryParams: FindAllWithQueryType) {
     console.info('init findAll service')
-    const { userId, categoryId, startDate, endDate, isPaid, type, cardId } = queryParams
+    const { userId, categoryId, startDate, endDate, isPaid, type, cardId, yearMonth } = queryParams
 
     try {
       console.log('FindAll paths', queryParams)
@@ -21,6 +21,7 @@ export class FindAllCore {
         isPaid,
         type,
         cardId,
+        yearMonth,
       })
       // TODO: Precisamos adicionar um redis
       const transactions = await this.repository.findAllWithQuery(validatedQuery)

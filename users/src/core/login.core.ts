@@ -25,14 +25,14 @@ export class LoginCore {
       throw new AppErrorException(400, 'Usuário ou senha incorretos!')
     }
 
-    const jwtSecret = 'teste123'
+    const jwtSecret = 'teste1234'
     const jwtToken = jwt.sign(
       {
         userId: user.id,
         email: user.email,
       },
       jwtSecret,
-      { expiresIn: '12h' },
+      { expiresIn: '36h' },
     )
     return {
       token: jwtToken,

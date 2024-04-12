@@ -6,11 +6,11 @@ import { FindByUserIdCore } from '../core/findByUserId.core'
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {
     console.debug('Event:', event)
-    const userId = event.pathParameters?.userId
-
+    const userId = event.requestContext.authorizer?.lambda?.userId as string
     if (!userId) {
-      throw new AppErrorException(400, 'Não foi enviado o parâmetro transactionId!')
+      throw new AppErrorException(400, 'Não foi enviado o userId!')
     }
+
     const repository = new TransactionCardRepository()
     const cardFindByUserIdCore = new FindByUserIdCore(repository)
     const cards = await cardFindByUserIdCore.execute(userId)

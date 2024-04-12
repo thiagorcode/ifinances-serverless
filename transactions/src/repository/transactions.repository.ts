@@ -81,6 +81,7 @@ export class TransactionRepository implements TransactionRepositoryInterface {
     type,
     userId,
     cardId,
+    yearMonth,
   }: FindAllWithQueryType): Promise<TransactionsTypes[]> {
     const queryBuilder = new QueryBuilder()
     const params = new QueryCommand({
@@ -88,11 +89,18 @@ export class TransactionRepository implements TransactionRepositoryInterface {
       IndexName: 'TransactionByUserId',
       KeyConditionExpression: 'userId = :userId',
       ProjectionExpression:
-        // 'id, #type, #date, userId, #value, isPaid, card, #description, #categoryName, #categoryId',
-        'id, #type, #date, userId, #value, isPaid, card, #description, category',
+        'id, #type, #date, userId, #value, isPaid, card, #description, category, yearMonth, currentInstallment, finalInstallments, isInstallments',
       ScanIndexForward: false,
     })
-    const newParams = queryBuilder.buildQueryFindAll({ categoryId, startDate, endDate, isPaid, type, cardId })
+    const newParams = queryBuilder.buildQueryFindAll({
+      categoryId,
+      startDate,
+      endDate,
+      isPaid,
+      type,
+      cardId,
+      yearMonth,
+    })
 
     params.input.FilterExpression = newParams.filterExpression ? newParams.filterExpression : undefined
     params.input.ExpressionAttributeValues = {
