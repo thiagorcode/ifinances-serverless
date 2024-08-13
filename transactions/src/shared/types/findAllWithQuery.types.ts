@@ -11,8 +11,5 @@ export type FindAllWithQueryOriginType = {
   yearMonth?: string
 }
 
-export type FindAllWithQueryServiceDto = FindAllWithQueryOriginType & {
-  userId: string
-}
 // TODO: REFACTOR changed name
 export type FindAllWithQueryType = z.infer<typeof findAllWithQuerySchema>

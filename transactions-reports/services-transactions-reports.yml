@@ -36,37 +36,6 @@ Resources:
         - nodejs18.x
       RetentionPolicy: Retain
 
-  
-
-  # ReportsTransactionsQueuePolicy:
-  #   Type: AWS::SQS::QueuePolicy
-  #   Properties:
-  #     PolicyDocument:
-  #       Version: "2012-10-17"
-  #       Statement:
-  #         - Action:
-  #             - sqs:*
-  #           Effect: Allow
-  #           Principal:
-  #             AWS: !Ref AWS::AccountId
-  #           Resource: !GetAtt ReportsTransactionsMonthlyQueue.Arn
-  #         - Action:
-  #             - sqs:*
-  #           Effect: Allow
-  #           Principal:
-  #             AWS: !Ref AWS::AccountId
-  #           Resource: !GetAtt ReportsTransactionsCardQueue.Arn
-  #         - Action:
-  #             - sqs:*
-  #           Effect: Allow
-  #           Principal:
-  #             AWS: !Ref AWS::AccountId
-  #           Resource: !GetAtt ReportsTransactionsCategoryQueue.Arn
-  #     Queues:
-  #       - !Ref ReportsTransactionsMonthlyQueue
-  #       - !Ref ReportsTransactionsCardQueue
-  #       - !Ref ReportsTransactionsCategoryQueue
-
   ProcessReportsTransactionMonthlyFunction:
     Type: AWS::Serverless::Function 
     Metadata:
@@ -163,6 +132,24 @@ Resources:
       Environment:
         Variables:
           TABLE_NAME: !Ref TableReportTransactionsMonthlyName
+
+  FindReportCategoryTransactionFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/findReportCategory.handler
+      FunctionName:
+        Fn::Join:
+          - '-'
+          - - Ref: AWS::StackName
+            - find-category
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref TableReportTransactionsCategoryName
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TableReportTransactionsCategoryName
 
   IFinancesEventsTransactionsReportsTable:
     Type: AWS::DynamoDB::Table

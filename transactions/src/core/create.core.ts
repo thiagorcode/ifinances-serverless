@@ -4,6 +4,7 @@ import { AppErrorException } from '../utils'
 import { transactionsSchema } from '../shared/schemas'
 import { randomUUID } from 'crypto'
 import { addMonths, parseISO } from 'date-fns'
+import { RedisRepository } from '../repository/redis.repository'
 
 export class CreateCore {
   constructor(private repository: TransactionRepositoryInterface) {}
@@ -31,6 +32,7 @@ export class CreateCore {
   async execute(transaction: CreateTransactionsType) {
     console.info('init create service')
     try {
+      const redisClient = await RedisRepository.connect()
       const isInstallments = !!transaction.finalInstallments && !!transaction.currentInstallment
       const transactionParsed = transactionsSchema.parse({ ...transaction, id: randomUUID(), isInstallments })
 
@@ -42,6 +44,10 @@ export class CreateCore {
       }
 
       console.info('-------- TRANSACTION CREATED -------')
+      console.log('CLEAR Cache')
+
+      // TODO Aplicar injeção de depedencia - Apenas Testes
+      await redisClient.del(`find-all-query-${transactionParsed.userId}-${transactionParsed.yearMonth}`)
     } catch (error) {
       console.error(error)
       throw new AppErrorException(400, 'Erro inesperado, tente novamente mais tarde!')

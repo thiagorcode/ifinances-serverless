@@ -6,16 +6,16 @@ import { FindAllWithQueryOriginType } from '../shared/types'
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {
-    console.debug('Event:', event)
-    const userId = event.requestContext.authorizer?.lambda?.userId as string
+    console.log('data Authorizer:', event.requestContext.authorizer)
+    const userId = event.requestContext.authorizer?.lambda?.id as string
     if (!userId) {
       throw new AppErrorException(400, 'Não foi enviado o userId!')
     }
     const query = event.queryStringParameters as FindAllWithQueryOriginType
     const repository = new TransactionRepository()
+
     const findAllCore = new FindAllCore(repository)
-    const transactions = await findAllCore.execute({
-      userId,
+    const transactions = await findAllCore.execute(userId, {
       categoryId: query?.categoryId,
       startDate: query?.startDate,
       endDate: query?.endDate,

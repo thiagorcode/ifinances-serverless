@@ -2,6 +2,7 @@ import { DynamoDB } from '@aws-sdk/client-dynamodb'
 import { PutCommand, ScanCommand, DynamoDBDocumentClient, QueryCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb'
 
 import {
+  FindReportCategoryMonthlyTypes,
   FindReportCategoryTypes,
   ReportTransactionsCategoryType,
   UpdateDecreaseValueReportsCategoryType,
@@ -73,11 +74,34 @@ export class ReportsTransactionsCategoryRepository implements ReportsTransaction
     if (!Items) {
       return null
     }
+
     const filteredItems = Items.filter((item) => {
       return item.category === categoryName
     })
     return filteredItems[0] as ReportTransactionsCategoryType
   }
+
+  async findByMonth({ yearMonth, userId }: FindReportCategoryMonthlyTypes): Promise<ReportTransactionsCategoryType[]> {
+    const params = new QueryCommand({
+      TableName: process.env.TABLE_NAME,
+      KeyConditionExpression: 'userId = :userId AND #ym = :yearMonth',
+      IndexName: 'UserCategoryIndex',
+      ExpressionAttributeNames: {
+        '#ym': 'yearMonth',
+      },
+      ExpressionAttributeValues: {
+        ':yearMonth': yearMonth,
+        ':userId': userId,
+      },
+    })
+
+    const { Items } = await this.dynamodbDocumentClient.send(params)
+    if (!Items) {
+      return [] as ReportTransactionsCategoryType[]
+    }
+    return Items as ReportTransactionsCategoryType[]
+  }
+
   async updateReportValue(id: string, currentReport: UpdateReportTransactionsCategoryType): Promise<void> {
     const params = new UpdateCommand({
       TableName: process.env.TABLE_NAME,
@@ -99,7 +123,7 @@ export class ReportsTransactionsCategoryRepository implements ReportsTransaction
   async updateDecreaseReportValue(id: string, currentReport: UpdateDecreaseValueReportsCategoryType): Promise<void> {
     const params = new UpdateCommand({
       TableName: process.env.TABLE_NAME,
-      Key: { id: id },
+      Key: { id },
       ExpressionAttributeNames: {
         '#currValue': 'value',
         '#qtdTransactions': 'quantityTransactions',

@@ -6,7 +6,7 @@ import { FindByUserIdCore } from '../core/findByUserId.core'
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {
     console.debug('Event:', event)
-    const userId = event.requestContext.authorizer?.lambda?.userId as string
+    const userId = event.requestContext.authorizer?.lambda?.id as string
     if (!userId) {
       throw new AppErrorException(400, 'Não foi enviado o userId!')
     }

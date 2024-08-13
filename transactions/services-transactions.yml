@@ -9,12 +9,6 @@ Parameters:
     Type: String
   TableReportTransactionsCardName:
     Type: String
-  QueueReportTransactionsMonthlyName:
-    Type: String
-  QueueReportTransactionsCategoryName:
-    Type: String
-  QueueReportTransactionsCardName:
-    Type: String
   BusTransactionsName:
     Type: String
 Globals:
@@ -197,6 +191,7 @@ Resources:
       BuildMethod: makefile
     Properties:
       Handler: dist/handlers/findAll.handler
+      MemorySize: 256
       FunctionName:
         Fn::Join:
           - '-'

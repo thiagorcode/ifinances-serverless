@@ -16,8 +16,7 @@ export class SendAmountRemainingMonthlyCore {
     const users = await this.userBotRepository.findAllUsers()
 
     const currentDate = new Date()
-    const nextMonthDate = new Date()
-    nextMonthDate.setMonth(nextMonthDate.getMonth() + 1)
+    const nextMonthDate = new Date(new Date().setMonth(currentDate.getMonth() + 1))
     const currentMonthYear = currentDate.toLocaleDateString('pt-BR', {
       year: 'numeric',
       month: '2-digit',

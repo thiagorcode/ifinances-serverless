@@ -24,7 +24,7 @@ export const TransactionsSchema = z
     isPaid: z.boolean().default(false),
     isDeleted: z.boolean().default(false),
     type: z.string(),
-    specification: z.string().optional().default(''),
+    expenseType: z.string().optional().default(''),
     category: categoryValidate,
     card: cardValidate.optional(),
     userId: z.string().uuid(),

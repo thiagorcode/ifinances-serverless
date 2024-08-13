@@ -25,5 +25,11 @@ export class SendTransactionsReportsEventCore {
       process.env.BUS_TRANSACTIONS_NAME ?? '',
       'REPORT_MONTHLY',
     )
+    await this.repositoryEBridge.push(
+      transactionReports,
+      'lambda.transaction-event',
+      process.env.BUS_TRANSACTIONS_NAME ?? '',
+      'REPORT_MONTHLY',
+    )
   }
 }

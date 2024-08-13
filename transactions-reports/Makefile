@@ -1,7 +1,6 @@
 .PHONY: build-ProcessReportsTransactionCategoryFunction build-ProcessReportsTransactionCardFunction build-ProcessReportsTransactionMonthlyFunction
-.PHONY: build-UpdateTransactionFunction build-UpdateTransactionFunction build-FindReportMonthlyTransactionFunction
+.PHONY: build-UpdateTransactionFunction build-UpdateTransactionFunction build-FindReportMonthlyTransactionFunction build-FindReportCategoryTransactionFunction
 .PHONY: build-RuntimeDependenciesLayer build-lambda-common 
-
 
 build-ProcessReportsTransactionMonthlyFunction:
 	$(MAKE) HANDLER=src/handlers/processReportsTransactionsMonthly.ts build-lambda-common
@@ -14,6 +13,9 @@ build-ProcessReportsTransactionCardFunction:
 
 build-FindReportMonthlyTransactionFunction:
 	$(MAKE) HANDLER=src/handlers/findReportMonthly.ts build-lambda-common
+
+build-FindReportCategoryTransactionFunction:
+	$(MAKE) HANDLER=src/handlers/findReportCategory.ts build-lambda-common
 
 build-lambda-common:
 	npm install

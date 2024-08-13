@@ -7,11 +7,11 @@ export const handler = async () => {
   const userBotRepository = new UserBotRepository()
   const reportTransactionsMonthlyRepository = new ReportTransactionMonthlyRepository()
   const eventBridgeRepository = new EventBridgeRepository()
-  const processImportDataCore = new SendAmountRemainingMonthlyCore(
+  const sendAmountRemainingMonthlyCore = new SendAmountRemainingMonthlyCore(
     userBotRepository,
     reportTransactionsMonthlyRepository,
     eventBridgeRepository,
   )
 
-  await processImportDataCore.execute()
+  await sendAmountRemainingMonthlyCore.execute()
 }
