@@ -1,5 +1,0 @@
-# lambda-services-users
-
-## Description
-
-...

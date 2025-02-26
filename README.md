@@ -4,6 +4,7 @@
 
 url: https://aws.amazon.com/pt/blogs/compute/developing-evolutionary-architecture-with-aws-lambda/
 
+```
 my-app/
 │
 ├── src/
@@ -23,3 +24,4 @@ my-app/
 │ │ │ ├── lambda-get-data.ts # Função Lambda para obter dados
 │
 ├── package.json # Arquivo de configuração do projeto
+```

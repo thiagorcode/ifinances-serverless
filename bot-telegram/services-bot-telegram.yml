@@ -6,13 +6,13 @@ Description: API do Bot ifinancesBot
 Parameters:
   TableUserBotPreferencesName:
     Type: String
-  CreateTransactionsQueueName:
-    Type: String
   TableTransactionsCardName:
     Type: String
   TableTransactionsCategoryName:
     Type: String
   TableReportTransactionsMonthlyName:
+    Type: String
+  TableReportTransactionsCategoryName:
     Type: String
   TableReportTransactionsCardName:
     Type: String
@@ -20,9 +20,11 @@ Parameters:
     Type: String
   SecretTelegram:
     Type: String
+  BusTransactionsName:
+    Type: String
 Globals:
   Function:
-    Timeout: 10
+    Timeout: 15
     Tracing: Active
     Runtime: nodejs18.x
     Architectures:
@@ -60,10 +62,11 @@ Resources:
           SECRET_TELEGRAM: !Ref SecretTelegram
           TABLE_TRANSACTIONS_CATEGORY_NAME: !Ref TableTransactionsCategoryName
           TABLE_USER_BOT_PREFERENCES_NAME: !Ref TableUserBotPreferencesName
-          CREATE_TRANSACTION_QUEUE_NAME: !Ref CreateTransactionsQueueName
           TABLE_TRANSACTIONS_CARD_NAME: !Ref TableTransactionsCardName
           TABLE_REPORT_TRANSACTIONS_MONTHLY_NAME: !Ref TableReportTransactionsMonthlyName
+          TABLE_REPORT_TRANSACTIONS_CATEGORY_NAME: !Ref TableReportTransactionsCategoryName
           TABLE_REPORT_TRANSACTIONS_CARD_NAME: !Ref TableReportTransactionsCardName
+          BUS_TRANSACTIONS_NAME: !Ref BusTransactionsName
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref TableUserBotPreferencesName
@@ -75,7 +78,37 @@ Resources:
             TableName: !Ref TableReportTransactionsMonthlyName
         - DynamoDBReadPolicy:
             TableName: !Ref TableReportTransactionsCardName
-        - SQSSendMessagePolicy:
-            QueueName: !Ref CreateTransactionsQueueName
+        - DynamoDBReadPolicy:
+            TableName: !Ref TableReportTransactionsCategoryName
         - SSMParameterReadPolicy: 
             ParameterName: '*'
+        - EventBridgePutEventsPolicy:
+            EventBusName: !Ref BusTransactionsName
+    
+  SendMessageBotFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/sendMessageBot.handler
+      FunctionName:
+        Fn::Join:
+        - '-'
+        - - Ref: AWS::StackName
+          - send-message
+      Environment:
+        Variables:
+          ENV: !Ref Env
+          SECRET_TELEGRAM: !Ref SecretTelegram
+      Policies:
+        - SSMParameterReadPolicy: 
+            ParameterName: '*'
+      Events:
+        Trigger:
+          Type: EventBridgeRule 
+          Properties:
+            EventBusName: !Ref BusTransactionsName
+            Pattern:
+              source:
+                - lambda.send-message
+

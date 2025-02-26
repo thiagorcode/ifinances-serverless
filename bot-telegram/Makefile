@@ -4,11 +4,14 @@
 build-BotTelegramFunction:
 	$(MAKE) HANDLER=src/handlers/processChat.ts build-lambda-common
 
+build-SendMessageBotFunction:
+	$(MAKE) HANDLER=src/handlers/sendMessageBot.ts build-lambda-common
+
 build-lambda-common:
 	npm install
 	rm -rf dist
 	echo "{\"extends\": \"./tsconfig.json\", \"include\": [\"${HANDLER}\"] }" > tsconfig-only-handler.json
-	npm run build -- --build tsconfig-only-handler.json
+	HANDLER="${HANDLER}" node build.js
 	cp -r dist "$(ARTIFACTS_DIR)/"
 
 build-RuntimeDependenciesLayer:

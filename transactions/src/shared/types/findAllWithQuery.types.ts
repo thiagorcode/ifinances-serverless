@@ -2,14 +2,14 @@ import * as z from 'zod'
 import { findAllWithQuerySchema } from '../schemas'
 
 export type FindAllWithQueryOriginType = {
-  categoryId: string | undefined
-  date: string | undefined
-  type: string | undefined
-  isPaid: boolean | undefined
+  categoryId?: string
+  startDate?: string
+  endDate?: string
+  type?: string
+  cardId?: string
+  isPaid?: boolean
+  yearMonth?: string
 }
 
-export type FindAllWithQueryServiceDto = FindAllWithQueryOriginType & {
-  userId: string
-}
 // TODO: REFACTOR changed name
 export type FindAllWithQueryType = z.infer<typeof findAllWithQuerySchema>

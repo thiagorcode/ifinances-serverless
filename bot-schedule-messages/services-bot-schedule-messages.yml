@@ -1,0 +1,67 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Stack management data ifinances
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Parameters:
+  # TableTransactionsCardName:
+  #   Type: String
+  TableUserBotPreferencesName:
+    Type: String
+  TableReportTransactionsMonthlyName:
+    Type: String
+  BusTransactionsName:
+    Type: String
+Globals:
+  Function:
+    Timeout: 15
+    Tracing: Active
+    Runtime: nodejs18.x
+    Architectures:
+      - x86_64
+    Layers:
+      - !Ref RuntimeDependenciesLayer
+  Api:
+    TracingEnabled: true
+
+Resources:
+  RuntimeDependenciesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Description: Runtime dependencies for Lambdas
+      ContentUri: ./
+      CompatibleRuntimes:
+        - nodejs20.x
+      RetentionPolicy: Retain
+
+  SendAmountRemainingMonthlyFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/amountRemainingMonthly.handler
+      FunctionName:
+        Fn::Join:
+          - '-'
+          - - Ref: AWS::StackName
+            - amount-remaining-monthly
+      Environment:
+        Variables:
+          BUS_TRANSACTIONS_NAME: !Ref BusTransactionsName
+          TABLE_REPORT_TRANSACTIONS_MONTHLY_NAME: !Ref TableReportTransactionsMonthlyName
+          TABLE_USER_BOT_PREFERENCES_NAME: !Ref TableUserBotPreferencesName
+
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref TableReportTransactionsMonthlyName
+        - DynamoDBReadPolicy:
+            TableName: !Ref TableUserBotPreferencesName
+        - EventBridgePutEventsPolicy:
+            EventBusName: !Ref BusTransactionsName
+      Events:
+        ScheduleEvent:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 12 * * ? *)

@@ -7,4 +7,5 @@ export const listCommands = [
   commandsChat.SHOW_REPORT_CARD,
   commandsChat.HELP,
   commandsChat.START,
+  commandsChat.SHOW_REPORT_CATEGORY,
 ]

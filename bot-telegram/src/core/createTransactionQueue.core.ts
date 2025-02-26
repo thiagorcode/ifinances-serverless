@@ -1,14 +1,17 @@
 import { createTransactionFromTelegramSchema } from '../shared/schemas'
-import { SQSRepositoryInterface } from '../repository/interface/sqsRepository.interface'
-import { CreateTransactionTelegramType } from '../shared/types/createTransactionFromTelegram.type'
+import {
+  CreateTransactionFromTelegramType,
+  CreateTransactionTelegramType,
+} from '../shared/types/createTransactionFromTelegram.type'
 import { AppErrorException } from '../utils'
 import { messages } from '../shared/constants/messages'
 import { TransactionCategoryRepositoryInterface } from '../repository/interface/transactionCategory.interface'
 import { TransactionCardRepository } from '../repository/transactionCard.repository'
+import { EventBridgeRepository } from '../repository/eventBridge.repository'
 
 export class CreateTransactionQueueCore {
   constructor(
-    private sqsRepository: SQSRepositoryInterface,
+    private eventBridgeRepository: EventBridgeRepository,
     private transactionCategoryRepository: TransactionCategoryRepositoryInterface,
     private transactionCardRepository: TransactionCardRepository,
   ) {}
@@ -33,9 +36,9 @@ export class CreateTransactionQueueCore {
     return categorySelected
   }
 
-  private async filterCard(cardName: string) {
-    if (!cardName) return undefined
-    const listCard = await this.transactionCardRepository.findAll()
+  private async filterCard(cardName: string, userId: string) {
+    if (!cardName) return null
+    const listCard = await this.transactionCardRepository.findByUserId(userId)
 
     const cardSelected = listCard.find((card) => card.name.toLowerCase() === cardName.toLowerCase())
 
@@ -63,19 +66,27 @@ export class CreateTransactionQueueCore {
 
   async execute(transaction: CreateTransactionTelegramType) {
     const categorySelected = await this.filterCategory(transaction.type, transaction.categoryName)
-    const cardSelected = await this.filterCard(transaction.cardName)
+    let cardSelected = null
+    if (transaction.cardName) {
+      cardSelected = (await this.filterCard(transaction.cardName, transaction.userId)) ?? null
+    }
     try {
       console.info('call CreateTransactionQueueCore')
-      const newTransaction = {
+      const newTransaction: CreateTransactionFromTelegramType = {
         ...transaction,
         date: this.validDate(transaction.date),
         card: cardSelected,
         category: categorySelected,
+        isInstallments: transaction.currentInstallment && transaction.finalInstallments ? true : false,
       }
 
       const transactionParsed = createTransactionFromTelegramSchema.parse(newTransaction)
       console.log('transaction', transactionParsed)
-      await this.sqsRepository.send(transactionParsed, process.env.CREATE_TRANSACTION_QUEUE_NAME)
+      await this.eventBridgeRepository.push(
+        transactionParsed,
+        'lambda.transaction-event',
+        process.env.BUS_TRANSACTIONS_NAME ?? '',
+      )
       return
     } catch (error: any) {
       console.error(error)

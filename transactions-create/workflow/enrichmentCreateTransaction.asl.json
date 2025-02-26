@@ -1,0 +1,60 @@
+{
+  "Comment": "Enrichment to create transaction",
+  "StartAt": "Get Category from DDB",
+  "States": {
+    "Get Category from DDB": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::dynamodb:getItem",
+      "Parameters": {
+        "TableName": "${CategoryDDBTable}",
+        "Key": {
+          "Id": {
+            "S.$": "$.data.order_id"
+          }
+        }
+      },
+      "Next": "Verify item Category"
+    },
+    "Verify item Category": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.Item",
+          "IsPresent": true,
+          "Comment": "Item Found",
+          "Next": "Get Card from DDB"
+        }
+      ],
+      "Default": "Nothing returned",
+      "Comment": "Item not found"
+    },
+    "Get Card from DDB": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::dynamodb:getItem",
+      "Parameters": {
+        "TableName": "${CardDDBTable}",
+        "Key": {
+          "Id": {
+            "S.$": "$.data.order_id"
+          }
+        }
+      },
+      "Next": "Verify item Category"
+    },
+    "Format result for target": {
+      "Type": "Pass",
+      "End": true,
+      "Parameters": [
+        {
+          "Item.$": "$.Item"
+        }
+      ]
+    },
+    "Nothing returned": {
+      "Type": "Pass",
+      "End": true,
+      "Result": [],
+      "Comment": "Not found"
+    }
+  }
+}

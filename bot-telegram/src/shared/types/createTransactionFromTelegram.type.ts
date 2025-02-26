@@ -4,8 +4,10 @@ import * as z from 'zod'
 export type CreateTransactionTelegramType = {
   date: string
   categoryName: string
-  cardName: string
+  cardName: string | null
   value: string
+  currentInstallment: number
+  finalInstallments: number
   description: string
   userId: string
   type: string

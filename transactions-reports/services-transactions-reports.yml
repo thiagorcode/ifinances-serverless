@@ -1,0 +1,242 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Stack of reports transactions
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Parameters:
+  TableReportTransactionsMonthlyName:
+    Type: String
+  TableReportTransactionsCategoryName:
+    Type: String
+  TableReportTransactionsCardName:
+    Type: String
+  BusTransactionsName:
+    Type: String
+Globals:
+  Function:
+    Timeout: 15
+    Tracing: Active
+    Runtime: nodejs18.x
+    Architectures:
+      - x86_64
+    Layers:
+      - !Ref RuntimeDependenciesLayer
+  Api:
+    TracingEnabled: true
+
+Resources:
+  RuntimeDependenciesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Metadata:
+      BuildMethod: makefile 
+    Properties:
+      Description: Runtime dependencies for Lambdas
+      ContentUri: ./
+      CompatibleRuntimes:
+        - nodejs18.x
+      RetentionPolicy: Retain
+
+  ProcessReportsTransactionMonthlyFunction:
+    Type: AWS::Serverless::Function 
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/processReportsTransactionsMonthly.handler
+      FunctionName:
+        Fn::Join:
+          - '-'
+          - - Ref: AWS::StackName
+            - process-monthly
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TableReportTransactionsMonthlyName
+          EVENTS_REPORT_TABLE_NAME: !Ref IFinancesEventsTransactionsReportsTable
+      Role: !GetAtt ReportsTransactionFunctionRole.Arn
+      Events:
+        Trigger:
+          Type: EventBridgeRule 
+          Properties:
+            EventBusName: !Ref BusTransactionsName
+            Pattern:
+              source:
+                - lambda.transaction-event
+              detail-type:
+                - REPORT_MONTHLY
+  ProcessReportsTransactionCategoryFunction:
+    Type: AWS::Serverless::Function 
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/processReportsTransactionsCategory.handler
+      FunctionName:
+        Fn::Join:
+          - '-'
+          - - Ref: AWS::StackName
+            - process-category
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TableReportTransactionsCategoryName
+          EVENTS_REPORT_TABLE_NAME: !Ref IFinancesEventsTransactionsReportsTable
+      Role: !GetAtt ReportsTransactionFunctionRole.Arn
+      Events:
+        Trigger:
+          Type: EventBridgeRule 
+          Properties:
+            EventBusName: !Ref BusTransactionsName
+            Pattern:
+              source:
+                - lambda.transaction-event
+              detail-type:
+                - REPORT_CATEGORY
+  ProcessReportsTransactionCardFunction:
+    Type: AWS::Serverless::Function 
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/processReportsTransactionsCard.handler
+      FunctionName:
+        Fn::Join:
+          - '-'
+          - - Ref: AWS::StackName
+            - process-card
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TableReportTransactionsCardName
+          EVENTS_REPORT_TABLE_NAME: !Ref IFinancesEventsTransactionsReportsTable
+      Role: !GetAtt ReportsTransactionFunctionRole.Arn
+      Events:
+        Trigger:
+          Type: EventBridgeRule 
+          Properties:
+            EventBusName: !Ref BusTransactionsName
+            Pattern:
+              source:
+                - lambda.transaction-event
+              detail-type:
+                - REPORT_CARD
+
+  FindReportMonthlyTransactionFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/findReportMonthly.handler
+      FunctionName:
+        Fn::Join:
+          - '-'
+          - - Ref: AWS::StackName
+            - find-monthly
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref TableReportTransactionsMonthlyName
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TableReportTransactionsMonthlyName
+
+  FindReportCategoryTransactionFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/handlers/findReportCategory.handler
+      FunctionName:
+        Fn::Join:
+          - '-'
+          - - Ref: AWS::StackName
+            - find-category
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref TableReportTransactionsCategoryName
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TableReportTransactionsCategoryName
+
+  IFinancesEventsTransactionsReportsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: "PAY_PER_REQUEST"
+      TableName: 
+        Fn::Join:
+          - '-'
+          - - Ref: AWS::StackName
+            - events-table
+      AttributeDefinitions:
+        - AttributeName: pk
+          AttributeType: S
+        - AttributeName: sk
+          AttributeType: S
+      KeySchema:
+        - AttributeName: pk
+          KeyType: HASH
+        - AttributeName: sk
+          KeyType: RANGE
+
+  ReportsTransactionFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Description: Role to access DDB
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Policies:
+      - PolicyName: ReportsTransactionsLambdaPolicy
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action: 
+                - "dynamodb:*"
+              Resource: 
+                - Fn::Sub: arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${TableReportTransactionsCategoryName}
+                - Fn::Sub: arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${TableReportTransactionsCategoryName}/*
+            - Effect: Allow
+              Action: 
+                - "dynamodb:*"
+              Resource: 
+                - Fn::Sub: arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${TableReportTransactionsCardName}
+                - Fn::Sub: arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${TableReportTransactionsCardName}/*
+            - Effect: Allow
+              Action: 
+                - "dynamodb:*"
+              Resource: 
+                - Fn::Sub: arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${TableReportTransactionsMonthlyName}
+                - Fn::Sub: arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${TableReportTransactionsMonthlyName}/*
+            - Effect: Allow
+              Action: 
+                - "dynamodb:*"
+              Resource: !GetAtt IFinancesEventsTransactionsReportsTable.Arn
+            - Effect: Allow
+              Action: 
+                - "logs:CreateLogGroup"
+                - "logs:CreateLogStream"
+                - "logs:PutLogEvents"
+              Resource: "*"
+  # Logs
+
+  ProcessReportsCategoryTransactionLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${ProcessReportsTransactionCategoryFunction}
+      RetentionInDays: 14
+  ProcessReportsCardTransactionLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${ProcessReportsTransactionCardFunction}
+      RetentionInDays: 14
+  ProcessReportsMonthlyTransactionLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${ProcessReportsTransactionMonthlyFunction}
+      RetentionInDays: 14
+  FindReportMonthlyTransactionLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${FindReportMonthlyTransactionFunction}
+      RetentionInDays: 14
+         

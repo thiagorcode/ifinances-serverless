@@ -1,24 +1,24 @@
-import { Callback, Context } from 'aws-lambda'
+import { Callback } from 'aws-lambda'
 
 import { EventCreateTransactionByChatType } from '../shared/types'
 import { AppErrorException } from '../utils'
 import { CreateTransactionQueueCore, SendMessageTelegramCore, ValidateTransactionCore } from '../core'
 import { messages } from '../shared/constants/messages'
-import { SQSRepository } from '../repository/sqs.repository'
+import { EventBridgeRepository } from '../repository/eventBridge.repository'
 import { TransactionCategoryRepository } from '../repository/transactionCategory.repository'
 import { TransactionCardRepository } from '../repository/transactionCard.repository'
 
-export const handler = async (event: EventCreateTransactionByChatType, context: Context, callback: Callback) => {
+export const handler = async (event: EventCreateTransactionByChatType, callback: Callback) => {
   console.info('Event:', event)
   const { chatId, attributes, user, type } = event
   // Repository
-  const sqsRepository = new SQSRepository()
+  const eventBridgeRepository = new EventBridgeRepository()
   const transactionCategoryRepository = new TransactionCategoryRepository()
   const transactionCardRepository = new TransactionCardRepository()
   // Core
   const sendMessageTelegramCore = new SendMessageTelegramCore(chatId)
   const createTransactionQueueCore = new CreateTransactionQueueCore(
-    sqsRepository,
+    eventBridgeRepository,
     transactionCategoryRepository,
     transactionCardRepository,
   )
@@ -37,6 +37,7 @@ export const handler = async (event: EventCreateTransactionByChatType, context: 
 
       return callback(null)
     }
+    console.error('error: ', error)
     await sendMessageTelegramCore.execute(messages['1'])
     return callback(null)
   }

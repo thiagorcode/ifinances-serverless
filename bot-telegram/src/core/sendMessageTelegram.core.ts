@@ -1,5 +1,5 @@
 import { GetParameterCommand, SSMClient } from '@aws-sdk/client-ssm'
-import { sendMessageToTelegram } from '../utils'
+import axios from 'axios'
 
 export class SendMessageTelegramCore {
   public chatId: string
@@ -14,9 +14,18 @@ export class SendMessageTelegramCore {
     const data = await client.send(command)
     return data.Parameter?.Value
   }
+
   async execute(message: string) {
-    console.info('call SendMessageTelegramCore')
-    const secretTokenBotTelegram = await this.loadTokenBot()
-    return await sendMessageToTelegram(secretTokenBotTelegram ?? '', this.chatId, message)
+    const tokenTelegram = await this.loadTokenBot()
+
+    const formData = new FormData()
+    formData.append('chat_id', this.chatId)
+    formData.append('text', message)
+
+    return axios.post(`https://api.telegram.org/bot${tokenTelegram}/sendMessage`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
   }
 }

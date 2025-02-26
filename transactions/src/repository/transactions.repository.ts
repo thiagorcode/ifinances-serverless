@@ -16,6 +16,8 @@ import {
   TransactionsTypes,
   UpdateTransactionsType,
 } from '../shared/types'
+import { QueryBuilder } from '../utils'
+import { compareDesc } from 'date-fns'
 
 // TODO: Preciso pensar uma maneira para refatorar e separar cada metódo em um arquivo execute
 
@@ -73,54 +75,53 @@ export class TransactionRepository implements TransactionRepositoryInterface {
   }
   async findAllWithQuery({
     categoryId,
-    date,
+    startDate,
+    endDate,
     isPaid,
     type,
     userId,
+    cardId,
+    yearMonth,
   }: FindAllWithQueryType): Promise<TransactionsTypes[]> {
+    const queryBuilder = new QueryBuilder()
     const params = new QueryCommand({
-      TableName: process.env.TABLE_NAME, // Substitua pelo nome correto da tabela
-      IndexName: 'UserFindIndex',
+      TableName: process.env.TABLE_NAME,
+      IndexName: 'TransactionByUserId',
       KeyConditionExpression: 'userId = :userId',
-      ExpressionAttributeValues: {
-        ':userId': userId,
-      },
       ProjectionExpression:
-        // 'id, #type, #date, userId, #value, isPaid, card, #description, #categoryName, #categoryId',
-        'id, #type, #date, userId, #value, isPaid, card, #description',
-      ExpressionAttributeNames: {
-        '#type': 'type',
-        '#date': 'date',
-        '#value': 'value',
-        '#description': 'description',
-        // '#categoryName': 'category.name',
-        // '#categoryId': 'category.id',
-      },
+        'id, #type, #date, userId, #value, isPaid, card, #description, category, yearMonth, currentInstallment, finalInstallments, isInstallments',
       ScanIndexForward: false,
     })
+    const newParams = queryBuilder.buildQueryFindAll({
+      categoryId,
+      startDate,
+      endDate,
+      isPaid,
+      type,
+      cardId,
+      yearMonth,
+    })
 
-    if (type !== undefined) {
-      params.input.FilterExpression = ' #type = :type'
-      params.input.ExpressionAttributeValues![':type'] = type
+    params.input.FilterExpression = newParams.filterExpression ? newParams.filterExpression : undefined
+    params.input.ExpressionAttributeValues = {
+      ':userId': userId,
+      ...newParams.expressionAttributesValues,
+    }
+    params.input.ExpressionAttributeNames = {
+      '#type': 'type',
+      '#date': 'date',
+      '#value': 'value',
+      '#description': 'description',
+      ...newParams.expressionAttributeNames,
     }
 
-    if (date !== undefined) {
-      params.input.FilterExpression = '#yearMonth = :yearMonth'
-      params.input.ExpressionAttributeValues![':yearMonth'] = date
+    const { Items, ...props } = await this.dynamodbDocumentClient.send(params)
+    console.log(JSON.stringify({ ...props }))
+    if (!Items) {
+      return [] as TransactionsTypes[]
     }
 
-    if (categoryId !== undefined) {
-      params.input.FilterExpression = '#categoryId = :categoryId'
-      params.input.ExpressionAttributeValues![':categoryId'] = categoryId
-    }
-
-    if (isPaid !== undefined) {
-      params.input.FilterExpression = 'isPaid = :isPaid'
-      params.input.ExpressionAttributeValues![':isPaid'] = isPaid
-    }
-    const { Items } = await this.dynamodbDocumentClient.send(params)
-
-    return Items as TransactionsTypes[]
+    return Items.sort((a, b) => compareDesc(new Date(a.date), new Date(b.date))) as TransactionsTypes[]
   }
   async findLast(userId: string): Promise<TransactionsTypes[]> {
     const params = new QueryCommand({

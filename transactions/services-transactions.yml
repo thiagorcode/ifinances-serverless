@@ -1,14 +1,15 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: API de transação
+Description: Stack of transactions
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Parameters:
-  TableReportTransactionsMonthlyName:
+  
+  TableReportTransactionsCategoryName:
     Type: String
-  TableTransactionsCategoryName:
+  TableReportTransactionsCardName:
     Type: String
-  TableTransactionsCardName:
+  BusTransactionsName:
     Type: String
 Globals:
   Function:
@@ -19,6 +20,9 @@ Globals:
       - x86_64
     Layers:
       - !Ref RuntimeDependenciesLayer
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref IFinancesTransactionsTable
   Api:
     TracingEnabled: true
 
@@ -66,73 +70,13 @@ Resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL
-
-
-  ReportsTransactionsMonthlyQueue:
-    Type: AWS::SQS::Queue
-    Properties:
-      QueueName: 
-        Fn::Join:
-          - '-'
-          - - Ref: AWS::StackName
-            - sqs-reports-monthly
-      RedrivePolicy:
-        deadLetterTargetArn: !GetAtt ReportsTransactionsDLQueue.Arn
-        maxReceiveCount: 6
-
-  ReportsTransactionsCategoryQueue:
-    Type: AWS::SQS::Queue
-    Properties:
-      QueueName:
-        Fn::Join:
-          - '-'
-          - - Ref: AWS::StackName
-            - sqs-reports-category
-      RedrivePolicy:
-        deadLetterTargetArn: !GetAtt ReportsTransactionsDLQueue.Arn
-        maxReceiveCount: 6
-
-  ReportsTransactionsCardQueue:
-    Type: AWS::SQS::Queue
-    Properties:
-      QueueName: 
-        Fn::Join:
-          - '-'
-          - - Ref: AWS::StackName
-            - sqs-reports-card
-      RedrivePolicy:
-        deadLetterTargetArn: !GetAtt ReportsTransactionsDLQueue.Arn
-        maxReceiveCount: 6
-  CreateTransactionsQueue:
-    Type: AWS::SQS::Queue
-    Properties:
-      QueueName: 
-        Fn::Join:
-          - '-'
-          - - Ref: AWS::StackName
-            - sqs-create
-      RedrivePolicy:
-        deadLetterTargetArn: !GetAtt ReportsTransactionsDLQueue.Arn
-        maxReceiveCount: 6
-
-  ReportsTransactionsDLQueue:
-    Type: AWS::SQS::Queue
-
-  ReportsTransactionsQueuePolicy:
-    Type: AWS::SQS::QueuePolicy
-    Properties:
-      PolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Action:
-              - sqs:*
-            Effect: Allow
-            Principal:
-              AWS: !Ref AWS::AccountId
-            Resource: !GetAtt ReportsTransactionsMonthlyQueue.Arn
-      Queues:
-        - !Ref ReportsTransactionsMonthlyQueue
-
+          - IndexName: TransactionByUserId
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+  
   CreateTransactionFunction:
     Type: AWS::Serverless::Function 
     Metadata:
@@ -144,9 +88,6 @@ Resources:
           - '-'
           - - Ref: AWS::StackName
             - create
-      Environment:
-        Variables:
-          TABLE_NAME: !Ref IFinancesTransactionsTable
       Policies:
         - DynamoDBWritePolicy:
             TableName: !Ref IFinancesTransactionsTable
@@ -164,16 +105,10 @@ Resources:
             - ddb-stream-reports
       Environment:
         Variables:
-          REPORTS_TRANSACTIONS_MONTHLY_QUEUE_NAME: !GetAtt ReportsTransactionsMonthlyQueue.QueueName
-          REPORTS_TRANSACTIONS_CATEGORY_QUEUE_NAME: !GetAtt ReportsTransactionsCategoryQueue.QueueName
-          REPORTS_TRANSACTIONS_CARD_QUEUE_NAME: !GetAtt ReportsTransactionsCardQueue.QueueName
+          BUS_TRANSACTIONS_NAME: !Ref BusTransactionsName
       Policies:
-        - SQSSendMessagePolicy:
-            QueueName: !GetAtt ReportsTransactionsMonthlyQueue.QueueName
-        - SQSSendMessagePolicy:
-            QueueName: !GetAtt ReportsTransactionsCategoryQueue.QueueName
-        - SQSSendMessagePolicy:
-            QueueName: !GetAtt ReportsTransactionsCardQueue.QueueName
+        - EventBridgePutEventsPolicy:
+            EventBusName: !Ref BusTransactionsName
       Events:
         DynamoDBEvent:
           Type: DynamoDB
@@ -181,102 +116,32 @@ Resources:
             Stream: !GetAtt IFinancesTransactionsTable.StreamArn
             StartingPosition: LATEST
     
-  SQSReportsTransactionMonthlyFunction:
+  
+  ProcessCreateTransactionFunction:
     Type: AWS::Serverless::Function 
     Metadata:
       BuildMethod: makefile
     Properties:
-      Handler: dist/handlers/sqsReportsTransactionsMonthly.handler
+      Handler: dist/handlers/processCreateTransaction.handler
       FunctionName:
         Fn::Join:
           - '-'
           - - Ref: AWS::StackName
-            - sqs-reports-monthly
-      Environment:
-        Variables:
-          TABLE_NAME: !Ref TableReportTransactionsMonthlyName
-      Policies:
-        - DynamoDBWritePolicy:
-            TableName: !Ref TableReportTransactionsMonthlyName
-        - DynamoDBReadPolicy:
-            TableName: !Ref TableReportTransactionsMonthlyName
-      Events:
-        SQSEvent:
-          Type: SQS
-          Properties:
-            Queue: !GetAtt ReportsTransactionsMonthlyQueue.Arn
-
-  SQSReportsTransactionCategoryFunction:
-    Type: AWS::Serverless::Function 
-    Metadata:
-      BuildMethod: makefile
-    Properties:
-      Handler: dist/handlers/sqsReportsTransactionsCategory.handler
-      FunctionName:
-        Fn::Join:
-          - '-'
-          - - Ref: AWS::StackName
-            - sqs-reports-category
-      Environment:
-        Variables:
-          TABLE_NAME: !Ref TableTransactionsCategoryName
-      Policies:
-        - DynamoDBWritePolicy:
-            TableName: !Ref TableTransactionsCategoryName
-        - DynamoDBReadPolicy:
-            TableName: !Ref TableTransactionsCategoryName
-      Events:
-        SQSEvent:
-          Type: SQS
-          Properties:
-            Queue: !GetAtt ReportsTransactionsCategoryQueue.Arn
-
-  SQSReportsTransactionCardFunction:
-    Type: AWS::Serverless::Function 
-    Metadata:
-      BuildMethod: makefile
-    Properties:
-      Handler: dist/handlers/sqsReportsTransactionsCard.handler
-      FunctionName:
-        Fn::Join:
-          - '-'
-          - - Ref: AWS::StackName
-            - sqs-reports-card
-      Environment:
-        Variables:
-          TABLE_NAME: !Ref TableTransactionsCardName
-      Policies:
-        - DynamoDBWritePolicy:
-            TableName: !Ref TableTransactionsCardName
-        - DynamoDBReadPolicy:
-            TableName: !Ref TableTransactionsCardName
-      Events:
-        SQSEvent:
-          Type: SQS
-          Properties:
-            Queue: !GetAtt ReportsTransactionsCardQueue.Arn
-  SQSCreateTransactionFunction:
-    Type: AWS::Serverless::Function 
-    Metadata:
-      BuildMethod: makefile
-    Properties:
-      Handler: dist/handlers/sqsCreateTransaction.handler
-      FunctionName:
-        Fn::Join:
-          - '-'
-          - - Ref: AWS::StackName
-            - sqs-create
-      Environment:
-        Variables:
-          TABLE_NAME: !Ref IFinancesTransactionsTable
+            - process-create
       Policies:
         - DynamoDBWritePolicy:
             TableName: !Ref IFinancesTransactionsTable
       Events:
-        SQSEvent:
-          Type: SQS
+        Trigger:
+          Type: EventBridgeRule 
           Properties:
-            Queue: !GetAtt CreateTransactionsQueue.Arn
+            EventBusName: !Ref BusTransactionsName
+            Pattern:
+              source:
+                - lambda.transaction-event
+              detail-type:
+                - TRANSACTION_CREATE
+
   FindTransactionFunction:
     Type: AWS::Serverless::Function
     Metadata:
@@ -326,6 +191,7 @@ Resources:
       BuildMethod: makefile
     Properties:
       Handler: dist/handlers/findAll.handler
+      MemorySize: 256
       FunctionName:
         Fn::Join:
           - '-'
@@ -365,3 +231,50 @@ Resources:
         - DynamoDBWritePolicy:
             TableName: !Ref IFinancesTransactionsTable
 
+  
+  # Logs
+  FindTransactionLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${FindTransactionFunction}
+      RetentionInDays: 14
+  FindByUserIdTransactionLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${FindByUserIdTransactionFunction}
+      RetentionInDays: 14
+  FindLastTransactionLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${FindLastTransactionFunction}
+      RetentionInDays: 14
+  DeleteTransactionLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${DeleteTransactionFunction}
+      RetentionInDays: 14
+  FindAllTransactionLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${FindAllTransactionFunction}
+      RetentionInDays: 14
+  CreateTransactionLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${CreateTransactionFunction}
+      RetentionInDays: 14
+  DDBStreamReportsTransactionLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${DDBStreamReportsTransactionFunction}
+      RetentionInDays: 14
+  ProcessCreateTransactionLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${ProcessCreateTransactionFunction}
+      RetentionInDays: 14
+  UpdateTransactionLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${UpdateTransactionFunction}
+      RetentionInDays: 14

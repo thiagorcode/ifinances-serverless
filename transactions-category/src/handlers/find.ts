@@ -1,5 +1,5 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import { DynamoDBRepository } from '../repository/dynamodb.repository'
+import { CategoryDatabaseRepository } from '../repository/categoryDatabase.repository'
 import { AppErrorException, formatResponse } from '../utils'
 import { FindAllCore } from '../core/find.core'
 
@@ -7,12 +7,12 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
   try {
     console.debug('Event:', event)
 
-    const repository = new DynamoDBRepository()
+    const repository = new CategoryDatabaseRepository()
     const findAllCore = new FindAllCore(repository)
 
     const category = await findAllCore.execute()
     return formatResponse(200, {
-      message: 'Buscas realizada com sucesso!',
+      message: 'Busca realizada com sucesso!',
       category,
     })
   } catch (err) {
